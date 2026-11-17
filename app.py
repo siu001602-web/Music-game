@@ -22,8 +22,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Music 폴더 안의 파일 경로로 수정했습니다.
-music_file_path = "Music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
+# music 폴더(소문자) 안의 파일 경로로 지정했습니다.
+music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 audio_base64 = ""
 
 if os.path.exists(music_file_path):
