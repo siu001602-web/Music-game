@@ -86,6 +86,7 @@ rhythm_game_html = """
     border-radius: 12px;
     padding: 20px;
     text-align: center;
+    z-index: 10;
   }
   .section-title {
     font-size: 13px;
@@ -216,9 +217,7 @@ let score = 0;
 let combo = 0;
 let maxCombo = 0;
 
-// 판정 통계 카운터
 let stats = { perfect: 0, great: 0, good: 0, miss: 0 };
-
 let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
@@ -244,18 +243,20 @@ diffBtns.forEach(btn => {
 });
 
 function playBonusSound() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.15);
+  try {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.15);
+  } catch(e) {}
 }
 
 function generateBeatmap(difficulty) {
@@ -679,17 +680,19 @@ function startGame() {
   generateBeatmap(currentDifficulty);
   
   bgm.currentTime = 0;
+  // 오디오 재생 실패 여부와 상관없이 화면 전환이 확실히 되도록 처리
   bgm.play().catch(error => {
     console.log("Audio play failed:", error);
   });
 
   isPlaying = true;
   startTime = performance.now();
+  
+  // UI 확실히 숨기기
+  overlay.style.display = 'none';
   menuGroup.style.display = 'none';
   statsContainer.style.display = 'none';
-  overlay.style.display = 'flex';
-  // 게임 시작 시 오버레이 숨기기
-  overlay.style.background = 'rgba(14, 17, 23, 0.95)';
+
   requestAnimationFrame(updateAndDraw);
 }
 
@@ -697,17 +700,16 @@ function endGame() {
   isPlaying = false;
   bgm.pause();
 
-  // 판정 및 칭호 계산
   let clearTitle = "CLEAR!";
   let titleColor = "#ffffff";
 
   if (stats.miss === 0) {
     if (stats.great === 0 && stats.good === 0) {
       clearTitle = "퍼펙트 풀콤보! (ALL PERFECTION)";
-      titleColor = "#c084fc"; // 보라색 영롱한 빛
+      titleColor = "#c084fc";
     } else {
       clearTitle = "풀콤보! (FULL COMBO)";
-      titleColor = "#00f2fe"; // 네온 블루
+      titleColor = "#00f2fe";
     }
   }
 
