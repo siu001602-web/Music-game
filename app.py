@@ -66,6 +66,10 @@ rhythm_game_html = """
   canvas {
     width: 100%;
     height: auto;
+    /* Star Trail 배경 이미지 연출 (이미지 파일명이 다를 경우 아래 URL 부분을 수정하세요) */
+    background: linear-gradient(rgba(14, 17, 23, 0.75), rgba(14, 17, 23, 0.75)), url('Star_trail.jpg');
+    background-size: cover;
+    background-position: center;
     background-color: #161b22;
     border: 2px solid #30363d;
     border-radius: 12px;
@@ -82,7 +86,7 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(14, 17, 23, 0.95);
+    background: rgba(14, 17, 23, 0.94);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
@@ -146,16 +150,29 @@ rhythm_game_html = """
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
   }
+  .rank-badge {
+    font-size: 50px;
+    font-weight: 900;
+    margin: 2px 0;
+    line-height: 1;
+    text-shadow: 0 0 15px currentColor;
+  }
   .stats-box {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 12px 20px;
-    margin: 12px 0;
-    width: 80%;
+    padding: 10px 18px;
+    margin: 8px 0 12px 0;
+    width: 82%;
     text-align: left;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .controls-hint {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #8b949e;
+    line-height: 1.4;
   }
 </style>
 </head>
@@ -168,7 +185,7 @@ rhythm_game_html = """
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin-bottom: 4px; color: #00f2fe; font-size: 26px;">RHYTHM STAR</h1>
+    <h1 id="main-title" style="margin-bottom: 6px; color: #00f2fe; font-size: 24px;">RHYTHM STAR</h1>
     
     <div id="menu-group">
       <div class="section-title">Select Song</div>
@@ -184,9 +201,13 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <div id="stats-container" style="display: none;"></div>
+    <div id="stats-container" class="stats-box" style="display: none;"></div>
 
     <button id="start-btn">게임 시작 (Start)</button>
+
+    <div id="controls-hint" class="controls-hint">
+      🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
+    </div>
   </div>
 </div>
 
@@ -199,6 +220,7 @@ const bgm = document.getElementById('bgm');
 const mainTitle = document.getElementById('main-title');
 const menuGroup = document.getElementById('menu-group');
 const statsContainer = document.getElementById('stats-container');
+const controlsHint = document.getElementById('controls-hint');
 const diffBtns = document.querySelectorAll('.diff-btn');
 const songBtns = document.querySelectorAll('.song-btn');
 
@@ -473,9 +495,18 @@ canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') { handleSwipe(1, 'left'); handleSwipe(2, 'left'); return; }
-  if (e.key === 'ArrowRight') { handleSwipe(1, 'right'); handleSwipe(2, 'right'); return; }
-  const idx = KEYS.indexOf(e.key.toLowerCase());
+  const key = e.key.toLowerCase();
+  if (e.key === 'ArrowLeft' || key === 'a') {
+    handleSwipe(1, 'left');
+    handleSwipe(2, 'left');
+    return;
+  }
+  if (e.key === 'ArrowRight' || key === 'l') {
+    handleSwipe(1, 'right');
+    handleSwipe(2, 'right');
+    return;
+  }
+  const idx = KEYS.indexOf(key);
   if (idx !== -1 && !keyPressed[idx]) {
     keyPressed[idx] = true;
     handleTapDown(idx);
@@ -489,6 +520,28 @@ window.addEventListener('keyup', (e) => {
     handleTapUp(idx);
   }
 });
+
+function calculateRank(difficulty, finalScore) {
+  if (difficulty === 'easy') {
+    if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 70000) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 60000) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else if (difficulty === 'normal') {
+    if (finalScore >= 130000) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 100000) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 80000) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 60000) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else {
+    if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 100000) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  }
+}
 
 function updateAndDraw() {
   if (!isPlaying) return;
@@ -680,7 +733,6 @@ function startGame() {
   generateBeatmap(currentDifficulty);
   
   bgm.currentTime = 0;
-  // 오디오 재생 실패 여부와 상관없이 화면 전환이 확실히 되도록 처리
   bgm.play().catch(error => {
     console.log("Audio play failed:", error);
   });
@@ -688,10 +740,10 @@ function startGame() {
   isPlaying = true;
   startTime = performance.now();
   
-  // UI 확실히 숨기기
   overlay.style.display = 'none';
   menuGroup.style.display = 'none';
   statsContainer.style.display = 'none';
+  controlsHint.style.display = 'none';
 
   requestAnimationFrame(updateAndDraw);
 }
@@ -713,22 +765,27 @@ function endGame() {
     }
   }
 
+  const rankInfo = calculateRank(currentDifficulty, score);
+
   mainTitle.innerHTML = clearTitle;
   mainTitle.style.color = titleColor;
-  mainTitle.style.fontSize = "22px";
+  mainTitle.style.fontSize = "20px";
 
   statsContainer.innerHTML = `
-    <div>🏆 최종 점수: <b>${score}</b></div>
+    <div style="text-align: center; margin-bottom: 2px;">
+      <div style="font-size: 11px; color: #8b949e;">RANK</div>
+      <div class="rank-badge" style="color: ${rankInfo.color};">${rankInfo.rank}</div>
+    </div>
+    <div>🏆 최종 점수: <b>${score.toLocaleString()}</b></div>
     <div>💎 최대 콤보: ${maxCombo}</div>
-    <div style="margin-top: 6px; border-top: 1px solid #30363d; padding-top: 6px;">
-      ✨ PERFECT: <span style="color: #00f2fe;">${stats.perfect}</span><br>
-      🌟 GREAT: <span style="color: #4ade80;">${stats.great}</span><br>
-      ⚡ GOOD: <span style="color: #facc15;">${stats.good}</span><br>
-      ❌ MISS: <span style="color: #ff4b4b;">${stats.miss}</span>
+    <div style="margin-top: 4px; border-top: 1px solid #30363d; padding-top: 4px;">
+      ✨ PERFECT: <span style="color: #00f2fe;">${stats.perfect}</span> | 🌟 GREAT: <span style="color: #4ade80;">${stats.great}</span><br>
+      ⚡ GOOD: <span style="color: #facc15;">${stats.good}</span> | ❌ MISS: <span style="color: #ff4b4b;">${stats.miss}</span>
     </div>
   `;
   statsContainer.style.display = 'block';
-  menuGroup.style.display = 'none';
+  menuGroup.style.display = 'block';
+  controlsHint.style.display = 'block';
 
   startBtn.innerText = "다시 하기 (Retry)";
   overlay.style.display = 'flex';
