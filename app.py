@@ -28,8 +28,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
-image_file_path = "Image/SmartSelect_20261117_234657_YouTube.jpg"
+# 파일 경로 정의 (첫 번째 곡 + 두 번째 곡 '삐질게')
+song1_music = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
+song1_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
+
+song2_music = "music/Screen_Recording_20261118_013745_YouTube_18112026.m4a"
+song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
+
 yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"
 arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"
 yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
@@ -40,8 +45,12 @@ def get_base64(path):
             return base64.b64encode(f.read()).decode("utf-8")
     return ""
 
-audio_base64 = get_base64(music_file_path)
-image_base64 = get_base64(image_file_path)
+audio1_base64 = get_base64(song1_music)
+image1_base64 = get_base64(song1_img)
+
+audio2_base64 = get_base64(song2_music)
+image2_base64 = get_base64(song2_img)
+
 yuni_img_base64 = get_base64(yuni_img_path)
 arunyang_img_base64 = get_base64(arunyang_img_path)
 yuni_voice_base64 = get_base64(yuni_voice_path)
@@ -87,7 +96,7 @@ rhythm_game_html = """
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     background-color: #161b22;
@@ -100,7 +109,7 @@ rhythm_game_html = """
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
     background-size: cover; background-position: center;
     padding: 14px; text-align: center; z-index: 10;
   }
@@ -234,8 +243,12 @@ rhythm_game_html = """
 </head>
 <body>
 
-<audio id="bgm" preload="auto">
-  <source src="data:audio/mp4;base64,AUDIO_BASE64_PLACEHOLDER" type="audio/mp4">
+<!-- 곡 오디오 정의 -->
+<audio id="bgm1" preload="auto">
+  <source src="data:audio/mp4;base64,AUDIO1_BASE64_PLACEHOLDER" type="audio/mp4">
+</audio>
+<audio id="bgm2" preload="auto">
+  <source src="data:audio/mp4;base64,AUDIO2_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
 <audio id="yuni-voice" preload="auto">
   <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
@@ -272,7 +285,7 @@ rhythm_game_html = """
   <!-- 유닛 편성창 -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_3](start_span)[span_3](end_span).</div>
+    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_2](start_span)[span_2](end_span).</div>
 
     <div class="unit-slots">
       <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
@@ -285,10 +298,10 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 🌟 시너지 카드 부활 (유니+아르냥 동시 장착 시 활성화) -->
+    <!-- 시너지 카드 -->
     <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -324,11 +337,11 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_6](start_span)[span_6](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)[span_5](start_span)[span_5](end_span)</div>
         <div class="difficulty-select-container">
-          <div class="diff-card" data-diff="easy"><div class="diff-lv">Lv. 5</div><div class="diff-name">EASY</div></div>
-          <div class="diff-card selected" data-diff="normal"><div class="diff-lv">Lv. 11</div><div class="diff-name">NORMAL</div></div>
-          <div class="diff-card" data-diff="hard"><div class="diff-lv">Lv. 18</div><div class="diff-name">HARD</div></div>
+          <div class="diff-card" data-diff="easy"><div class="diff-lv" id="lv-easy">Lv. 5</div><div class="diff-name">EASY</div></div>
+          <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">NORMAL</div></div>
+          <div class="diff-card" data-diff="hard"><div class="diff-lv" id="lv-hard">Lv. 18</div><div class="diff-name">HARD</div></div>
         </div>
       </div>
 
@@ -387,7 +400,8 @@ const prepSongTitle = document.getElementById('prep-song-title');
 const prepRecordTitle = document.getElementById('prep-record-title');
 const prepRecordContent = document.getElementById('prep-record-content');
 
-const bgm = document.getElementById('bgm');
+const bgm1 = document.getElementById('bgm1');
+const bgm2 = document.getElementById('bgm2');
 const yuniVoice = document.getElementById('yuni-voice');
 const yuniPopup = document.getElementById('yuni-popup');
 const skillBarContainer = document.getElementById('skill-bar-container');
@@ -410,6 +424,10 @@ const statsContainer = document.getElementById('stats-container');
 const diffCards = document.querySelectorAll('.diff-card');
 const songListContainer = document.getElementById('song-list');
 
+const lvEasy = document.getElementById('lv-easy');
+const lvNormal = document.getElementById('lv-normal');
+const lvHard = document.getElementById('lv-hard');
+
 const navTabs = document.querySelectorAll('.nav-tab');
 const tabContents = {
   songs: document.getElementById('tab-songs'),
@@ -429,7 +447,8 @@ navTabs.forEach(tab => {
 });
 
 const songs = [
-  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER' }
+  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } },
+  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } }
 ];
 
 const LANES = 4;
@@ -439,7 +458,7 @@ const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
 let audioCtx = null;
-let currentSong = 'startrail';
+let currentSongId = 'startrail';
 let currentDifficulty = 'normal';
 
 let stella = 100;
@@ -448,9 +467,16 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  easy: { score: 0, rank: '-', color: '#94a3b8' },
-  normal: { score: 0, rank: '-', color: '#94a3b8' },
-  hard: { score: 0, rank: '-', color: '#94a3b8' }
+  startrail: {
+    easy: { score: 0, rank: '-', color: '#94a3b8' },
+    normal: { score: 0, rank: '-', color: '#94a3b8' },
+    hard: { score: 0, rank: '-', color: '#94a3b8' }
+  },
+  bbijilge: {
+    easy: { score: 0, rank: '-', color: '#94a3b8' },
+    normal: { score: 0, rank: '-', color: '#94a3b8' },
+    hard: { score: 0, rank: '-', color: '#94a3b8' }
+  }
 };
 
 let isPlaying = false;
@@ -473,6 +499,72 @@ let hornGlowTimer = 0;
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
+
+function getActiveBgm() {
+  const s = songs.find(item => item.id === currentSongId);
+  return s ? s.audio : bgm1;
+}
+
+function renderSongList() {
+  songListContainer.innerHTML = '';
+  songs.forEach(song => {
+    const card = document.createElement('div');
+    card.className = `song-card ${song.id === currentSongId ? 'selected' : ''}`;
+    card.innerHTML = `
+      <div style="position:relative;">
+        <img src="${song.thumb}" class="song-thumb">
+        <span class="new-badge">NEW</span>
+      </div>
+      <div class="song-name">🎵 ${song.title}</div>
+    `;
+    card.addEventListener('click', () => {
+      currentSongId = song.id;
+      renderSongList();
+      updateDifficultyLevels();
+    });
+    songListContainer.appendChild(card);
+  });
+}
+
+function updateDifficultyLevels() {
+  const song = songs.find(s => s.id === currentSongId);
+  if (song) {
+    lvEasy.innerText = song.levels.easy;
+    lvNormal.innerText = song.levels.normal;
+    lvHard.innerText = song.levels.hard;
+  }
+}
+
+renderSongList();
+updateDifficultyLevels();
+
+diffCards.forEach(card => {
+  card.addEventListener('click', () => {
+    diffCards.forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    currentDifficulty = card.getAttribute('data-diff');
+  });
+});
+
+nextPrepBtn.addEventListener('click', () => {
+  const song = songs.find(s => s.id === currentSongId);
+  const diffNameMap = { easy: `EASY (${song.levels.easy})`, normal: `NORMAL (${song.levels.normal})`, hard: `HARD (${song.levels.hard})` };
+  prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
+  
+  const rec = bestRecords[currentSongId][currentDifficulty];
+  prepRecordTitle.innerHTML = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
+  if (rec.score > 0) {
+    prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
+  } else {
+    prepRecordContent.innerHTML = `기록 없음 (첫 클라이언트에 도전하세요!)`;
+  }
+
+  prepScreen.style.display = 'flex';
+});
+
+prepBackBtn.addEventListener('click', () => {
+  prepScreen.style.display = 'none';
+});
 
 function updateInventoryUI() {
   stellaCountEl.innerText = stella;
@@ -503,7 +595,6 @@ function updateInventoryUI() {
     }
   }
 
-  // 🌟 유니 + 아르냥 동시 편성 시 [유니냥] 시너지 활성화 연출 체크
   const synergyCard = document.getElementById('synergy-card');
   const hasYuni = equippedUnit.includes('yuni');
   const hasArunyang = equippedUnit.includes('arunyang');
@@ -513,14 +604,14 @@ function updateInventoryUI() {
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
-      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
     `;
   } else {
     synergyCard.style.opacity = "0.4";
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)</div>
     `;
   }
 
@@ -617,54 +708,6 @@ gacha1Btn.addEventListener('click', () => executeGacha(1));
 gacha10Btn.addEventListener('click', () => executeGacha(10));
 gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none"; });
 
-function renderSongList() {
-  songListContainer.innerHTML = '';
-  songs.forEach(song => {
-    const card = document.createElement('div');
-    card.className = `song-card ${song.id === currentSong ? 'selected' : ''}`;
-    card.innerHTML = `
-      <div style="position:relative;">
-        <img src="${song.thumb}" class="song-thumb">
-        <span class="new-badge">NEW</span>
-      </div>
-      <div class="song-name">🎵 ${song.title}</div>
-    `;
-    card.addEventListener('click', () => {
-      currentSong = song.id;
-      renderSongList();
-    });
-    songListContainer.appendChild(card);
-  });
-}
-renderSongList();
-
-diffCards.forEach(card => {
-  card.addEventListener('click', () => {
-    diffCards.forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    currentDifficulty = card.getAttribute('data-diff');
-  });
-});
-
-nextPrepBtn.addEventListener('click', () => {
-  const diffNameMap = { easy: 'EASY (Lv.5)', normal: 'NORMAL (Lv.11)', hard: 'HARD (Lv.18)' };
-  prepSongTitle.innerHTML = `🎵 Star Trail [${diffNameMap[currentDifficulty]}]`;
-  
-  const rec = bestRecords[currentDifficulty];
-  prepRecordTitle.innerHTML = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
-  if (rec.score > 0) {
-    prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
-  } else {
-    prepRecordContent.innerHTML = `기록 없음 (첫 클라이언트에 도전하세요!)`;
-  }
-
-  prepScreen.style.display = 'flex';
-});
-
-prepBackBtn.addEventListener('click', () => {
-  prepScreen.style.display = 'none';
-});
-
 function playBonusSound() {
   try {
     if (!audioCtx) return;
@@ -687,7 +730,7 @@ function generateBeatmap(difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = 225.0;
+  const totalDuration = 140.0; // 약 2분 20초
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
@@ -739,9 +782,8 @@ function applyHitScore(note, minDiff) {
     mult *= 1.05;
   }
 
-  // 🌟 유니 + 아르냥 동시 편성 시 100콤보 이상에서 [유니냥] 시너지 점수 +15% 적용
   if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
-    mult *= 1.15;[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)
+    mult *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
   }
 
   if (note.type === 'bonus') playBonusSound();
@@ -861,7 +903,7 @@ function handleTapUp(lane) {
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span)
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1008,6 +1050,7 @@ function calculateRank(difficulty, finalScore) {
 function updateAndDraw() {
   if (!isPlaying) return;
 
+  const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
   if (yuniSkillActivated) {
@@ -1097,7 +1140,7 @@ function updateAndDraw() {
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span)
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1181,11 +1224,10 @@ function updateAndDraw() {
     ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 56);
   }
 
-  // 🌟 화면에도 [유니냥] 시너지 발동 표시
   if (hasYuni && hasArunyang && combo >= 100) {
     ctx.fillStyle = '#c084fc';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_17](start_span)[span_17](end_span)[span_18](start_span)[span_18](end_span)
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_16](start_span)[span_16](end_span)[span_17](start_span)[span_17](end_span)
   }
 
   if (combo > 1) {
@@ -1203,7 +1245,7 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  if (bgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
+  if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
     endGame();
     return;
   }
@@ -1245,8 +1287,9 @@ function startGame() {
   
   generateBeatmap(currentDifficulty);
   
-  bgm.currentTime = 0;
-  bgm.play().catch(error => {});
+  const currentBgm = getActiveBgm();
+  currentBgm.currentTime = 0;
+  currentBgm.play().catch(error => {});
 
   isPlaying = true;
   startTime = performance.now();
@@ -1257,7 +1300,8 @@ function startGame() {
 
 function endGame() {
   isPlaying = false;
-  bgm.pause();
+  const currentBgm = getActiveBgm();
+  currentBgm.pause();
   yuniPopup.classList.remove('show');
   skillBarContainer.style.display = 'none';
 
@@ -1276,8 +1320,8 @@ function endGame() {
 
   const rankInfo = calculateRank(currentDifficulty, score);
 
-  if (score > bestRecords[currentDifficulty].score) {
-    bestRecords[currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
+  if (score > bestRecords[currentSongId][currentDifficulty].score) {
+    bestRecords[currentSongId][currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
     clearTitle = "🎉 NEW RECORD! " + clearTitle;
   }
 
@@ -1293,7 +1337,7 @@ function endGame() {
       <div style="font-size: 10px; color: #8b949e;">RANK</div>
       <div class="rank-badge" style="color: ${rankInfo.color};">${rankInfo.rank}</div>
     </div>
-    <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentDifficulty].score.toLocaleString()})</div>
+    <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentSongId][currentDifficulty].score.toLocaleString()})</div>
     <div>💎 최대 콤보: ${maxCombo} | <span style="color: #facc15;">🌟 스텔라 +25 획득!</span></div>
     <div style="margin-top: 4px; border-top: 1px solid #30363d; padding-top: 4px;">
       ✨ PERFECT: <span style="color: #00f2fe;">${stats.perfect}</span> | 🌟 GREAT: <span style="color: #4ade80;">${stats.great}</span><br>
@@ -1319,8 +1363,12 @@ updateInventoryUI();
 </html>
 """
 
-rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
-rhythm_game_html = rhythm_game_html.replace("IMAGE_BASE64_PLACEHOLDER", image_base64)
+rhythm_game_html = rhythm_game_html.replace("AUDIO1_BASE64_PLACEHOLDER", audio1_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE1_BASE64_PLACEHOLDER", image1_base64)
+
+rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_base64)
+
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_img_base64)
 rhythm_game_html = rhythm_game_html.replace("USER_IMG_PLACEHOLDER", arunyang_img_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
