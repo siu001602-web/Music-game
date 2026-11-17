@@ -4,7 +4,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Custom BGM Rhythm Game",
+    page_title="Full-Length Rhythm Game",
     page_icon="🎵",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -22,7 +22,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 1. 깃허브 메인에 바로 올린 m4a 파일 경로 지정
+# 1. 음원 파일 읽기 및 Base64 변환
 music_file_path = "Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 audio_base64 = ""
 
@@ -33,7 +33,7 @@ if os.path.exists(music_file_path):
 else:
     st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 깃허브 메인 화면에 음원 파일을 추가해 주세요!")
 
-# 2. HTML 템플릿
+# 2. HTML / JS 게임 템플릿
 rhythm_game_html = """
 <!DOCTYPE html>
 <html>
@@ -84,14 +84,36 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(14, 17, 23, 0.88);
+    background: rgba(14, 17, 23, 0.92);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
   }
-  button {
-    padding: 16px 36px;
-    font-size: 20px;
+  .difficulty-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .diff-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #8b949e;
+    background: #21262d;
+    border: 2px solid #30363d;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .diff-btn.selected {
+    color: #0e1117;
+    background: #00f2fe;
+    border-color: #00f2fe;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  }
+  #start-btn {
+    padding: 14px 36px;
+    font-size: 18px;
     font-weight: bold;
     color: #0e1117;
     background: #00f2fe;
@@ -101,21 +123,20 @@ rhythm_game_html = """
     box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
     transition: transform 0.1s, background 0.2s;
   }
-  button:active {
+  #start-btn:active {
     transform: scale(0.95);
     background: #4facfe;
   }
   .controls-info {
-    margin-top: 18px;
-    font-size: 15px;
+    margin-top: 15px;
+    font-size: 14px;
     color: #8b949e;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 </style>
 </head>
 <body>
 
-<!-- 백그라운드 음악 오디오 객체 -->
 <audio id="bgm" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -123,10 +144,18 @@ rhythm_game_html = """
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
-    <h1 id="title-text" style="margin-bottom: 24px; color: #00f2fe; font-size: 32px;">NEON BEAT</h1>
+    <h1 style="margin-bottom: 10px; color: #00f2fe; font-size: 28px;">STAR TRAIL</h1>
+    <p style="margin-bottom: 15px; color: #8b949e; font-size: 14px;">난이도를 선택하세요 (약 3분 45초)</p>
+    
+    <div class="difficulty-container">
+      <button class="diff-btn" data-diff="easy">하 (Easy)</button>
+      <button class="diff-btn selected" data-diff="normal">중 (Normal)</button>
+      <button class="diff-btn" data-diff="hard">상 (Hard)</button>
+    </div>
+
     <button id="start-btn">게임 시작 (Start)</button>
     <div class="controls-info">
-      📱 태블릿/모바일: 하단 4개 레인 직접 터치 (멀티터치)<br>
+      📱 태블릿/모바일: 하단 4개 레인 직접 터치 (멀티)<br>
       💻 PC: 키보드 [ D ] [ F ] [ J ] [ K ]
     </div>
   </div>
@@ -137,16 +166,16 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('ui-overlay');
 const startBtn = document.getElementById('start-btn');
-const titleText = document.getElementById('title-text');
 const bgm = document.getElementById('bgm');
+const diffBtns = document.querySelectorAll('.diff-btn');
 
 const LANES = 4;
 const LANE_WIDTH = canvas.width / LANES;
 const HIT_Y = 510;
-const NOTE_SPEED = 420;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
+let currentDifficulty = 'normal'; // 기본값 중
 let isPlaying = false;
 let startTime = 0;
 let score = 0;
@@ -160,26 +189,54 @@ let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
-function generateBeatmap() {
-  notes = [];
-  const bpm = 120;
-  const beatInterval = 60 / bpm;
-  let currentTime = 2.0;
+// 난이도 버튼 선택 이벤트
+diffBtns.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    diffBtns.forEach(b => b.classList.remove('selected'));
+    e.target.classList.add('selected');
+    currentDifficulty = e.target.getAttribute('data-diff');
+  });
+});
 
-  for (let i = 0; i < 80; i++) {
+// 3분 45초(225초) 분량의 채보 생성기 (난이도별 밀도 조절)
+function generateBeatmap(difficulty) {
+  notes = [];
+  const bpm = 125; // 곡의 일반적인 템포 가정
+  const beatInterval = 60 / bpm; 
+  let currentTime = 2.0; // 시작 여유 시간 2초
+  const totalDuration = 225.0; // 3분 45초
+
+  let density = 1; // 하
+  let speed = 400;
+  if (difficulty === 'normal') { density = 2; speed = 440; }
+  if (difficulty === 'hard') { density = 3; speed = 480; }
+
+  window.NOTE_SPEED = speed;
+
+  while (currentTime < totalDuration - 5.0) {
     const lane = Math.floor(Math.random() * LANES);
     notes.push({ time: currentTime, lane: lane, hit: false, missed: false });
 
-    if (i % 4 === 0 && i > 0) {
+    // Normal 이상: 동시타 추가
+    if (difficulty !== 'easy' && Math.random() < 0.35) {
       let secondLane = (lane + 2) % LANES;
       notes.push({ time: currentTime, lane: secondLane, hit: false, missed: false });
     }
-    if (i % 2 === 1 && Math.random() > 0.4) {
-      let offBeatLane = (lane + 1) % LANES;
-      notes.push({ time: currentTime + beatInterval / 2, lane: offBeatLane, hit: false, missed: false });
+
+    // Hard: 엇박자 폭타 추가
+    if (difficulty === 'hard' && Math.random() < 0.5) {
+      let offLane = (lane + 1) % LANES;
+      notes.push({ time: currentTime + beatInterval / 2, lane: offLane, hit: false, missed: false });
     }
 
-    currentTime += beatInterval;
+    // 난이도별 노트 간격 조절
+    if (difficulty === 'easy') {
+      currentTime += beatInterval * 1.5;
+    } else if (difficulty === 'normal') {
+      currentTime += beatInterval;
+    } else {
+      currentTime += beatInterval * 0.5;
+    }
   }
 }
 
@@ -331,7 +388,7 @@ function updateAndDraw() {
     remainingNotes++;
 
     const timeDiff = note.time - currentTime;
-    const y = HIT_Y - (timeDiff * NOTE_SPEED);
+    const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
     if (timeDiff < -0.20) {
       note.missed = true;
@@ -387,7 +444,8 @@ function startGame() {
   judgementTimer = 0;
   activeTouches.clear();
   keyPressed = [false, false, false, false];
-  generateBeatmap();
+  
+  generateBeatmap(currentDifficulty);
   
   bgm.currentTime = 0;
   bgm.play().catch(error => {
@@ -403,7 +461,8 @@ function startGame() {
 function endGame() {
   isPlaying = false;
   bgm.pause();
-  titleText.innerHTML = `CLEAR!<br><span style="font-size:20px; color:white;">Score: ${score} | Max Combo: ${maxCombo}</span>`;
+  document.querySelector('h1').innerHTML = "CLEAR!";
+  document.querySelector('p').innerHTML = `Score: ${score} | Max Combo: ${maxCombo}`;
   startBtn.innerText = "다시 하기 (Retry)";
   overlay.style.display = 'flex';
 }
