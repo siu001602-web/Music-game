@@ -22,8 +22,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 1. 로컬에 업로드된 m4a 파일 읽어서 Base64로 변환
-music_file_path = "music.m4a"
+# 1. 깃허브 메인에 바로 올린 m4a 파일 경로 지정
+music_file_path = "Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 audio_base64 = ""
 
 if os.path.exists(music_file_path):
@@ -31,9 +31,9 @@ if os.path.exists(music_file_path):
         audio_bytes = f.read()
         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
 else:
-    st.warning("⚠️ 'music.m4a' 파일을 찾을 수 없습니다. 깃허브 폴더에 음원 파일을 추가해 주세요!")
+    st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 깃허브 메인 화면에 음원 파일을 추가해 주세요!")
 
-# 2. HTML 템플릿 (f-string 에러 방지를 위해 audio_base64만 문자열 포맷팅으로 주입)
+# 2. HTML 템플릿
 rhythm_game_html = """
 <!DOCTYPE html>
 <html>
@@ -414,7 +414,6 @@ startBtn.addEventListener('click', startGame);
 </html>
 """
 
-# 플레이스홀더를 실제 Base64 음원 데이터로 치환 (f-string 에러 원천 차단)
 rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
 
 components.html(rhythm_game_html, height=680)
