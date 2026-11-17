@@ -22,7 +22,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-music_file_path = "Screen_Recording_20261117_180140_YouTube_17112026.m4a"
+# Music 폴더 안의 파일 경로로 수정했습니다.
+music_file_path = "Music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 audio_base64 = ""
 
 if os.path.exists(music_file_path):
@@ -30,7 +31,7 @@ if os.path.exists(music_file_path):
         audio_bytes = f.read()
         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
 else:
-    st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 깃허브 메인 화면에 음원 파일을 추가해 주세요!")
+    st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 경로와 파일명을 다시 확인해 주세요!")
 
 rhythm_game_html = """
 <!DOCTYPE html>
@@ -66,7 +67,6 @@ rhythm_game_html = """
   canvas {
     width: 100%;
     height: auto;
-    /* Star Trail 배경 이미지 연출 (이미지 파일명이 다를 경우 아래 URL 부분을 수정하세요) */
     background: linear-gradient(rgba(14, 17, 23, 0.75), rgba(14, 17, 23, 0.75)), url('Star_trail.jpg');
     background-size: cover;
     background-position: center;
