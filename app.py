@@ -155,12 +155,12 @@ rhythm_game_html = """
     background: rgba(14, 17, 23, 0.97); padding: 16px; display: none; flex-direction: column; z-index: 15; text-align: left;
   }
   .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
-  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 10px; }
+  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
   
-  .unit-slots { display: flex; gap: 8px; margin-bottom: 12px; }
+  .unit-slots { display: flex; gap: 8px; margin-bottom: 8px; }
   .unit-slot {
     flex: 1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px;
-    height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 105px; display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.2s; position: relative; padding: 6px; text-align: center;
   }
   .unit-slot.filled { border-style: solid; }
@@ -168,7 +168,7 @@ rhythm_game_html = """
   .unit-slot.filled.star-4 { border-color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
   
   .plus-icon { font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; }
-  .slot-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin-bottom: 3px; border: 2px solid currentColor; }
+  .slot-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; }
 
   /* 캐릭터 선택 팝업 모달 */
   #char-select-modal {
@@ -182,6 +182,10 @@ rhythm_game_html = """
   }
   .char-option-card.owned { border-color: #00f2fe; }
 
+  .prep-skill-card {
+    background: rgba(255, 121, 198, 0.1); border: 1px solid #ff79c6; border-radius: 8px;
+    padding: 6px 10px; margin-bottom: 8px; font-size: 11px;
+  }
   .prep-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
 
   .action-btn {
@@ -268,7 +272,7 @@ rhythm_game_html = """
   <!-- 유닛 편성창 -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_0](start_span)[span_0](end_span).</div>
+    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_3](start_span)[span_3](end_span).</div>
 
     <div class="unit-slots">
       <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
@@ -279,6 +283,12 @@ rhythm_game_html = """
         <div class="plus-icon">+</div>
         <div style="font-size: 10px; color: #8b949e;">슬롯 2</div>
       </div>
+    </div>
+
+    <!-- 🌟 시너지 카드 부활 (유니+아르냥 동시 장착 시 활성화) -->
+    <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -314,7 +324,7 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_1](start_span)[span_1](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)[span_6](start_span)[span_6](end_span)</div>
         <div class="difficulty-select-container">
           <div class="diff-card" data-diff="easy"><div class="diff-lv">Lv. 5</div><div class="diff-name">EASY</div></div>
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv">Lv. 11</div><div class="diff-name">NORMAL</div></div>
@@ -491,6 +501,27 @@ function updateInventoryUI() {
         <div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>
       `;
     }
+  }
+
+  // 🌟 유니 + 아르냥 동시 편성 시 [유니냥] 시너지 활성화 연출 체크
+  const synergyCard = document.getElementById('synergy-card');
+  const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
+
+  if (hasYuni && hasArunyang) {
+    synergyCard.style.opacity = "1";
+    synergyCard.style.borderColor = "#ff79c6";
+    synergyCard.innerHTML = `
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)</div>
+    `;
+  } else {
+    synergyCard.style.opacity = "0.4";
+    synergyCard.style.borderColor = "#ff79c6";
+    synergyCard.innerHTML = `
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
+      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)</div>
+    `;
   }
 
   const charYuniCard = document.getElementById('char-card-yuni');
@@ -702,9 +733,15 @@ function generateBeatmap(difficulty) {
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
   const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
 
   if (hasYuni && yuniSkillActivated) {
     mult *= 1.05;
+  }
+
+  // 🌟 유니 + 아르냥 동시 편성 시 100콤보 이상에서 [유니냥] 시너지 점수 +15% 적용
+  if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
+    mult *= 1.15;[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)
   }
 
   if (note.type === 'bonus') playBonusSound();
@@ -822,7 +859,9 @@ function handleTapUp(lane) {
       if (diff <= 0.26) {
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
+        const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1056,7 +1095,9 @@ function updateAndDraw() {
         note.tailHit = true;
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
+        const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1132,10 +1173,19 @@ function updateAndDraw() {
   ctx.fillText(`SCORE: ${score}`, 18, 36);
 
   const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
+
   if (hasYuni && yuniSkillActivated) {
     ctx.fillStyle = '#ff79c6';
     ctx.font = 'bold 13px sans-serif';
     ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 56);
+  }
+
+  // 🌟 화면에도 [유니냥] 시너지 발동 표시
+  if (hasYuni && hasArunyang && combo >= 100) {
+    ctx.fillStyle = '#c084fc';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_17](start_span)[span_17](end_span)[span_18](start_span)[span_18](end_span)
   }
 
   if (combo > 1) {
