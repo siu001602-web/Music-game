@@ -235,17 +235,21 @@ rhythm_game_html = """
   }
   .gauge-bg { width: 90px; height: 7px; background: #21262d; border-radius: 4px; overflow: hidden; }
   .gauge-fill { width: 0%; height: 100%; background: #ff79c6; transition: width 0.1s linear; }
+
+  #loading-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(14, 17, 23, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50; color: #00f2fe; font-weight: bold; font-size: 14px;
+  }
 </style>
 </head>
 <body>
 
-<!-- 오디오 버퍼링 및 끊김 방지 최적화 설정 -->
-<audio id="bgm1" preload="auto" autobuffer>
-  <source src="data:audio/mp4;base64,AUDIO1_BASE64_PLACEHOLDER" type="audio/mp4">
-</audio>
-<audio id="bgm2" preload="auto" autobuffer>
-  <source src="data:audio/mp4;base64,AUDIO2_BASE64_PLACEHOLDER" type="audio/mp4">
-</audio>
+<div id="loading-overlay">
+  <div style="font-size: 24px; margin-bottom: 8px;">🎵</div>
+  <div>음원 로딩 중... 잠시만 기다려주세요!</div>
+</div>
+
+<!-- 보이스 오디오 -->
 <audio id="yuni-voice" preload="auto">
   <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -388,9 +392,8 @@ const prepBackBtn = document.getElementById('prep-back-btn');
 const prepSongTitle = document.getElementById('prep-song-title');
 const prepRecordTitle = document.getElementById('prep-record-title');
 const prepRecordContent = document.getElementById('prep-record-content');
+const loadingOverlay = document.getElementById('loading-overlay');
 
-const bgm1 = document.getElementById('bgm1');
-const bgm2 = document.getElementById('bgm2');
 const yuniVoice = document.getElementById('yuni-voice');
 const yuniPopup = document.getElementById('yuni-popup');
 const skillBarContainer = document.getElementById('skill-bar-container');
@@ -435,10 +438,53 @@ navTabs.forEach(tab => {
   });
 });
 
+// 🌟 Web Audio API를 활용한 완벽한 음원 로딩 시스템
+let audioCtx = null;
+let audioBuffers = { startrail: null, bbijilge: null };
+let activeMusicSource = null;
+
 const songs = [
-  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } },
-  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } }
+  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', base64: 'AUDIO1_BASE64_PLACEHOLDER', levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } },
+  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', base64: 'AUDIO2_BASE64_PLACEHOLDER', levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } }
 ];
+
+async function initAudioSystem() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    await audioCtx.resume();
+  }
+
+  for (let song of songs) {
+    if (!audioBuffers[song.id]) {
+      try {
+        const binaryString = atob(song.base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        audioBuffers[song.id] = await audioCtx.decodeAudioData(bytes.buffer);
+      } catch (e) {
+        console.error("Audio decoding error for " + song.id, e);
+      }
+    }
+  }
+  loadingOverlay.style.display = 'none';
+}
+
+window.addEventListener('click', () => {
+  if (!audioCtx) initAudioSystem();
+}, { once: true });
+
+// 앱 시작 시 자동 로딩 시도
+setTimeout(() => {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    initAudioSystem();
+  }
+}, 300);
 
 const LANES = 4;
 const LANE_WIDTH = canvas.width / LANES;
@@ -446,7 +492,6 @@ const HIT_Y = 570;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
-let audioCtx = null;
 let currentSongId = 'startrail';
 let currentDifficulty = 'normal';
 
@@ -488,11 +533,6 @@ let hornGlowTimer = 0;
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
-
-function getActiveBgm() {
-  const s = songs.find(item => item.id === currentSongId);
-  return s ? s.audio : bgm1;
-}
 
 function renderSongList() {
   songListContainer.innerHTML = '';
@@ -1039,7 +1079,6 @@ function calculateRank(difficulty, finalScore) {
 function updateAndDraw() {
   if (!isPlaying) return;
 
-  const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
   if (yuniSkillActivated) {
@@ -1234,7 +1273,8 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
+  const songDuration = audioBuffers[currentSongId] ? audioBuffers[currentSongId].duration : 140;
+  if (currentTime >= songDuration || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
     endGame();
     return;
   }
@@ -1242,14 +1282,20 @@ function updateAndDraw() {
   requestAnimationFrame(updateAndDraw);
 }
 
-function startGame() {
+async function startGame() {
   prepScreen.style.display = 'none';
 
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+    await audioCtx.resume();
+  }
+
+  if (!audioBuffers[currentSongId]) {
+    alert("아직 음원이 로딩 중입니다. 잠시만 후 다시 시도해 주세요!");
+    prepScreen.style.display = 'flex';
+    return;
   }
 
   score = 0;
@@ -1276,10 +1322,14 @@ function startGame() {
   
   generateBeatmap(currentDifficulty);
   
-  const currentBgm = getActiveBgm();
-  currentBgm.pause();
-  currentBgm.currentTime = 0;
-  currentBgm.play().catch(error => {});
+  if (activeMusicSource) {
+    try { activeMusicSource.stop(); } catch(e) {}
+  }
+
+  activeMusicSource = audioCtx.createBufferSource();
+  activeMusicSource.buffer = audioBuffers[currentSongId];
+  activeMusicSource.connect(audioCtx.destination);
+  activeMusicSource.start(0);
 
   isPlaying = true;
   startTime = performance.now();
@@ -1290,8 +1340,10 @@ function startGame() {
 
 function endGame() {
   isPlaying = false;
-  const currentBgm = getActiveBgm();
-  currentBgm.pause();
+  if (activeMusicSource) {
+    try { activeMusicSource.stop(); } catch(e) {}
+    activeMusicSource = null;
+  }
   yuniPopup.classList.remove('show');
   skillBarContainer.style.display = 'none';
 
