@@ -33,21 +33,21 @@ if os.path.exists(music_file_path):
 else:
     st.warning("⚠️ 'music.m4a' 파일을 찾을 수 없습니다. 깃허브 폴더에 음원 파일을 추가해 주세요!")
 
-# HTML에 Base64 음원 데이터 주입
-rhythm_game_html = f"""
+# 2. HTML 템플릿 (f-string 에러 방지를 위해 audio_base64만 문자열 포맷팅으로 주입)
+rhythm_game_html = """
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-  * {{
+  * {
     box-sizing: border-box;
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
-  }}
-  body {{
+  }
+  body {
     margin: 0;
     background-color: #0e1117;
     color: white;
@@ -57,15 +57,15 @@ rhythm_game_html = f"""
     align-items: center;
     justify-content: center;
     overflow: hidden;
-  }}
-  #game-container {{
+  }
+  #game-container {
     position: relative;
     width: 100%;
     max-width: 540px;
     display: flex;
     justify-content: center;
-  }}
-  canvas {{
+  }
+  canvas {
     width: 100%;
     height: auto;
     background-color: #161b22;
@@ -73,8 +73,8 @@ rhythm_game_html = f"""
     border-radius: 12px;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
     touch-action: none;
-  }}
-  #ui-overlay {{
+  }
+  #ui-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -88,8 +88,8 @@ rhythm_game_html = f"""
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-  }}
-  button {{
+  }
+  button {
     padding: 16px 36px;
     font-size: 20px;
     font-weight: bold;
@@ -100,24 +100,24 @@ rhythm_game_html = f"""
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
     transition: transform 0.1s, background 0.2s;
-  }}
-  button:active {{
+  }
+  button:active {
     transform: scale(0.95);
     background: #4facfe;
-  }}
-  .controls-info {{
+  }
+  .controls-info {
     margin-top: 18px;
     font-size: 15px;
     color: #8b949e;
     line-height: 1.5;
-  }}
+  }
 </style>
 </head>
 <body>
 
 <!-- 백그라운드 음악 오디오 객체 -->
 <audio id="bgm" preload="auto">
-  <source src="data:audio/mp4;base64,{audio_base64}" type="audio/mp4">
+  <source src="data:audio/mp4;base64,AUDIO_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
 
 <div id="game-container">
@@ -164,7 +164,7 @@ function generateBeatmap() {
   notes = [];
   const bpm = 120;
   const beatInterval = 60 / bpm;
-  let currentTime = 2.0; // 음악 시작 후 2초 뒤부터 노트 낙하 시작
+  let currentTime = 2.0;
 
   for (let i = 0; i < 80; i++) {
     const lane = Math.floor(Math.random() * LANES);
@@ -372,7 +372,6 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  // 음악이 끝나거나 노트를 다 치면 종료
   if (bgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
     endGame();
     return;
@@ -390,7 +389,6 @@ function startGame() {
   keyPressed = [false, false, false, false];
   generateBeatmap();
   
-  // 음악 재생 시작
   bgm.currentTime = 0;
   bgm.play().catch(error => {
     console.log("Audio play failed:", error);
@@ -415,5 +413,8 @@ startBtn.addEventListener('click', startGame);
 </body>
 </html>
 """
+
+# 플레이스홀더를 실제 Base64 음원 데이터로 치환 (f-string 에러 원천 차단)
+rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
 
 components.html(rhythm_game_html, height=680)
