@@ -4,7 +4,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Full-Length Rhythm Game",
+    page_title="Rhythm Game with Long Notes",
     page_icon="🎵",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -33,7 +33,6 @@ if os.path.exists(music_file_path):
 else:
     st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 깃허브 메인 화면에 음원 파일을 추가해 주세요!")
 
-# 2. HTML / JS 게임 템플릿
 rhythm_game_html = """
 <!DOCTYPE html>
 <html>
@@ -145,7 +144,7 @@ rhythm_game_html = """
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
     <h1 style="margin-bottom: 10px; color: #00f2fe; font-size: 28px;">STAR TRAIL</h1>
-    <p style="margin-bottom: 15px; color: #8b949e; font-size: 14px;">난이도를 선택하세요 (약 3분 45초)</p>
+    <p style="margin-bottom: 15px; color: #8b949e; font-size: 14px;">난이도를 선택하세요 (롱 노트 포함)</p>
     
     <div class="difficulty-container">
       <button class="diff-btn" data-diff="easy">하 (Easy)</button>
@@ -155,7 +154,7 @@ rhythm_game_html = """
 
     <button id="start-btn">게임 시작 (Start)</button>
     <div class="controls-info">
-      📱 태블릿/모바일: 하단 4개 레인 직접 터치 (멀티)<br>
+      📱 태블릿/모바일: 하단 레인 터치 (롱 노트는 누르고 있기)<br>
       💻 PC: 키보드 [ D ] [ F ] [ J ] [ K ]
     </div>
   </div>
@@ -175,7 +174,7 @@ const HIT_Y = 510;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
-let currentDifficulty = 'normal'; // 기본값 중
+let currentDifficulty = 'normal';
 let isPlaying = false;
 let startTime = 0;
 let score = 0;
@@ -189,7 +188,6 @@ let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
-// 난이도 버튼 선택 이벤트
 diffBtns.forEach(btn => {
   btn.addEventListener('click', (e) => {
     diffBtns.forEach(b => b.classList.remove('selected'));
@@ -198,49 +196,71 @@ diffBtns.forEach(btn => {
   });
 });
 
-// 3분 45초(225초) 분량의 채보 생성기 (난이도별 밀도 조절)
+// 3분 45초(225초) 채보 생성 (롱 노트 포함, 상 난이도 완화)
 function generateBeatmap(difficulty) {
   notes = [];
-  const bpm = 125; // 곡의 일반적인 템포 가정
+  const bpm = 125;
   const beatInterval = 60 / bpm; 
-  let currentTime = 2.0; // 시작 여유 시간 2초
-  const totalDuration = 225.0; // 3분 45초
+  let currentTime = 2.0;
+  const totalDuration = 225.0;
 
-  let density = 1; // 하
   let speed = 400;
-  if (difficulty === 'normal') { density = 2; speed = 440; }
-  if (difficulty === 'hard') { density = 3; speed = 480; }
+  if (difficulty === 'normal') speed = 420;
+  if (difficulty === 'hard') speed = 450; // 기존보다 속도 낮춤
 
   window.NOTE_SPEED = speed;
 
+  let index = 0;
   while (currentTime < totalDuration - 5.0) {
     const lane = Math.floor(Math.random() * LANES);
-    notes.push({ time: currentTime, lane: lane, hit: false, missed: false });
+    
+    // 난이도별 롱 노트 확률 설정 (Hard도 과하지 않게 25% 확률)
+    let isLong = false;
+    let duration = 0;
+    if (difficulty !== 'easy' && index % 3 === 0 && Math.random() < (difficulty === 'hard' ? 0.35 : 0.2)) {
+      isLong = true;
+      duration = beatInterval * (Math.random() * 1.5 + 1.0); // 1~2.5박자 길이
+    }
 
-    // Normal 이상: 동시타 추가
-    if (difficulty !== 'easy' && Math.random() < 0.35) {
+    notes.push({
+      time: currentTime,
+      lane: lane,
+      isLong: isLong,
+      duration: duration,
+      tailHit: false,
+      hit: false,
+      missed: false,
+      holding: false
+    });
+
+    // Normal / Hard 동시타 추가 (확률 조정)
+    if (difficulty !== 'easy' && index % 4 === 0 && Math.random() < 0.3) {
       let secondLane = (lane + 2) % LANES;
-      notes.push({ time: currentTime, lane: secondLane, hit: false, missed: false });
+      notes.push({
+        time: currentTime,
+        lane: secondLane,
+        isLong: false,
+        duration: 0,
+        tailHit: false,
+        hit: false,
+        missed: false,
+        holding: false
+      });
     }
 
-    // Hard: 엇박자 폭타 추가
-    if (difficulty === 'hard' && Math.random() < 0.5) {
-      let offLane = (lane + 1) % LANES;
-      notes.push({ time: currentTime + beatInterval / 2, lane: offLane, hit: false, missed: false });
-    }
-
-    // 난이도별 노트 간격 조절
     if (difficulty === 'easy') {
-      currentTime += beatInterval * 1.5;
+      currentTime += beatInterval * 1.8;
     } else if (difficulty === 'normal') {
-      currentTime += beatInterval;
+      currentTime += beatInterval * 1.2;
     } else {
-      currentTime += beatInterval * 0.5;
+      currentTime += beatInterval * 0.8; // 상 난이도 간격을 넓혀서 피로도 줄임
     }
+    index++;
   }
 }
 
-function checkHit(lane) {
+function handleKeyDown(lane) {
+  if (!isPlaying) return;
   const currentTime = (performance.now() - startTime) / 1000;
   let targetNote = null;
   let minDiff = Infinity;
@@ -255,14 +275,17 @@ function checkHit(lane) {
     }
   }
 
-  if (targetNote && minDiff <= 0.20) {
+  if (targetNote && minDiff <= 0.22) {
     targetNote.hit = true;
+    if (targetNote.isLong) {
+      targetNote.holding = true;
+    }
     
     if (minDiff <= 0.07) {
       score += 100 + combo * 2;
       combo++;
       showJudgement("PERFECT!", "#00f2fe");
-    } else if (minDiff <= 0.14) {
+    } else if (minDiff <= 0.15) {
       score += 70 + combo;
       combo++;
       showJudgement("GREAT!", "#4ade80");
@@ -272,6 +295,27 @@ function checkHit(lane) {
       showJudgement("GOOD", "#facc15");
     }
     if (combo > maxCombo) maxCombo = combo;
+  }
+}
+
+function handleKeyUp(lane) {
+  const currentTime = (performance.now() - startTime) / 1000;
+  for (let note of notes) {
+    if (note.isLong && note.holding && !note.tailHit && note.lane === lane) {
+      const endTime = note.time + note.duration;
+      const diff = Math.abs(endTime - currentTime);
+      note.holding = false;
+      note.tailHit = true;
+
+      if (diff <= 0.25) {
+        score += 50;
+        combo++;
+        showJudgement("HOLD END", "#00f2fe");
+      } else {
+        showJudgement("MISS", "#ff4b4b");
+        combo = 0;
+      }
+    }
   }
 }
 
@@ -300,7 +344,7 @@ canvas.addEventListener('touchstart', (e) => {
     
     if (!keyPressed[lane]) {
       keyPressed[lane] = true;
-      checkHit(lane);
+      handleKeyDown(lane);
     }
   }
 }, { passive: false });
@@ -319,6 +363,7 @@ function handleTouchEnd(e) {
       }
       if (!stillPressed) {
         keyPressed[lane] = false;
+        handleKeyUp(lane);
       }
     }
   }
@@ -331,7 +376,7 @@ window.addEventListener('keydown', (e) => {
   const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1 && !keyPressed[idx]) {
     keyPressed[idx] = true;
-    if (isPlaying) checkHit(idx);
+    handleKeyDown(idx);
   }
 });
 
@@ -339,6 +384,7 @@ window.addEventListener('keyup', (e) => {
   const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1) {
     keyPressed[idx] = false;
+    handleKeyUp(idx);
   }
 });
 
@@ -384,28 +430,57 @@ function updateAndDraw() {
 
   let remainingNotes = 0;
   for (let note of notes) {
-    if (note.hit || note.missed) continue;
+    if (note.missed || (note.hit && (!note.isLong || note.tailHit))) continue;
     remainingNotes++;
 
     const timeDiff = note.time - currentTime;
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
-    if (timeDiff < -0.20) {
+    // 롱 노트 처리 중인 경우
+    if (note.isLong && note.holding) {
+      const endY = HIT_Y - ((note.time + note.duration - currentTime) * window.NOTE_SPEED);
+      const x = note.lane * LANE_WIDTH + 14;
+      const w = LANE_WIDTH - 28;
+      
+      ctx.fillStyle = 'rgba(0, 242, 254, 0.4)';
+      ctx.fillRect(x, Math.max(0, endY), w, HIT_Y - Math.max(0, endY));
+
+      if (currentTime >= note.time + note.duration) {
+        note.holding = false;
+        note.tailHit = true;
+        score += 50;
+        combo++;
+        showJudgement("PERFECT!", "#00f2fe");
+      }
+      continue;
+    }
+
+    if (!note.hit && timeDiff < -0.22) {
       note.missed = true;
       combo = 0;
       showJudgement("MISS", "#ff4b4b");
       continue;
     }
 
-    if (y >= -25 && y <= HIT_Y + 20) {
+    if (y >= -50 && y <= HIT_Y + 20) {
       const x = note.lane * LANE_WIDTH + 10;
       const w = LANE_WIDTH - 20;
-      const h = 24;
 
-      ctx.fillStyle = LANE_COLORS[note.lane];
-      ctx.beginPath();
-      ctx.roundRect(x, y - h / 2, w, h, 6);
-      ctx.fill();
+      if (note.isLong) {
+        const tailY = y - (note.duration * window.NOTE_SPEED);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillRect(x + 4, tailY, w - 8, y - tailY);
+
+        ctx.fillStyle = '#facc15'; // 롱 노트 머리는 노란색 계열
+        ctx.beginPath();
+        ctx.roundRect(x, y - 12, w, 24, 6);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = LANE_COLORS[note.lane];
+        ctx.beginPath();
+        ctx.roundRect(x, y - 12, w, 24, 6);
+        ctx.fill();
+      }
     }
   }
 
