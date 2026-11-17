@@ -28,7 +28,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 파일 경로 정의 (첫 번째 곡 + 두 번째 곡 '삐질게')
 song1_music = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 song1_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
@@ -158,7 +157,6 @@ rhythm_game_html = """
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
 
-  /* 유닛 편성창 (`+` 버튼 스타일) */
   #prep-screen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.97); padding: 16px; display: none; flex-direction: column; z-index: 15; text-align: left;
@@ -179,7 +177,6 @@ rhythm_game_html = """
   .plus-icon { font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; }
   .slot-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; }
 
-  /* 캐릭터 선택 팝업 모달 */
   #char-select-modal {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; padding: 20px;
@@ -208,7 +205,6 @@ rhythm_game_html = """
   }
   .controls-hint { margin-top: 4px; font-size: 10px; color: #8b949e; }
 
-  /* 뽑기 탭 스타일 */
   .gacha-box {
     background: #161b22; border: 2px solid #30363d; border-radius: 14px; padding: 16px;
     width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -243,11 +239,11 @@ rhythm_game_html = """
 </head>
 <body>
 
-<!-- 곡 오디오 정의 -->
-<audio id="bgm1" preload="auto">
+<!-- 오디오 버퍼링 및 끊김 방지 최적화 설정 -->
+<audio id="bgm1" preload="auto" autobuffer>
   <source src="data:audio/mp4;base64,AUDIO1_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
-<audio id="bgm2" preload="auto">
+<audio id="bgm2" preload="auto" autobuffer>
   <source src="data:audio/mp4;base64,AUDIO2_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
 <audio id="yuni-voice" preload="auto">
@@ -268,24 +264,21 @@ rhythm_game_html = """
     <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
   </div>
 
-  <!-- 캐릭터 선택 모달 창 -->
   <div id="char-select-modal">
     <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-bottom: 10px;">👤 편성할 캐릭터 선택</div>
     <div class="char-select-grid" id="char-select-list"></div>
     <button id="modal-close-btn" style="padding: 6px 20px; font-size: 12px; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">닫기</button>
   </div>
 
-  <!-- 뽑기 결과 모달 창 -->
   <div id="gacha-result-modal">
     <div style="font-size: 16px; font-weight: bold; color: #facc15; margin-bottom: 10px;">🎁 뽑기 결과</div>
     <div id="gacha-result-list" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;"></div>
     <button id="gacha-close-btn" class="action-btn">확인</button>
   </div>
 
-  <!-- 유닛 편성창 -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_2](start_span)[span_2](end_span).</div>
+    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_0](start_span)[span_0](end_span).</div>
 
     <div class="unit-slots">
       <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
@@ -298,10 +291,9 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 시너지 카드 -->
     <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_1](start_span)[span_1](end_span)[span_2](start_span)[span_2](end_span)</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -329,7 +321,6 @@ rhythm_game_html = """
       <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
     </div>
 
-    <!-- 1. 악보 탭 -->
     <div id="tab-songs" class="tab-content">
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
@@ -337,7 +328,7 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_5](start_span)[span_5](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)[span_3](start_span)[span_3](end_span)</div>
         <div class="difficulty-select-container">
           <div class="diff-card" data-diff="easy"><div class="diff-lv" id="lv-easy">Lv. 5</div><div class="diff-name">EASY</div></div>
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">NORMAL</div></div>
@@ -352,7 +343,6 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 2. 뽑기 탭 -->
     <div id="tab-gacha" class="tab-content" style="display: none;">
       <div class="gacha-box">
         <div style="font-size: 32px;">🌟</div>
@@ -368,7 +358,6 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 3. 캐릭터 탭 -->
     <div id="tab-characters" class="tab-content" style="display: none;">
       <div class="section-title">보유 캐릭터 상태</div>
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-top: 8px;">
@@ -604,14 +593,14 @@ function updateInventoryUI() {
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
-      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)</div>
     `;
   } else {
     synergyCard.style.opacity = "0.4";
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
     `;
   }
 
@@ -730,7 +719,7 @@ function generateBeatmap(difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = 140.0; // 약 2분 20초
+  const totalDuration = 140.0;
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
@@ -783,7 +772,7 @@ function applyHitScore(note, minDiff) {
   }
 
   if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
-    mult *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
+    mult *= 1.15;[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
   }
 
   if (note.type === 'bonus') playBonusSound();
@@ -903,7 +892,7 @@ function handleTapUp(lane) {
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1140,7 +1129,7 @@ function updateAndDraw() {
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1227,7 +1216,7 @@ function updateAndDraw() {
   if (hasYuni && hasArunyang && combo >= 100) {
     ctx.fillStyle = '#c084fc';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_16](start_span)[span_16](end_span)[span_17](start_span)[span_17](end_span)
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)
   }
 
   if (combo > 1) {
@@ -1288,6 +1277,7 @@ function startGame() {
   generateBeatmap(currentDifficulty);
   
   const currentBgm = getActiveBgm();
+  currentBgm.pause();
   currentBgm.currentTime = 0;
   currentBgm.play().catch(error => {});
 
