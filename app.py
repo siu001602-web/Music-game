@@ -999,7 +999,6 @@ function endGame() {
     </div>
   `;
   
-  // 게임 종료 후 악보 탭으로 돌아가며 결과 표시
   navTabs.forEach(t => t.classList.remove('active'));
   navTabs[0].classList.add('active');
   tabContents.songs.style.display = 'flex';
