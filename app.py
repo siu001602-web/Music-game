@@ -22,15 +22,23 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 음원 및 이미지 파일 로드 및 Base64 인코딩
 music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
-audio_base64 = ""
+image_file_path = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
+audio_base64 = ""
 if os.path.exists(music_file_path):
     with open(music_file_path, "rb") as f:
-        audio_bytes = f.read()
-        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+        audio_base64 = base64.b64encode(f.read()).decode("utf-8")
 else:
-    st.warning(f"⚠️ '{music_file_path}' 파일을 찾을 수 없습니다. 경로와 파일명을 다시 확인해 주세요!")
+    st.warning(f"⚠️ '{music_file_path}' 음원 파일을 찾을 수 없습니다.")
+
+image_base64 = ""
+if os.path.exists(image_file_path):
+    with open(image_file_path, "rb") as f:
+        image_base64 = base64.b64encode(f.read()).decode("utf-8")
+else:
+    st.warning(f"⚠️ '{image_file_path}' 이미지 파일을 찾을 수 없습니다.")
 
 rhythm_game_html = """
 <!DOCTYPE html>
@@ -66,8 +74,7 @@ rhythm_game_html = """
   canvas {
     width: 100%;
     height: auto;
-    /* Image 폴더 (대문자 I) 배경 이미지 적용 */
-    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('Image/SmartSelect_20261117_234657_YouTube.jpg');
+    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     background-color: #161b22;
@@ -86,8 +93,7 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* 메뉴 화면에도 동일한 배경 이미지 적용 */
-    background: linear-gradient(rgba(14, 17, 23, 0.85), rgba(14, 17, 23, 0.85)), url('Image/SmartSelect_20261117_234657_YouTube.jpg');
+    background: linear-gradient(rgba(14, 17, 23, 0.85), rgba(14, 17, 23, 0.85)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     border-radius: 12px;
@@ -800,6 +806,8 @@ startBtn.addEventListener('click', startGame);
 </html>
 """
 
+# Placeholders 치환
 rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE_BASE64_PLACEHOLDER", image_base64)
 
 components.html(rhythm_game_html, height=680)
