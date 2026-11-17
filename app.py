@@ -90,16 +90,55 @@ rhythm_game_html = """
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.88), rgba(14, 17, 23, 0.88)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.9), rgba(14, 17, 23, 0.9)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     border-radius: 12px;
-    padding: 16px;
+    padding: 18px 16px;
     text-align: center;
     z-index: 10;
   }
+
+  /* 상단 메인 카테고리 탭 바 */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    background: rgba(22, 27, 34, 0.9);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    margin-bottom: 14px;
+  }
+  .nav-tab {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: bold;
+    color: #8b949e;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-tab.active {
+    color: #0e1117;
+    background: #00f2fe;
+    box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3);
+  }
+
+  .tab-content {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   .section-title {
     font-size: 12px;
     color: #8b949e;
@@ -108,13 +147,14 @@ rhythm_game_html = """
     letter-spacing: 1px;
     font-weight: bold;
   }
+
   /* 곡 선택 그리드 카드 스타일 */
   .song-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     width: 100%;
-    max-height: 190px;
+    max-height: 175px;
     overflow-y: auto;
     margin-bottom: 12px;
     padding: 4px;
@@ -136,7 +176,7 @@ rhythm_game_html = """
   }
   .song-thumb {
     width: 100%;
-    height: 75px;
+    height: 70px;
     border-radius: 6px;
     object-fit: cover;
     margin-bottom: 4px;
@@ -160,6 +200,56 @@ rhythm_game_html = """
     padding: 2px 5px;
     border-radius: 4px;
   }
+
+  /* 뽑기 & 캐릭터 임시 플레이스홀더 박스 */
+  .placeholder-box {
+    width: 92%;
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px dashed #30363d;
+    border-radius: 14px;
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .placeholder-icon {
+    font-size: 42px;
+  }
+  .placeholder-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00f2fe;
+  }
+  .placeholder-desc {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.5;
+  }
+
+  /* 캐릭터 미리보기 슬롯 */
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .char-slot {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .char-slot.locked {
+    opacity: 0.45;
+  }
+
   .difficulty-container {
     display: flex;
     gap: 8px;
@@ -203,14 +293,14 @@ rhythm_game_html = """
     border: 1px solid #30363d;
     border-radius: 10px;
     padding: 8px 16px;
-    margin: 6px 0 10px 0;
-    width: 82%;
+    margin: 4px 0 10px 0;
+    width: 85%;
     text-align: left;
     font-size: 12px;
     line-height: 1.4;
   }
   .controls-hint {
-    margin-top: 10px;
+    margin-top: 8px;
     font-size: 11px;
     color: #8b949e;
   }
@@ -225,28 +315,80 @@ rhythm_game_html = """
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin-bottom: 4px; color: #00f2fe; font-size: 22px;">RHYTHM STAR</h1>
+    <h1 id="main-title" style="margin: 0 0 8px 0; color: #00f2fe; font-size: 21px;">RHYTHM STAR</h1>
     
-    <div id="menu-group" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-      <div class="section-title">Select Song (악보 카테고리)</div>
-      <!-- 곡 카드 리스트 영역 -->
-      <div id="song-list" class="song-grid"></div>
+    <!-- 상단 카테고리 전환 탭 -->
+    <div id="nav-tabs" class="nav-tabs">
+      <button class="nav-tab active" data-tab="songs">🎵 악보</button>
+      <button class="nav-tab" data-tab="gacha">✨ 뽑기</button>
+      <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
+    </div>
 
-      <div class="section-title">Difficulty (난이도)</div>
-      <div class="difficulty-container">
-        <button class="diff-btn" data-diff="easy">하 (Easy)</button>
-        <button class="diff-btn selected" data-diff="normal">중 (Normal)</button>
-        <button class="diff-btn" data-diff="hard">상 (Hard)</button>
+    <!-- 1. 악보(곡 선택) 탭 화면 -->
+    <div id="tab-songs" class="tab-content">
+      <div id="stats-container" class="stats-box" style="display: none;"></div>
+
+      <div id="menu-group" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="section-title">Select Song (악보 목록)</div>
+        <div id="song-list" class="song-grid"></div>
+
+        <div class="section-title">Difficulty (난이도)</div>
+        <div class="difficulty-container">
+          <button class="diff-btn" data-diff="easy">하 (Easy)</button>
+          <button class="diff-btn selected" data-diff="normal">중 (Normal)</button>
+          <button class="diff-btn" data-diff="hard">상 (Hard)</button>
+        </div>
+      </div>
+
+      <button id="start-btn">게임 시작 (Start)</button>
+
+      <div id="controls-hint" class="controls-hint">
+        🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
       </div>
     </div>
 
-    <div id="stats-container" class="stats-box" style="display: none;"></div>
-
-    <button id="start-btn">게임 시작 (Start)</button>
-
-    <div id="controls-hint" class="controls-hint">
-      🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
+    <!-- 2. 뽑기(Gacha) 탭 화면 (준비 틀) -->
+    <div id="tab-gacha" class="tab-content" style="display: none;">
+      <div class="placeholder-box">
+        <div class="placeholder-icon">🎁</div>
+        <div class="placeholder-title">스타 스카우트 (뽑기)</div>
+        <div class="placeholder-desc">
+          새로운 캐릭터와 특별 스킨을 획득할 수 있는<br>
+          뽑기 시스템이 곧 오픈됩니다!
+        </div>
+        <button disabled style="margin-top:8px; padding:8px 20px; border-radius:20px; border:1px solid #30363d; background:#21262d; color:#8b949e; font-weight:bold;">
+          준비 중 (Coming Soon)
+        </button>
+      </div>
     </div>
+
+    <!-- 3. 캐릭터(Characters) 탭 화면 (준비 틀) -->
+    <div id="tab-characters" class="tab-content" style="display: none;">
+      <div class="section-title">보유 캐릭터 목록</div>
+      <div class="char-grid">
+        <div class="char-slot" style="border-color: #00f2fe;">
+          <div style="font-size: 28px;">🌟</div>
+          <div style="font-size: 12px; font-weight: bold; color: #fff;">기본 스타</div>
+          <div style="font-size: 10px; color: #00f2fe;">장착 중</div>
+        </div>
+        <div class="char-slot locked">
+          <div style="font-size: 28px;">🔒</div>
+          <div style="font-size: 12px; font-weight: bold;">미획득</div>
+          <div style="font-size: 10px;">뽑기 해금</div>
+        </div>
+        <div class="char-slot locked">
+          <div style="font-size: 28px;">🔒</div>
+          <div style="font-size: 12px; font-weight: bold;">미획득</div>
+          <div style="font-size: 10px;">뽑기 해금</div>
+        </div>
+      </div>
+      <div class="placeholder-box" style="margin-top: 14px; padding: 16px;">
+        <div class="placeholder-desc">
+          캐릭터별 고유 스킬(점수 보너스, 판정 완화 등) 기능이<br>추후 업데이트될 예정입니다.
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -263,7 +405,27 @@ const controlsHint = document.getElementById('controls-hint');
 const diffBtns = document.querySelectorAll('.diff-btn');
 const songListContainer = document.getElementById('song-list');
 
-// 🎵 등록된 곡 리스트 (나중에 여기에 곡을 계속 추가할 수 있습니다!)
+// 탭 전환 로직
+const navTabs = document.querySelectorAll('.nav-tab');
+const tabContents = {
+  songs: document.getElementById('tab-songs'),
+  gacha: document.getElementById('tab-gacha'),
+  characters: document.getElementById('tab-characters')
+};
+
+navTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    navTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    const target = tab.getAttribute('data-tab');
+    Object.keys(tabContents).forEach(key => {
+      tabContents[key].style.display = (key === target) ? 'flex' : 'none';
+    });
+  });
+});
+
+// 등록된 곡 리스트
 const songs = [
   { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER' }
 ];
@@ -292,7 +454,6 @@ let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
-// 곡 선택 UI 동적 생성 함수
 function renderSongList() {
   songListContainer.innerHTML = '';
   songs.forEach(song => {
@@ -799,10 +960,6 @@ function startGame() {
   startTime = performance.now();
   
   overlay.style.display = 'none';
-  menuGroup.style.display = 'none';
-  statsContainer.style.display = 'none';
-  controlsHint.style.display = 'none';
-
   requestAnimationFrame(updateAndDraw);
 }
 
@@ -841,10 +998,15 @@ function endGame() {
       ⚡ GOOD: <span style="color: #facc15;">${stats.good}</span> | ❌ MISS: <span style="color: #ff4b4b;">${stats.miss}</span>
     </div>
   `;
-  statsContainer.style.display = 'block';
-  menuGroup.style.display = 'flex';
-  controlsHint.style.display = 'block';
+  
+  // 게임 종료 후 악보 탭으로 돌아가며 결과 표시
+  navTabs.forEach(t => t.classList.remove('active'));
+  navTabs[0].classList.add('active');
+  tabContents.songs.style.display = 'flex';
+  tabContents.gacha.style.display = 'none';
+  tabContents.characters.style.display = 'none';
 
+  statsContainer.style.display = 'block';
   startBtn.innerText = "다시 하기 (Retry)";
   overlay.style.display = 'flex';
 }
