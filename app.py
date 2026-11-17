@@ -24,6 +24,7 @@ st.markdown("""
         body {
             background-color: #0e1117;
             overflow: hidden;
+            touch-action: none;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -62,7 +63,7 @@ rhythm_game_html = """
 <style>
   * {
     box-sizing: border-box;
-    touch-action: manipulation;
+    touch-action: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -246,10 +247,9 @@ rhythm_game_html = """
 
 <div id="loading-overlay">
   <div style="font-size: 24px; margin-bottom: 8px;">🎵</div>
-  <div>음원 로딩 중... 잠시만 기다려주세요!</div>
+  <div>음원 로딩 중... 화면을 터치해 주세요!</div>
 </div>
 
-<!-- 보이스 오디오 -->
 <audio id="yuni-voice" preload="auto">
   <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -438,7 +438,6 @@ navTabs.forEach(tab => {
   });
 });
 
-// 🌟 Web Audio API를 활용한 완벽한 음원 로딩 시스템
 let audioCtx = null;
 let audioBuffers = { startrail: null, bbijilge: null };
 let activeMusicSource = null;
@@ -474,11 +473,10 @@ async function initAudioSystem() {
   loadingOverlay.style.display = 'none';
 }
 
-window.addEventListener('click', () => {
+window.addEventListener('pointerdown', () => {
   if (!audioCtx) initAudioSystem();
 }, { once: true });
 
-// 앱 시작 시 자동 로딩 시도
 setTimeout(() => {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -640,7 +638,7 @@ function updateInventoryUI() {
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
     `;
   }
 
@@ -878,7 +876,7 @@ function handleTapDown(lane) {
     }
   }
 
-  if (targetNote && minDiff <= 0.23) {
+  if (targetNote && minDiff <= 0.25) {
     targetNote.hit = true;
     if (targetNote.type === 'long') targetNote.holding = true;
     applyHitScore(targetNote, minDiff);
@@ -901,7 +899,7 @@ function handleSwipe(lane, dir) {
     }
   }
 
-  if (targetNote && minDiff <= 0.26 && targetNote.swipeDir === dir) {
+  if (targetNote && minDiff <= 0.28 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
     let addScore = 120 + combo * 2;
     const hasYuni = equippedUnit.includes('yuni');
@@ -927,7 +925,7 @@ function handleTapUp(lane) {
       note.holding = false;
       note.tailHit = true;
 
-      if (diff <= 0.26) {
+      if (diff <= 0.28) {
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
@@ -967,7 +965,7 @@ function showJudgement(text, color) {
   judgementTimer = 30;
 }
 
-function getLaneFromTouch(clientX) {
+function getLaneFromPointer(clientX) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const canvasX = (clientX - rect.left) * scaleX;
@@ -975,57 +973,49 @@ function getLaneFromTouch(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
-canvas.addEventListener('touchstart', (e) => {
+// 🌟 포인터 이벤트(Pointer Events)로 멀티터치 지연 및 씹힘 완벽 해결
+canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
-  for (let i = 0; i < e.changedTouches.length; i++) {
-    const touch = e.changedTouches[i];
-    const lane = getLaneFromTouch(touch.clientX);
-    activeTouches.set(touch.identifier, { lane: lane, startX: touch.clientX, swiped: false });
-    if (!keyPressed[lane]) {
-      keyPressed[lane] = true;
-      handleTapDown(lane);
+  const lane = getLaneFromPointer(e.clientX);
+  activeTouches.set(e.pointerId, { lane: lane, startX: e.clientX, swiped: false });
+  if (!keyPressed[lane]) {
+    keyPressed[lane] = true;
+    handleTapDown(lane);
+  }
+}, { passive: false });
+
+canvas.addEventListener('pointermove', (e) => {
+  e.preventDefault();
+  if (!isPlaying) return;
+  const data = activeTouches.get(e.pointerId);
+  if (data && !data.swiped) {
+    const deltaX = e.clientX - data.startX;
+    if (Math.abs(deltaX) > 25) {
+      data.swiped = true;
+      handleSwipe(data.lane, deltaX > 0 ? 'right' : 'left');
     }
   }
 }, { passive: false });
 
-canvas.addEventListener('touchmove', (e) => {
+function handlePointerUp(e) {
   e.preventDefault();
-  if (!isPlaying) return;
-  for (let i = 0; i < e.changedTouches.length; i++) {
-    const touch = e.changedTouches[i];
-    const data = activeTouches.get(touch.identifier);
-    if (data && !data.swiped) {
-      const deltaX = touch.clientX - data.startX;
-      if (Math.abs(deltaX) > 28) {
-        data.swiped = true;
-        handleSwipe(data.lane, deltaX > 0 ? 'right' : 'left');
-      }
+  const data = activeTouches.get(e.pointerId);
+  activeTouches.delete(e.pointerId);
+  if (data !== undefined) {
+    let stillPressed = false;
+    for (let activeData of activeTouches.values()) {
+      if (activeData.lane === data.lane) stillPressed = true;
     }
-  }
-}, { passive: false });
-
-function handleTouchEnd(e) {
-  e.preventDefault();
-  for (let i = 0; i < e.changedTouches.length; i++) {
-    const touch = e.changedTouches[i];
-    const data = activeTouches.get(touch.identifier);
-    activeTouches.delete(touch.identifier);
-    if (data !== undefined) {
-      let stillPressed = false;
-      for (let activeData of activeTouches.values()) {
-        if (activeData.lane === data.lane) stillPressed = true;
-      }
-      if (!stillPressed) {
-        keyPressed[data.lane] = false;
-        handleTapUp(data.lane);
-      }
+    if (!stillPressed) {
+      keyPressed[data.lane] = false;
+      handleTapUp(data.lane);
     }
   }
 }
 
-canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
+canvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   const key = e.key.toLowerCase();
@@ -1181,7 +1171,7 @@ function updateAndDraw() {
       continue;
     }
 
-    if (!note.hit && timeDiff < -0.24) {
+    if (!note.hit && timeDiff < -0.28) {
       note.missed = true;
       handleMiss();
       continue;
