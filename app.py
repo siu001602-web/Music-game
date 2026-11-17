@@ -25,6 +25,7 @@ st.markdown("""
 music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 image_file_path = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"
+arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"
 yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
 
 def get_base64(path):
@@ -36,6 +37,7 @@ def get_base64(path):
 audio_base64 = get_base64(music_file_path)
 image_base64 = get_base64(image_file_path)
 yuni_img_base64 = get_base64(yuni_img_path)
+arunyang_img_base64 = get_base64(arunyang_img_path)
 yuni_voice_base64 = get_base64(yuni_voice_path)
 
 rhythm_game_html = """
@@ -95,7 +97,7 @@ rhythm_game_html = """
     background-size: cover;
     background-position: center;
     border-radius: 12px;
-    padding: 16px;
+    padding: 14px;
     text-align: center;
     z-index: 10;
   }
@@ -108,11 +110,11 @@ rhythm_game_html = """
     padding: 6px;
     border-radius: 12px;
     border: 1px solid #30363d;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .nav-tab {
     flex: 1;
-    padding: 7px 0;
+    padding: 6px 0;
     font-size: 13px;
     font-weight: bold;
     color: #8b949e;
@@ -137,9 +139,9 @@ rhythm_game_html = """
   }
 
   .section-title {
-    font-size: 12px;
+    font-size: 11px;
     color: #8b949e;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
@@ -148,11 +150,11 @@ rhythm_game_html = """
   .song-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    max-height: 150px;
+    max-height: 140px;
     overflow-y: auto;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding: 4px;
   }
   .song-card {
@@ -172,13 +174,13 @@ rhythm_game_html = """
   }
   .song-thumb {
     width: 100%;
-    height: 60px;
+    height: 55px;
     border-radius: 6px;
     object-fit: cover;
     margin-bottom: 4px;
   }
   .song-name {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     color: #ffffff;
     white-space: nowrap;
@@ -187,54 +189,45 @@ rhythm_game_html = """
   }
   .new-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 6px;
+    right: 6px;
     background: #ff4b4b;
     color: white;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: bold;
-    padding: 2px 5px;
+    padding: 2px 4px;
     border-radius: 4px;
   }
 
-  /* 🌟 스크린샷풍 카드형 난이도 선택 UI 스타일 */
+  /* 난이도 카드 선택 UI */
   .difficulty-select-container {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .diff-card {
     flex: 1;
     background: #161b22;
     border: 2px solid #30363d;
-    border-radius: 12px;
-    padding: 10px 6px;
+    border-radius: 10px;
+    padding: 8px 4px;
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
   }
   .diff-card.selected {
     border-color: #00f2fe;
-    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
     background: #1f2630;
   }
-  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 12px rgba(74, 222, 128, 0.4); }
-  .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); }
-  .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 12px rgba(255, 75, 75, 0.4); }
+  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
+  .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+  .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
 
-  .diff-lv {
-    font-size: 11px;
-    font-weight: bold;
-    color: #8b949e;
-    margin-bottom: 2px;
-  }
-  .diff-name {
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 0.5px;
-  }
+  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
+  .diff-name { font-size: 12px; font-weight: 900; }
   .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
@@ -248,47 +241,50 @@ rhythm_game_html = """
     height: 100%;
     background: rgba(14, 17, 23, 0.96);
     border-radius: 12px;
-    padding: 16px;
+    padding: 14px;
     display: none;
     flex-direction: column;
     z-index: 15;
     text-align: left;
   }
-  .prep-header {
-    font-size: 14px;
-    font-weight: bold;
-    color: #00f2fe;
-    margin-bottom: 4px;
+  .prep-header { font-size: 13px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
+  .prep-sub { font-size: 10px; color: #8b949e; margin-bottom: 8px; }
+  
+  /* 유닛 슬롯 (5성 유니 + 4성 아르냥) */
+  .unit-slots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
   }
-  .prep-sub {
-    font-size: 11px;
-    color: #8b949e;
-    margin-bottom: 10px;
-  }
-  .prep-box {
+  .unit-card {
+    flex: 1;
     background: #161b22;
     border: 1px solid #30363d;
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 6px;
     display: flex;
-    gap: 12px;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
+    text-align: center;
   }
-  .prep-char-img {
-    width: 65px;
-    height: 65px;
+  .unit-card.star-5 { border-color: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.3); }
+  .unit-card.star-4 { border-color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
+  .unit-img {
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #00f2fe;
+    margin-bottom: 3px;
+    border: 2px solid currentColor;
   }
+
   .prep-skill-card {
     background: rgba(255, 121, 198, 0.1);
     border: 1px solid #ff79c6;
-    border-radius: 10px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    font-size: 12px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
   }
   .prep-footer {
     display: flex;
@@ -298,8 +294,8 @@ rhythm_game_html = """
   }
 
   .action-btn {
-    padding: 10px 24px;
-    font-size: 15px;
+    padding: 8px 20px;
+    font-size: 14px;
     font-weight: bold;
     color: #0e1117;
     background: #00f2fe;
@@ -313,20 +309,16 @@ rhythm_game_html = """
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 8px 16px;
+    padding: 8px 14px;
     margin: 2px 0 6px 0;
     width: 85%;
     text-align: left;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
   }
-  .controls-hint {
-    margin-top: 4px;
-    font-size: 11px;
-    color: #8b949e;
-  }
+  .controls-hint { margin-top: 4px; font-size: 10px; color: #8b949e; }
 
-  /* 우측 상단 유니 팝업 및 자동 게이지 바 */
+  /* 우측 상단 유니 팝업 및 게이지 바 */
   #yuni-popup {
     position: absolute;
     top: 15px;
@@ -344,16 +336,8 @@ rhythm_game_html = """
     transition: all 0.3s ease;
     pointer-events: none;
   }
-  #yuni-popup.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  #yuni-popup img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
+  #yuni-popup.show { opacity: 1; transform: translateY(0); }
+  #yuni-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 
   #skill-bar-container {
     position: absolute;
@@ -361,27 +345,16 @@ rhythm_game_html = """
     right: 12px;
     background: rgba(14, 17, 23, 0.85);
     border: 2px solid #30363d;
-    border-radius: 14px;
-    padding: 8px 12px;
+    border-radius: 12px;
+    padding: 6px 10px;
     display: none;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     z-index: 20;
   }
-  .gauge-bg {
-    width: 100px;
-    height: 8px;
-    background: #21262d;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .gauge-fill {
-    width: 0%;
-    height: 100%;
-    background: #ff79c6;
-    transition: width 0.1s linear;
-  }
+  .gauge-bg { width: 90px; height: 7px; background: #21262d; border-radius: 4px; overflow: hidden; }
+  .gauge-fill { width: 0%; height: 100%; background: #ff79c6; transition: width 0.1s linear; }
 </style>
 </head>
 <body>
@@ -398,48 +371,53 @@ rhythm_game_html = """
   
   <div id="yuni-popup">
     <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
-    <span style="font-size: 12px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
+    <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
   </div>
 
   <div id="skill-bar-container">
-    <div style="font-size: 10px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 스킬 게이지</div>
+    <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
     <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
-    <div id="skill-status" style="font-size: 11px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
+    <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
   </div>
 
-  <!-- 🌟 캐릭터 편성창 (난이도별 최고 기록 표시 추가) -->
+  <!-- 🌟 유닛 편성창 (5성 유니 + 4성 아르냥 + 시너지 [유니냥]) -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">출전할 유니트와 난이도별 최고 기록을 확인하세요[span_1](start_span)[span_1](end_span)[span_2](start_span)[span_2](end_span).</div>
+    <div class="prep-sub">출전할 유니트와 캐릭터 스킬 및 시너지를 확인하세요[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).</div>
 
-    <div class="prep-box">
-      <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="prep-char-img">
-      <div>
-        <div style="font-size: 13px; font-weight: bold; color: #fff;">아야츠노 유니 (장착 중)</div>
-        <div style="font-size: 10px; color: #00f2fe; margin-top: 2px;">⭐ 주능력: 게이지 충전 후 자동 점수 +5%[span_3](start_span)[span_3](end_span)</div>
-        <div style="font-size: 10px; color: #ff79c6; margin-top: 1px;">🛡️ 보조능력: Miss 콤보 방어 2회 (뿔 빛남)</div>
+    <div class="unit-slots">
+      <div class="unit-card star-5">
+        <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="unit-img" style="color: #facc15;">
+        <div style="font-size: 11px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
+        <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
+        <div style="font-size: 9px; color: #00f2fe;">주능력: 10초간 점수 5%[span_10](start_span)[span_10](end_span)</div>
+      </div>
+      <div class="unit-card star-4">
+        <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" class="unit-img" style="color: #c084fc;">
+        <div style="font-size: 11px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
+        <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
+        <div style="font-size: 9px; color: #c084fc;">팬 서포터 (유니 시너지)</div>
       </div>
     </div>
 
-    <!-- 난이도별 최고 기록 표시 상자 -->
-    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
+    <div class="prep-skill-card">
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본 노트 및 롱노트 점수 <b>상시 15% 증가!</b>[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)</div>
+    </div>
+
+    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 11px;">
       <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [Normal] 최고 기록</div>
       <div id="prep-record-content" style="color: #fff;">점수: 0점 (RANK: -)</div>
     </div>
 
-    <div class="prep-skill-card" style="margin-bottom: 8px; padding: 6px 10px;">
-      <div style="font-weight: bold; color: #ff79c6; font-size: 11px;">✨ 장착 의상 스킬</div>
-      <div style="font-size: 11px;">• 발동 시 10초간 보너스 점수 +5% 뻥튀기[span_4](start_span)[span_4](end_span)</div>
-    </div>
-
     <div class="prep-footer">
-      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
-      <button id="prep-start-btn" class="action-btn" style="padding: 8px 20px; font-size: 14px;">결정 (라이브 시작)</button>
+      <button id="prep-back-btn" style="padding: 6px 14px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
+      <button id="prep-start-btn" class="action-btn" style="padding: 6px 18px; font-size: 13px;">결정 (라이브 시작)</button>
     </div>
   </div>
 
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin: 0 0 4px 0; color: #00f2fe; font-size: 19px;">RHYTHM STAR</h1>
+    <h1 id="main-title" style="margin: 0 0 4px 0; color: #00f2fe; font-size: 18px;">RHYTHM STAR</h1>
     
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
@@ -454,25 +432,15 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_5](start_span)[span_5](end_span)</div>
-        <!-- 🌟 카드형 난이도 선택 UI -->
+        <div class="section-title">Difficulty (난이도 선택)[span_13](start_span)[span_13](end_span)</div>
         <div class="difficulty-select-container">
-          <div class="diff-card" data-diff="easy">
-            <div class="diff-lv">Lv. 5</div>
-            <div class="diff-name">EASY</div>
-          </div>
-          <div class="diff-card selected" data-diff="normal">
-            <div class="diff-lv">Lv. 11</div>
-            <div class="diff-name">NORMAL</div>
-          </div>
-          <div class="diff-card" data-diff="hard">
-            <div class="diff-lv">Lv. 18</div>
-            <div class="diff-name">HARD</div>
-          </div>
+          <div class="diff-card" data-diff="easy"><div class="diff-lv">Lv. 5</div><div class="diff-name">EASY</div></div>
+          <div class="diff-card selected" data-diff="normal"><div class="diff-lv">Lv. 11</div><div class="diff-name">NORMAL</div></div>
+          <div class="diff-card" data-diff="hard"><div class="diff-lv">Lv. 18</div><div class="diff-name">HARD</div></div>
         </div>
       </div>
 
-      <button id="next-prep-btn" class="action-btn" style="margin-top: 4px; padding: 8px 20px; font-size: 14px;">유니트 편성 및 라이브</button>
+      <button id="next-prep-btn" class="action-btn" style="margin-top: 4px; padding: 7px 18px; font-size: 13px;">유니트 편성 및 라이브</button>
 
       <div id="controls-hint" class="controls-hint">
         🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
@@ -480,20 +448,25 @@ rhythm_game_html = """
     </div>
 
     <div id="tab-gacha" class="tab-content" style="display: none;">
-      <div class="prep-box" style="flex-direction: column; text-align: center; width: 90%; padding: 20px;">
-        <div style="font-size: 32px;">🎁</div>
-        <div style="font-size: 15px; font-weight: bold; color: #00f2fe;">스타 스카우트 (뽑기)</div>
-        <div style="font-size: 11px; color: #8b949e;">새로운 캐릭터를 획득할 수 있는 뽑기 시스템!</div>
+      <div class="unit-card" style="width: 85%; padding: 20px; align-items: center; justify-content: center;">
+        <div style="font-size: 28px;">🎁</div>
+        <div style="font-size: 14px; font-weight: bold; color: #00f2fe; margin-top: 4px;">스타 스카우트 (뽑기)</div>
+        <div style="font-size: 10px; color: #8b949e;">새로운 팬 캐릭터를 획득할 수 있습니다!</div>
       </div>
     </div>
 
     <div id="tab-characters" class="tab-content" style="display: none;">
-      <div class="section-title">보유 캐릭터 목록</div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 6px;">
-        <div style="background: #161b22; border: 2px solid #00f2fe; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center;">
-          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #00f2fe; margin-bottom: 4px;">
+      <div class="section-title">보유 캐릭터 유니트</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 6px;">
+        <div style="background: #161b22; border: 2px solid #facc15; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center;">
+          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #facc15; margin-bottom: 3px;">
+          <div style="font-size: 10px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
           <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
-          <div style="font-size: 9px; color: #00f2fe;">장착 중</div>
+        </div>
+        <div style="background: #161b22; border: 2px solid #c084fc; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center;">
+          <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #c084fc; margin-bottom: 3px;">
+          <div style="font-size: 10px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
+          <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
         </div>
       </div>
     </div>
@@ -521,9 +494,7 @@ const gaugeFill = document.getElementById('gauge-fill');
 const skillStatus = document.getElementById('skill-status');
 
 const mainTitle = document.getElementById('main-title');
-const menuGroup = document.getElementById('menu-group');
 const statsContainer = document.getElementById('stats-container');
-const controlsHint = document.getElementById('controls-hint');
 const diffCards = document.querySelectorAll('.diff-card');
 const songListContainer = document.getElementById('song-list');
 
@@ -559,7 +530,6 @@ let audioCtx = null;
 let currentSong = 'startrail';
 let currentDifficulty = 'normal';
 
-// 🌟 난이도별 최고 기록 저장 객체 (Easy, Normal, Hard 각각 독립 저장)
 let bestRecords = {
   easy: { score: 0, rank: '-', color: '#94a3b8' },
   normal: { score: 0, rank: '-', color: '#94a3b8' },
@@ -608,21 +578,18 @@ function renderSongList() {
 }
 renderSongList();
 
-// 카드형 난이도 선택 이벤트 리스너
 diffCards.forEach(card => {
-  card.addEventListener('click', (e) => {
+  card.addEventListener('click', () => {
     diffCards.forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     currentDifficulty = card.getAttribute('data-diff');
   });
 });
 
-// [유니트 편성 및 라이브 버튼 클릭 시]
 nextPrepBtn.addEventListener('click', () => {
   const diffNameMap = { easy: 'EASY (Lv.5)', normal: 'NORMAL (Lv.11)', hard: 'HARD (Lv.18)' };
   prepSongTitle.innerHTML = `🎵 Star Trail [${diffNameMap[currentDifficulty]}]`;
   
-  // 현재 선택한 난이도의 최고 기록 불러와서 편성창에 표시
   const rec = bestRecords[currentDifficulty];
   prepRecordTitle.innerHTML = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
   if (rec.score > 0) {
@@ -703,9 +670,15 @@ function generateBeatmap(difficulty) {
   }
 }
 
+// 🌟 [유니냥 시너지 적용] 100콤보 이상 시 기본/롱노트 점수 상시 15% 증가
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
   if (yuniSkillActivated) mult *= 1.05;
+
+  // 100콤보 이상 시 유니냥 시너지 발동 (기본 및 롱노트 15% 추가)
+  if (combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
+    mult *= 1.15;
+  }
 
   if (note.type === 'bonus') playBonusSound();
 
@@ -821,6 +794,7 @@ function handleTapUp(lane) {
       if (diff <= 0.26) {
         let addScore = 50;
         if (yuniSkillActivated) addScore *= 1.05;
+        if (combo >= 100) addScore *= 1.15; // 롱노트 시너지 적용
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1053,6 +1027,7 @@ function updateAndDraw() {
         note.tailHit = true;
         let addScore = 50;
         if (yuniSkillActivated) addScore *= 1.05;
+        if (combo >= 100) addScore *= 1.15;
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1129,8 +1104,15 @@ function updateAndDraw() {
 
   if (yuniSkillActivated) {
     ctx.fillStyle = '#ff79c6';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 58);
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 56);
+  }
+
+  // 100콤보 이상일 때 화면에 [유니냥] 시너지 발동 표시
+  if (combo >= 100) {
+    ctx.fillStyle = '#c084fc';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);
   }
 
   if (combo > 1) {
@@ -1216,7 +1198,6 @@ function endGame() {
 
   const rankInfo = calculateRank(currentDifficulty, score);
 
-  // 🌟 현재 난이도의 최고 기록 갱신 체크 및 저장
   if (score > bestRecords[currentDifficulty].score) {
     bestRecords[currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
     clearTitle = "🎉 NEW RECORD! " + clearTitle;
@@ -1259,6 +1240,7 @@ startBtn.addEventListener('click', startGame);
 rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE_BASE64_PLACEHOLDER", image_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_img_base64)
+rhythm_game_html = rhythm_game_html.replace("USER_IMG_PLACEHOLDER", arunyang_img_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 
 components.html(rhythm_game_html, height=680)
