@@ -22,7 +22,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# music 폴더(소문자) 안의 파일 경로로 지정했습니다.
 music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 audio_base64 = ""
 
@@ -67,7 +66,8 @@ rhythm_game_html = """
   canvas {
     width: 100%;
     height: auto;
-    background: linear-gradient(rgba(14, 17, 23, 0.75), rgba(14, 17, 23, 0.75)), url('Star_trail.jpg');
+    /* Image 폴더 (대문자 I) 배경 이미지 적용 */
+    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('Image/SmartSelect_20261117_234657_YouTube.jpg');
     background-size: cover;
     background-position: center;
     background-color: #161b22;
@@ -86,7 +86,10 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(14, 17, 23, 0.94);
+    /* 메뉴 화면에도 동일한 배경 이미지 적용 */
+    background: linear-gradient(rgba(14, 17, 23, 0.85), rgba(14, 17, 23, 0.85)), url('Image/SmartSelect_20261117_234657_YouTube.jpg');
+    background-size: cover;
+    background-position: center;
     border-radius: 12px;
     padding: 20px;
     text-align: center;
@@ -158,7 +161,7 @@ rhythm_game_html = """
     text-shadow: 0 0 15px currentColor;
   }
   .stats-box {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid #30363d;
     border-radius: 10px;
     padding: 10px 18px;
