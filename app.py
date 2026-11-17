@@ -6,19 +6,26 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="Star Trail - Rhythm Game",
     page_icon="🎵",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# 🌟 스트림릿 기본 상하좌우 여백을 완전히 없애고 화면을 꽉 채우는 설정
 st.markdown("""
     <style>
         .block-container {
-            padding-top: 1.5rem;
-            padding-bottom: 0rem;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            padding-left: 0rem !important;
+            padding-right: 0.5rem !important;
+            max-width: 100% !important;
         }
         header {visibility: hidden;}
+        footer {visibility: hidden;}
+        body {
+            background-color: #0e1117;
+            overflow: hidden;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -53,13 +60,15 @@ rhythm_game_html = """
     -webkit-user-select: none;
     user-select: none;
   }
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
     background-color: #0e1117;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -67,19 +76,24 @@ rhythm_game_html = """
   #game-container {
     position: relative;
     width: 100%;
-    max-width: 540px;
+    max-width: 480px;
+    height: 100vh;
+    max-height: 840px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    background-color: #0e1117;
   }
   canvas {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     background-color: #161b22;
-    border: 2px solid #30363d;
-    border-radius: 12px;
+    border-left: 2px solid #30363d;
+    border-right: 2px solid #30363d;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
     touch-action: none;
   }
@@ -93,11 +107,10 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.9), rgba(14, 17, 23, 0.9)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.93), rgba(14, 17, 23, 0.93)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
-    border-radius: 12px;
-    padding: 14px;
+    padding: 16px;
     text-align: center;
     z-index: 10;
   }
@@ -110,11 +123,11 @@ rhythm_game_html = """
     padding: 6px;
     border-radius: 12px;
     border: 1px solid #30363d;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .nav-tab {
     flex: 1;
-    padding: 6px 0;
+    padding: 7px 0;
     font-size: 13px;
     font-weight: bold;
     color: #8b949e;
@@ -141,7 +154,7 @@ rhythm_game_html = """
   .section-title {
     font-size: 11px;
     color: #8b949e;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
@@ -152,9 +165,9 @@ rhythm_game_html = """
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     width: 100%;
-    max-height: 140px;
+    max-height: 160px;
     overflow-y: auto;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     padding: 4px;
   }
   .song-card {
@@ -174,7 +187,7 @@ rhythm_game_html = """
   }
   .song-thumb {
     width: 100%;
-    height: 55px;
+    height: 60px;
     border-radius: 6px;
     object-fit: cover;
     margin-bottom: 4px;
@@ -199,13 +212,12 @@ rhythm_game_html = """
     border-radius: 4px;
   }
 
-  /* 난이도 카드 선택 UI */
   .difficulty-select-container {
     display: flex;
     gap: 8px;
     width: 100%;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .diff-card {
     flex: 1;
@@ -232,36 +244,33 @@ rhythm_game_html = """
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
 
-  /* 캐릭터 편성창 스타일 */
   #prep-screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(14, 17, 23, 0.96);
-    border-radius: 12px;
-    padding: 14px;
+    background: rgba(14, 17, 23, 0.97);
+    padding: 16px;
     display: none;
     flex-direction: column;
     z-index: 15;
     text-align: left;
   }
-  .prep-header { font-size: 13px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
-  .prep-sub { font-size: 10px; color: #8b949e; margin-bottom: 8px; }
+  .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 4px; }
+  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 10px; }
   
-  /* 유닛 슬롯 (5성 유니 + 4성 아르냥) */
   .unit-slots {
     display: flex;
-    gap: 6px;
-    margin-bottom: 8px;
+    gap: 8px;
+    margin-bottom: 10px;
   }
   .unit-card {
     flex: 1;
     background: #161b22;
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 6px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -270,21 +279,21 @@ rhythm_game_html = """
   .unit-card.star-5 { border-color: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.3); }
   .unit-card.star-4 { border-color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
   .unit-img {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     border: 2px solid currentColor;
   }
 
   .prep-skill-card {
     background: rgba(255, 121, 198, 0.1);
     border: 1px solid #ff79c6;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin-bottom: 8px;
-    font-size: 11px;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
   }
   .prep-footer {
     display: flex;
@@ -294,8 +303,8 @@ rhythm_game_html = """
   }
 
   .action-btn {
-    padding: 8px 20px;
-    font-size: 14px;
+    padding: 10px 24px;
+    font-size: 15px;
     font-weight: bold;
     color: #0e1117;
     background: #00f2fe;
@@ -309,16 +318,15 @@ rhythm_game_html = """
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 8px 14px;
-    margin: 2px 0 6px 0;
+    padding: 8px 16px;
+    margin: 4px 0 8px 0;
     width: 85%;
     text-align: left;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.4;
   }
-  .controls-hint { margin-top: 4px; font-size: 10px; color: #8b949e; }
+  .controls-hint { margin-top: 6px; font-size: 11px; color: #8b949e; }
 
-  /* 우측 상단 유니 팝업 및 게이지 바 */
   #yuni-popup {
     position: absolute;
     top: 15px;
@@ -337,7 +345,7 @@ rhythm_game_html = """
     pointer-events: none;
   }
   #yuni-popup.show { opacity: 1; transform: translateY(0); }
-  #yuni-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+  #yuni-popup img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
 
   #skill-bar-container {
     position: absolute;
@@ -345,15 +353,15 @@ rhythm_game_html = """
     right: 12px;
     background: rgba(14, 17, 23, 0.85);
     border: 2px solid #30363d;
-    border-radius: 12px;
-    padding: 6px 10px;
+    border-radius: 14px;
+    padding: 8px 12px;
     display: none;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     z-index: 20;
   }
-  .gauge-bg { width: 90px; height: 7px; background: #21262d; border-radius: 4px; overflow: hidden; }
+  .gauge-bg { width: 100px; height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
   .gauge-fill { width: 0%; height: 100%; background: #ff79c6; transition: width 0.1s linear; }
 </style>
 </head>
@@ -367,57 +375,56 @@ rhythm_game_html = """
 </audio>
 
 <div id="game-container">
-  <canvas id="gameCanvas" width="480" height="640"></canvas>
+  <canvas id="gameCanvas" width="480" height="720"></canvas>
   
   <div id="yuni-popup">
     <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
-    <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
+    <span style="font-size: 12px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
   </div>
 
   <div id="skill-bar-container">
-    <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
+    <div style="font-size: 10px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
     <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
-    <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
+    <div id="skill-status" style="font-size: 11px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
   </div>
 
-  <!-- 🌟 유닛 편성창 (5성 유니 + 4성 아르냥 + 시너지 [유니냥]) -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">출전할 유니트와 캐릭터 스킬 및 시너지를 확인하세요[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).</div>
+    <div class="prep-sub">출전할 유니트와 캐릭터 스킬 및 시너지를 확인하세요[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span).</div>
 
     <div class="unit-slots">
       <div class="unit-card star-5">
         <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="unit-img" style="color: #facc15;">
-        <div style="font-size: 11px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
+        <div style="font-size: 10px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
         <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
-        <div style="font-size: 9px; color: #00f2fe;">주능력: 10초간 점수 5%[span_10](start_span)[span_10](end_span)</div>
+        <div style="font-size: 10px; color: #00f2fe;">주능력: 점수 5%[span_2](start_span)[span_2](end_span)</div>
       </div>
       <div class="unit-card star-4">
         <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" class="unit-img" style="color: #c084fc;">
-        <div style="font-size: 11px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
+        <div style="font-size: 10px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
         <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
-        <div style="font-size: 9px; color: #c084fc;">팬 서포터 (유니 시너지)</div>
+        <div style="font-size: 10px; color: #c084fc;">팬 서포터</div>
       </div>
     </div>
 
     <div class="prep-skill-card">
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
-      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본 노트 및 롱노트 점수 <b>상시 15% 증가!</b>[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)</div>
+      <div style="font-size: 11px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본 노트 및 롱노트 점수 <b>상시 15% 증가!</b>[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)</div>
     </div>
 
-    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 11px;">
+    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
       <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [Normal] 최고 기록</div>
       <div id="prep-record-content" style="color: #fff;">점수: 0점 (RANK: -)</div>
     </div>
 
     <div class="prep-footer">
-      <button id="prep-back-btn" style="padding: 6px 14px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
-      <button id="prep-start-btn" class="action-btn" style="padding: 6px 18px; font-size: 13px;">결정 (라이브 시작)</button>
+      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
+      <button id="prep-start-btn" class="action-btn" style="padding: 8px 22px; font-size: 14px;">결정 (라이브 시작)</button>
     </div>
   </div>
 
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin: 0 0 4px 0; color: #00f2fe; font-size: 18px;">RHYTHM STAR</h1>
+    <h1 id="main-title" style="margin: 0 0 6px 0; color: #00f2fe; font-size: 20px;">RHYTHM STAR</h1>
     
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
@@ -432,7 +439,7 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_13](start_span)[span_13](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)[span_5](start_span)[span_5](end_span)</div>
         <div class="difficulty-select-container">
           <div class="diff-card" data-diff="easy"><div class="diff-lv">Lv. 5</div><div class="diff-name">EASY</div></div>
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv">Lv. 11</div><div class="diff-name">NORMAL</div></div>
@@ -440,7 +447,7 @@ rhythm_game_html = """
         </div>
       </div>
 
-      <button id="next-prep-btn" class="action-btn" style="margin-top: 4px; padding: 7px 18px; font-size: 13px;">유니트 편성 및 라이브</button>
+      <button id="next-prep-btn" class="action-btn" style="margin-top: 6px; padding: 9px 22px; font-size: 14px;">유니트 편성 및 라이브</button>
 
       <div id="controls-hint" class="controls-hint">
         🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
@@ -448,23 +455,23 @@ rhythm_game_html = """
     </div>
 
     <div id="tab-gacha" class="tab-content" style="display: none;">
-      <div class="unit-card" style="width: 85%; padding: 20px; align-items: center; justify-content: center;">
-        <div style="font-size: 28px;">🎁</div>
-        <div style="font-size: 14px; font-weight: bold; color: #00f2fe; margin-top: 4px;">스타 스카우트 (뽑기)</div>
-        <div style="font-size: 10px; color: #8b949e;">새로운 팬 캐릭터를 획득할 수 있습니다!</div>
+      <div class="unit-card" style="width: 85%; padding: 24px; align-items: center; justify-content: center;">
+        <div style="font-size: 32px;">🎁</div>
+        <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-top: 4px;">스타 스카우트 (뽑기)</div>
+        <div style="font-size: 11px; color: #8b949e;">새로운 팬 캐릭터를 획득할 수 있습니다!</div>
       </div>
     </div>
 
     <div id="tab-characters" class="tab-content" style="display: none;">
       <div class="section-title">보유 캐릭터 유니트</div>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 6px;">
-        <div style="background: #161b22; border: 2px solid #facc15; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center;">
-          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #facc15; margin-bottom: 3px;">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-top: 8px;">
+        <div style="background: #161b22; border: 2px solid #facc15; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center;">
+          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #facc15; margin-bottom: 4px;">
           <div style="font-size: 10px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
           <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
         </div>
-        <div style="background: #161b22; border: 2px solid #c084fc; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center;">
-          <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #c084fc; margin-bottom: 3px;">
+        <div style="background: #161b22; border: 2px solid #c084fc; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center;">
+          <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #c084fc; margin-bottom: 4px;">
           <div style="font-size: 10px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
           <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
         </div>
@@ -522,7 +529,7 @@ const songs = [
 
 const LANES = 4;
 const LANE_WIDTH = canvas.width / LANES;
-const HIT_Y = 510;
+const HIT_Y = 570;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
@@ -629,9 +636,9 @@ function generateBeatmap(difficulty) {
   let currentTime = 2.0;
   const totalDuration = 225.0;
 
-  let speed = 400;
-  if (difficulty === 'normal') speed = 420;
-  if (difficulty === 'hard') speed = 450;
+  let speed = 420;
+  if (difficulty === 'normal') speed = 450;
+  if (difficulty === 'hard') speed = 490;
   window.NOTE_SPEED = speed;
 
   let index = 0;
@@ -670,14 +677,12 @@ function generateBeatmap(difficulty) {
   }
 }
 
-// 🌟 [유니냥 시너지 적용] 100콤보 이상 시 기본/롱노트 점수 상시 15% 증가
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
   if (yuniSkillActivated) mult *= 1.05;
 
-  // 100콤보 이상 시 유니냥 시너지 발동 (기본 및 롱노트 15% 추가)
   if (combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
-    mult *= 1.15;
+    mult *= 1.15;[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
   }
 
   if (note.type === 'bonus') playBonusSound();
@@ -794,7 +799,7 @@ function handleTapUp(lane) {
       if (diff <= 0.26) {
         let addScore = 50;
         if (yuniSkillActivated) addScore *= 1.05;
-        if (combo >= 100) addScore *= 1.15; // 롱노트 시너지 적용
+        if (combo >= 100) addScore *= 1.15;[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -958,11 +963,11 @@ function updateAndDraw() {
     const x = i * LANE_WIDTH;
     
     if (keyPressed[i]) {
-      const grad = ctx.createLinearGradient(0, HIT_Y - 180, 0, HIT_Y);
+      const grad = ctx.createLinearGradient(0, HIT_Y - 200, 0, HIT_Y);
       grad.addColorStop(0, 'rgba(0, 242, 254, 0)');
       grad.addColorStop(1, 'rgba(0, 242, 254, 0.35)');
       ctx.fillStyle = grad;
-      ctx.fillRect(x, HIT_Y - 180, LANE_WIDTH, 180);
+      ctx.fillRect(x, HIT_Y - 200, LANE_WIDTH, 200);
     }
 
     ctx.fillStyle = keyPressed[i] ? LANE_COLORS[i] : '#1f2630';
@@ -1027,7 +1032,7 @@ function updateAndDraw() {
         note.tailHit = true;
         let addScore = 50;
         if (yuniSkillActivated) addScore *= 1.05;
-        if (combo >= 100) addScore *= 1.15;
+        if (combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1108,11 +1113,10 @@ function updateAndDraw() {
     ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 56);
   }
 
-  // 100콤보 이상일 때 화면에 [유니냥] 시너지 발동 표시
   if (combo >= 100) {
     ctx.fillStyle = '#c084fc';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
   }
 
   if (combo > 1) {
@@ -1243,4 +1247,4 @@ rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_img_bas
 rhythm_game_html = rhythm_game_html.replace("USER_IMG_PLACEHOLDER", arunyang_img_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 
-components.html(rhythm_game_html, height=680)
+components.html(rhythm_game_html, height=820)
