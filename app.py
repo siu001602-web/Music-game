@@ -100,7 +100,6 @@ rhythm_game_html = """
     z-index: 10;
   }
 
-  /* 상단 메인 카테고리 탭 바 */
   .nav-tabs {
     display: flex;
     gap: 8px;
@@ -146,7 +145,6 @@ rhythm_game_html = """
     font-weight: bold;
   }
 
-  /* 곡 선택 카드 스타일 */
   .song-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -199,7 +197,7 @@ rhythm_game_html = """
     border-radius: 4px;
   }
 
-  /* 🌟 스크린샷풍 캐릭터 편성창 스타일 */
+  /* 캐릭터 편성창 스타일 */
   #prep-screen {
     position: absolute;
     top: 0;
@@ -306,7 +304,7 @@ rhythm_game_html = """
     color: #8b949e;
   }
 
-  /* 게임 플레이 중 우측 상단 유니 팝업 & 스킬 게이지 버튼 */
+  /* 우측 상단 유니 팝업 및 자동 게이지 바 */
   #yuni-popup {
     position: absolute;
     top: 15px;
@@ -335,7 +333,6 @@ rhythm_game_html = """
     object-fit: cover;
   }
 
-  /* 스킬 게이지 바 UI 스타일 */
   #skill-bar-container {
     position: absolute;
     bottom: 12px;
@@ -350,29 +347,8 @@ rhythm_game_html = """
     gap: 4px;
     z-index: 20;
   }
-  #skill-btn {
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #0e1117;
-    background: #454d5d;
-    border: none;
-    border-radius: 20px;
-    cursor: not-allowed;
-    transition: all 0.2s;
-  }
-  #skill-btn.ready {
-    background: #ff79c6;
-    cursor: pointer;
-    box-shadow: 0 0 12px rgba(255, 121, 198, 0.6);
-    animation: pulse 1s infinite alternate;
-  }
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.06); }
-  }
   .gauge-bg {
-    width: 90px;
+    width: 100px;
     height: 8px;
     background: #21262d;
     border-radius: 4px;
@@ -398,36 +374,33 @@ rhythm_game_html = """
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   
-  <!-- 게임 중 우측 상단 유니 팝업 -->
   <div id="yuni-popup">
     <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
     <span style="font-size: 12px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
   </div>
 
-  <!-- 게임 중 하단 스킬 게이지 버튼 -->
   <div id="skill-bar-container">
     <div style="font-size: 10px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 스킬 게이지</div>
     <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
-    <button id="skill-btn" disabled>스킬 충전 중...</button>
+    <div id="skill-status" style="font-size: 11px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
   </div>
 
-  <!-- 🌟 곡 클릭 시 뜨는 캐릭터 편성 화면 (출전 준비) -->
   <div id="prep-screen">
-    <div class="prep-header" id="prep-song-title">🎵 Bishoujo Muzai Pirates (Easy)</div>
-    <div class="prep-sub">출전할 유니트와 캐릭터 스킬을 확인하세요.[span_1](start_span)[span_1](end_span)</div>
+    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
+    <div class="prep-sub">출전할 유니트와 캐릭터 스킬을 확인하세요[span_0](start_span)[span_0](end_span).</div>
 
     <div class="prep-box">
       <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="prep-char-img">
       <div>
         <div style="font-size: 14px; font-weight: bold; color: #fff;">아야츠노 유니 (장착 중)</div>
-        <div style="font-size: 11px; color: #00f2fe; margin-top: 2px;">⭐ 주능력: 노트 타격으로 게이지 충전 후 터트리기</div>
+        <div style="font-size: 11px; color: #00f2fe; margin-top: 2px;">⭐ 주능력: 노트 타격으로 게이지 충전 후 자동 발동</div>
         <div style="font-size: 11px; color: #ff79c6; margin-top: 1px;">🛡️ 보조능력: Miss 콤보 방어 2회 (뿔 빛남 연출)</div>
       </div>
     </div>
 
     <div class="prep-skill-card">
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ 장착 의상 스킬</div>
-      <div>• 발동 시 <b>10초간 보너스 점수 +5%</b> 뻥튀기 및 전용 보이스 재생[span_2](start_span)[span_2](end_span)!</div>
+      <div>• 게이지 충전 완료 시 <b>자동으로 10초간 보너스 점수 +5%</b> 뻥튀기[span_1](start_span)[span_1](end_span)</div>
     </div>
 
     <div class="prep-footer">
@@ -439,14 +412,12 @@ rhythm_game_html = """
   <div id="ui-overlay">
     <h1 id="main-title" style="margin: 0 0 6px 0; color: #00f2fe; font-size: 20px;">RHYTHM STAR</h1>
     
-    <!-- 상단 카테고리 탭 -->
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
       <button class="nav-tab" data-tab="gacha">✨ 뽑기</button>
       <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
     </div>
 
-    <!-- 1. 악보 탭 -->
     <div id="tab-songs" class="tab-content">
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
@@ -469,7 +440,6 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 2. 뽑기 탭 -->
     <div id="tab-gacha" class="tab-content" style="display: none;">
       <div class="prep-box" style="flex-direction: column; text-align: center; width: 90%; padding: 24px;">
         <div style="font-size: 32px;">🎁</div>
@@ -478,7 +448,6 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 3. 캐릭터 탭 -->
     <div id="tab-characters" class="tab-content" style="display: none;">
       <div class="section-title">보유 캐릭터 목록</div>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 6px;">
@@ -507,8 +476,8 @@ const bgm = document.getElementById('bgm');
 const yuniVoice = document.getElementById('yuni-voice');
 const yuniPopup = document.getElementById('yuni-popup');
 const skillBarContainer = document.getElementById('skill-bar-container');
-const skillBtn = document.getElementById('skill-btn');
 const gaugeFill = document.getElementById('gauge-fill');
+const skillStatus = document.getElementById('skill-status');
 
 const mainTitle = document.getElementById('main-title');
 const menuGroup = document.getElementById('menu-group');
@@ -559,9 +528,8 @@ let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
 
-// 유니 스킬 게이지 시스템 변수
+// 유니 스킬 게이지 시스템 변수 (1분당 1회 꼴로 차오르도록 충전량 조정)
 let skillGauge = 0;           // 0 ~ 100
-let isSkillReady = false;
 let yuniSkillActivated = false;
 let yuniSkillTimer = 0;       // 10초 지속 시간 카운트
 let missShieldCount = 2;
@@ -600,7 +568,6 @@ diffBtns.forEach(btn => {
   });
 });
 
-// [곡 선택 후 '유니트 편성 및 라이브' 버튼 누르면 스크린샷풍 편성창 열기]
 nextPrepBtn.addEventListener('click', () => {
   const diffName = currentDifficulty === 'easy' ? '하 (Easy)' : (currentDifficulty === 'normal' ? '중 (Normal)' : '상 (Hard)');
   prepSongTitle.innerHTML = `🎵 Star Trail (${diffName})`;
@@ -676,16 +643,15 @@ function generateBeatmap(difficulty) {
   }
 }
 
-// 스킬 게이지 충전 및 점수 반영
+// 1분당 1회 꼴로 차오르도록 노트당 충전량 조정 (+0.8%)
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
   if (yuniSkillActivated) mult *= 1.05;
 
   if (note.type === 'bonus') playBonusSound();
 
-  // 노트를 칠 때마다 스킬 게이지 충전 (+3.5%)
-  if (!yuniSkillActivated && !isSkillReady) {
-    skillGauge = Math.min(100, skillGauge + 3.5);
+  if (!yuniSkillActivated) {
+    skillGauge = Math.min(100, skillGauge + 0.8);
     updateSkillUI();
   }
 
@@ -710,32 +676,25 @@ function applyHitScore(note, minDiff) {
 
 function updateSkillUI() {
   gaugeFill.style.width = skillGauge + '%';
-  if (skillGauge >= 100 && !isSkillReady) {
-    isSkillReady = true;
-    skillBtn.classList.add('ready');
-    skillBtn.innerText = "✨ [뭘뽀노?] 발동 가능!";
-    skillBtn.removeAttribute('disabled');
+  if (skillGauge >= 100 && !yuniSkillActivated) {
+    triggerYuniSkill();
   }
 }
 
-// 스킬 버튼 클릭 시 수동 발동
-skillBtn.addEventListener('click', () => {
-  if (!isSkillReady || yuniSkillActivated) return;
-  
-  isSkillReady = false;
+// 게이지가 100%가 되면 알아서 자동 발동하는 함수
+function triggerYuniSkill() {
   skillGauge = 0;
-  skillBtn.classList.remove('ready');
-  skillBtn.setAttribute('disabled', 'true');
-  skillBtn.innerText = "스킬 충전 중...";
   gaugeFill.style.width = '0%';
-
   yuniSkillActivated = true;
-  yuniSkillTimer = 600; // 60프레임 * 10초 = 10초간 유지
+  yuniSkillTimer = 600; // 10초간 지속
   
+  skillStatus.innerText = "✨ [뭘뽀노?] 발동 중!";
+  skillStatus.style.color = "#ff79c6";
+
   yuniVoice.currentTime = 0;
   yuniVoice.play().catch(e => {});
   yuniPopup.classList.add('show');
-});
+}
 
 function handleTapDown(lane) {
   if (!isPlaying) return;
@@ -783,8 +742,8 @@ function handleSwipe(lane, dir) {
     score += Math.round(addScore);
     combo++;
     stats.perfect++;
-    if (!yuniSkillActivated && !isSkillReady) {
-      skillGauge = Math.min(100, skillGauge + 3.5);
+    if (!yuniSkillActivated) {
+      skillGauge = Math.min(100, skillGauge + 0.8);
       updateSkillUI();
     }
     if (combo > maxCombo) maxCombo = combo;
@@ -807,8 +766,8 @@ function handleTapUp(lane) {
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
-        if (!yuniSkillActivated && !isSkillReady) {
-          skillGauge = Math.min(100, skillGauge + 3.5);
+        if (!yuniSkillActivated) {
+          skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
         showJudgement("HOLD CLEAR", "#00f2fe");
@@ -951,12 +910,13 @@ function updateAndDraw() {
 
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 유니 스킬 지속 시간 감소 처리
   if (yuniSkillActivated) {
     yuniSkillTimer--;
     if (yuniSkillTimer <= 0) {
       yuniSkillActivated = false;
       yuniPopup.classList.remove('show');
+      skillStatus.innerText = "자동 충전 중...";
+      skillStatus.style.color = "#8b949e";
     }
   }
 
@@ -989,7 +949,6 @@ function updateAndDraw() {
     ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
   }
 
-  // 판정선 (실드 방어 시 뿔 빛나는 연출)
   ctx.strokeStyle = hornGlowTimer > 0 ? '#ff79c6' : '#00f2fe';
   ctx.lineWidth = hornGlowTimer > 0 ? 8 : 4;
   ctx.beginPath();
@@ -1039,8 +998,8 @@ function updateAndDraw() {
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
-        if (!yuniSkillActivated && !isSkillReady) {
-          skillGauge = Math.min(100, skillGauge + 3.5);
+        if (!yuniSkillActivated) {
+          skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
         showJudgement("HOLD CLEAR", "#00f2fe");
@@ -1154,14 +1113,12 @@ function startGame() {
   maxCombo = 0;
   judgementTimer = 0;
   skillGauge = 0;
-  isSkillReady = false;
   yuniSkillActivated = false;
   missShieldCount = 2;
   
   skillBarContainer.style.display = 'flex';
-  skillBtn.setAttribute('disabled', 'true');
-  skillBtn.classList.remove('ready');
-  skillBtn.innerText = "스킬 충전 중...";
+  skillStatus.innerText = "자동 충전 중...";
+  skillStatus.style.color = "#8b949e";
   gaugeFill.style.width = '0%';
 
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
