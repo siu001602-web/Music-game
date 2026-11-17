@@ -22,22 +22,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 파일 경로 설정 (음원, 배경, 유니 캐릭터 이미지, 유니 스킬 보이스)
 music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 image_file_path = "Image/SmartSelect_20261117_234657_YouTube.jpg"
+yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"
+yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
 
-audio_base64 = ""
-if os.path.exists(music_file_path):
-    with open(music_file_path, "rb") as f:
-        audio_base64 = base64.b64encode(f.read()).decode("utf-8")
-else:
-    st.warning(f"⚠️ '{music_file_path}' 음원 파일을 찾을 수 없습니다.")
+def get_base64(path):
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+    return ""
 
-image_base64 = ""
-if os.path.exists(image_file_path):
-    with open(image_file_path, "rb") as f:
-        image_base64 = base64.b64encode(f.read()).decode("utf-8")
-else:
-    st.warning(f"⚠️ '{image_file_path}' 이미지 파일을 찾을 수 없습니다.")
+audio_base64 = get_base64(music_file_path)
+image_base64 = get_base64(image_file_path)
+yuni_img_base64 = get_base64(yuni_img_path)
+yuni_voice_base64 = get_base64(yuni_voice_path)
 
 rhythm_game_html = """
 <!DOCTYPE html>
@@ -110,7 +110,7 @@ rhythm_game_html = """
     padding: 6px;
     border-radius: 12px;
     border: 1px solid #30363d;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   .nav-tab {
     flex: 1;
@@ -154,9 +154,9 @@ rhythm_game_html = """
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     width: 100%;
-    max-height: 175px;
+    max-height: 160px;
     overflow-y: auto;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     padding: 4px;
   }
   .song-card {
@@ -176,7 +176,7 @@ rhythm_game_html = """
   }
   .song-thumb {
     width: 100%;
-    height: 70px;
+    height: 65px;
     border-radius: 6px;
     object-fit: cover;
     margin-bottom: 4px;
@@ -201,59 +201,52 @@ rhythm_game_html = """
     border-radius: 4px;
   }
 
-  /* 뽑기 & 캐릭터 임시 플레이스홀더 박스 */
+  /* 뽑기 & 캐릭터 슬롯 스타일 */
   .placeholder-box {
     width: 92%;
     background: rgba(22, 27, 34, 0.85);
     border: 1px dashed #30363d;
     border-radius: 14px;
-    padding: 32px 20px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
   }
-  .placeholder-icon {
-    font-size: 42px;
-  }
-  .placeholder-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #00f2fe;
-  }
-  .placeholder-desc {
-    font-size: 13px;
-    color: #8b949e;
-    line-height: 1.5;
-  }
-
-  /* 캐릭터 미리보기 슬롯 */
   .char-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 6px;
   }
   .char-slot {
     background: #161b22;
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 12px 6px;
+    padding: 10px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
   }
-  .char-slot.locked {
-    opacity: 0.45;
+  .char-slot.equipped {
+    border-color: #00f2fe;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+  }
+  .char-thumb {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00f2fe;
   }
 
   .difficulty-container {
     display: flex;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   .diff-btn {
     padding: 6px 16px;
@@ -300,9 +293,38 @@ rhythm_game_html = """
     line-height: 1.4;
   }
   .controls-hint {
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 11px;
     color: #8b949e;
+  }
+
+  /* 유니 스킬 연출 UI (오른쪽 상단 캐릭터 팝업) */
+  #yuni-popup {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 242, 254, 0.2);
+    border: 2px solid #00f2fe;
+    border-radius: 30px;
+    padding: 4px 12px 4px 4px;
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  #yuni-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #yuni-popup img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 </style>
 </head>
@@ -311,9 +333,19 @@ rhythm_game_html = """
 <audio id="bgm" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
+<audio id="yuni-voice" preload="auto">
+  <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
+</audio>
 
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
+  
+  <!-- 게임 플레이 중 우측 상단에 뜰 유니 팝업 -->
+  <div id="yuni-popup">
+    <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
+    <span style="font-size: 12px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
+  </div>
+
   <div id="ui-overlay">
     <h1 id="main-title" style="margin: 0 0 8px 0; color: #00f2fe; font-size: 21px;">RHYTHM STAR</h1>
     
@@ -324,7 +356,7 @@ rhythm_game_html = """
       <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
     </div>
 
-    <!-- 1. 악보(곡 선택) 탭 화면 -->
+    <!-- 1. 악보 탭 -->
     <div id="tab-songs" class="tab-content">
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
@@ -347,45 +379,39 @@ rhythm_game_html = """
       </div>
     </div>
 
-    <!-- 2. 뽑기(Gacha) 탭 화면 (준비 틀) -->
+    <!-- 2. 뽑기 탭 -->
     <div id="tab-gacha" class="tab-content" style="display: none;">
       <div class="placeholder-box">
-        <div class="placeholder-icon">🎁</div>
-        <div class="placeholder-title">스타 스카우트 (뽑기)</div>
-        <div class="placeholder-desc">
-          새로운 캐릭터와 특별 스킨을 획득할 수 있는<br>
-          뽑기 시스템이 곧 오픈됩니다!
-        </div>
-        <button disabled style="margin-top:8px; padding:8px 20px; border-radius:20px; border:1px solid #30363d; background:#21262d; color:#8b949e; font-weight:bold;">
-          준비 중 (Coming Soon)
-        </button>
+        <div style="font-size: 36px;">🎁</div>
+        <div style="font-size: 16px; font-weight: bold; color: #00f2fe;">스타 스카우트 (뽑기)</div>
+        <div style="font-size: 12px; color: #8b949e;">새로운 캐릭터를 획득할 수 있는 뽑기 시스템!</div>
       </div>
     </div>
 
-    <!-- 3. 캐릭터(Characters) 탭 화면 (준비 틀) -->
+    <!-- 3. 캐릭터 탭 (아야츠노 유니 장착 가능) -->
     <div id="tab-characters" class="tab-content" style="display: none;">
       <div class="section-title">보유 캐릭터 목록</div>
       <div class="char-grid">
-        <div class="char-slot" style="border-color: #00f2fe;">
-          <div style="font-size: 28px;">🌟</div>
-          <div style="font-size: 12px; font-weight: bold; color: #fff;">기본 스타</div>
-          <div style="font-size: 10px; color: #00f2fe;">장착 중</div>
+        <div class="char-slot equipped">
+          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="char-thumb">
+          <div style="font-size: 11px; font-weight: bold; color: #fff;">아야츠노 유니</div>
+          <div style="font-size: 9px; color: #00f2fe;">장착 중 (스킬 활성)</div>
         </div>
-        <div class="char-slot locked">
+        <div class="char-slot" style="opacity: 0.4;">
           <div style="font-size: 28px;">🔒</div>
-          <div style="font-size: 12px; font-weight: bold;">미획득</div>
-          <div style="font-size: 10px;">뽑기 해금</div>
+          <div style="font-size: 11px; font-weight: bold;">미획득</div>
+          <div style="font-size: 9px;">뽑기 해금</div>
         </div>
-        <div class="char-slot locked">
+        <div class="char-slot" style="opacity: 0.4;">
           <div style="font-size: 28px;">🔒</div>
-          <div style="font-size: 12px; font-weight: bold;">미획득</div>
-          <div style="font-size: 10px;">뽑기 해금</div>
+          <div style="font-size: 11px; font-weight: bold;">미획득</div>
+          <div style="font-size: 9px;">뽑기 해금</div>
         </div>
       </div>
-      <div class="placeholder-box" style="margin-top: 14px; padding: 16px;">
-        <div class="placeholder-desc">
-          캐릭터별 고유 스킬(점수 보너스, 판정 완화 등) 기능이<br>추후 업데이트될 예정입니다.
-        </div>
+      <div class="stats-box" style="margin-top: 10px; width: 100%;">
+        🌟 **장착 효과 요약**<br>
+        • **주능력 [뭘뽀노?]:** 게임 중반 10초간 보너스 점수 +5%<br>
+        • **보조능력 [유니는 실수하지 않아!]:** 곡당 Miss 콤보 방어 최대 2회 (뿔 빛남 연출)
       </div>
     </div>
 
@@ -398,6 +424,8 @@ const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('ui-overlay');
 const startBtn = document.getElementById('start-btn');
 const bgm = document.getElementById('bgm');
+const yuniVoice = document.getElementById('yuni-voice');
+const yuniPopup = document.getElementById('yuni-popup');
 const mainTitle = document.getElementById('main-title');
 const menuGroup = document.getElementById('menu-group');
 const statsContainer = document.getElementById('stats-container');
@@ -425,7 +453,6 @@ navTabs.forEach(tab => {
   });
 });
 
-// 등록된 곡 리스트
 const songs = [
   { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER' }
 ];
@@ -449,6 +476,12 @@ let stats = { perfect: 0, great: 0, good: 0, miss: 0 };
 let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
+
+// 유니 스킬 관련 변수
+let yuniSkillActivated = false;
+let yuniSkillActiveTime = 0;
+let missShieldCount = 2; // 곡당 미스 방어 2회
+let hornGlowTimer = 0;   // 뿔 빛나는 연출 타이머
 
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
@@ -550,20 +583,26 @@ function generateBeatmap(difficulty) {
 
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
+  
+  // 유니 주능력 [뭘뽀노?] 발동 중일 때 점수 5% 추가 보너스
+  if (yuniSkillActivated) {
+    mult *= 1.05;
+  }
+
   if (note.type === 'bonus') playBonusSound();
 
   if (minDiff <= 0.08) {
-    score += (100 + combo * 2) * mult;
+    score += Math.round((100 + combo * 2) * mult);
     combo++;
     stats.perfect++;
     showJudgement(note.type === 'bonus' ? "BONUS PERFECT!" : "PERFECT!", note.type === 'bonus' ? "#c084fc" : "#00f2fe");
   } else if (minDiff <= 0.16) {
-    score += (70 + combo) * mult;
+    score += Math.round((70 + combo) * mult);
     combo++;
     stats.great++;
     showJudgement(note.type === 'bonus' ? "BONUS GREAT!" : "GREAT!", "#4ade80");
   } else {
-    score += 30 * mult;
+    score += Math.round(30 * mult);
     combo++;
     stats.good++;
     showJudgement("GOOD", "#facc15");
@@ -612,7 +651,9 @@ function handleSwipe(lane, dir) {
 
   if (targetNote && minDiff <= 0.26 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
-    score += 120 + combo * 2;
+    let addScore = 120 + combo * 2;
+    if (yuniSkillActivated) addScore *= 1.05;
+    score += Math.round(addScore);
     combo++;
     stats.perfect++;
     if (combo > maxCombo) maxCombo = combo;
@@ -630,16 +671,29 @@ function handleTapUp(lane) {
       note.tailHit = true;
 
       if (diff <= 0.26) {
-        score += 50;
+        let addScore = 50;
+        if (yuniSkillActivated) addScore *= 1.05;
+        score += Math.round(addScore);
         combo++;
         stats.perfect++;
         showJudgement("HOLD CLEAR", "#00f2fe");
       } else {
-        stats.miss++;
-        showJudgement("MISS", "#ff4b4b");
-        combo = 0;
+        handleMiss();
       }
     }
+  }
+}
+
+// 미스 발생 시 처리 (유니 보조능력 적용)
+function handleMiss() {
+  stats.miss++;
+  if (missShieldCount > 0) {
+    missShieldCount--;
+    hornGlowTimer = 40; // 뿔 빛나는 연출 지속 프레임
+    showJudgement("UNI SHIELD! (콤보 유지)", "#ff79c6");
+  } else {
+    combo = 0;
+    showJudgement("MISS", "#ff4b4b");
   }
 }
 
@@ -766,6 +820,18 @@ function updateAndDraw() {
   if (!isPlaying) return;
 
   const currentTime = (performance.now() - startTime) / 1000;
+
+  // 게임 시작 후 15초 뒤에 유니 주능력 [뭘뽀노?] 10초간 발동
+  if (currentTime >= 15.0 && currentTime <= 25.0 && !yuniSkillActivated) {
+    yuniSkillActivated = true;
+    yuniVoice.currentTime = 0;
+    yuniVoice.play().catch(e => {});
+    yuniPopup.classList.add('show');
+  } else if (currentTime > 25.0 && yuniSkillActivated && yuniSkillActiveTime === 0) {
+    yuniSkillActiveTime = 1;
+    yuniPopup.classList.remove('show');
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let i = 0; i < LANES; i++) {
@@ -795,12 +861,14 @@ function updateAndDraw() {
     ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
   }
 
-  ctx.strokeStyle = '#00f2fe';
-  ctx.lineWidth = 4;
+  // 판정선 (유니 보조능력 발동 시 뿔 빛나는 연출: 핑크빛 네온 효과)
+  ctx.strokeStyle = hornGlowTimer > 0 ? '#ff79c6' : '#00f2fe';
+  ctx.lineWidth = hornGlowTimer > 0 ? 8 : 4;
   ctx.beginPath();
   ctx.moveTo(0, HIT_Y);
   ctx.lineTo(canvas.width, HIT_Y);
   ctx.stroke();
+  if (hornGlowTimer > 0) hornGlowTimer--;
 
   for (let note of notes) {
     if (note.type === 'bridge' && !note.missed && !note.hit && note.lane < note.pairLane) {
@@ -838,7 +906,9 @@ function updateAndDraw() {
       if (currentTime >= note.time + note.duration) {
         note.holding = false;
         note.tailHit = true;
-        score += 50;
+        let addScore = 50;
+        if (yuniSkillActivated) addScore *= 1.05;
+        score += Math.round(addScore);
         combo++;
         stats.perfect++;
         showJudgement("HOLD CLEAR", "#00f2fe");
@@ -848,9 +918,7 @@ function updateAndDraw() {
 
     if (!note.hit && timeDiff < -0.24) {
       note.missed = true;
-      stats.miss++;
-      combo = 0;
-      showJudgement("MISS", "#ff4b4b");
+      handleMiss();
       continue;
     }
 
@@ -910,6 +978,13 @@ function updateAndDraw() {
   ctx.textAlign = 'left';
   ctx.fillText(`SCORE: ${score}`, 18, 36);
 
+  // 유니 스킬 발동 중일 때 점수판 옆에 표시
+  if (yuniSkillActivated && currentTime <= 25.0) {
+    ctx.fillStyle = '#ff79c6';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 58);
+  }
+
   if (combo > 1) {
     ctx.fillStyle = '#00f2fe';
     ctx.font = 'bold 34px sans-serif';
@@ -945,6 +1020,9 @@ function startGame() {
   combo = 0;
   maxCombo = 0;
   judgementTimer = 0;
+  yuniSkillActivated = false;
+  yuniSkillActiveTime = 0;
+  missShieldCount = 2; // 실드 2회 충전
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   activeTouches.clear();
   keyPressed = [false, false, false, false];
@@ -952,9 +1030,7 @@ function startGame() {
   generateBeatmap(currentDifficulty);
   
   bgm.currentTime = 0;
-  bgm.play().catch(error => {
-    console.log("Audio play failed:", error);
-  });
+  bgm.play().catch(error => {});
 
   isPlaying = true;
   startTime = performance.now();
@@ -966,6 +1042,7 @@ function startGame() {
 function endGame() {
   isPlaying = false;
   bgm.pause();
+  yuniPopup.classList.remove('show');
 
   let clearTitle = "CLEAR!";
   let titleColor = "#ffffff";
@@ -1016,7 +1093,10 @@ startBtn.addEventListener('click', startGame);
 </html>
 """
 
+# Base64 플레이스홀더 치환
 rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE_BASE64_PLACEHOLDER", image_base64)
+rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_img_base64)
+rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 
 components.html(rhythm_game_html, height=680)
