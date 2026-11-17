@@ -10,7 +10,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🌟 스트림릿 기본 상하좌우 여백을 완전히 없애고 화면을 꽉 채우는 설정
 st.markdown("""
     <style>
         .block-container {
@@ -107,10 +106,10 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.93), rgba(14, 17, 23, 0.93)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
-    padding: 16px;
+    padding: 14px;
     text-align: center;
     z-index: 10;
   }
@@ -123,12 +122,12 @@ rhythm_game_html = """
     padding: 6px;
     border-radius: 12px;
     border: 1px solid #30363d;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .nav-tab {
     flex: 1;
-    padding: 7px 0;
-    font-size: 13px;
+    padding: 6px 0;
+    font-size: 12px;
     font-weight: bold;
     color: #8b949e;
     background: transparent;
@@ -154,7 +153,7 @@ rhythm_game_html = """
   .section-title {
     font-size: 11px;
     color: #8b949e;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
@@ -165,9 +164,9 @@ rhythm_game_html = """
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     width: 100%;
-    max-height: 160px;
+    max-height: 140px;
     overflow-y: auto;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding: 4px;
   }
   .song-card {
@@ -187,7 +186,7 @@ rhythm_game_html = """
   }
   .song-thumb {
     width: 100%;
-    height: 60px;
+    height: 55px;
     border-radius: 6px;
     object-fit: cover;
     margin-bottom: 4px;
@@ -217,14 +216,14 @@ rhythm_game_html = """
     gap: 8px;
     width: 100%;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .diff-card {
     flex: 1;
     background: #161b22;
     border: 2px solid #30363d;
     border-radius: 10px;
-    padding: 8px 4px;
+    padding: 6px 4px;
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
@@ -244,6 +243,7 @@ rhythm_game_html = """
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
 
+  /* 유닛 편성창 */
   #prep-screen {
     position: absolute;
     top: 0;
@@ -258,13 +258,9 @@ rhythm_game_html = """
     text-align: left;
   }
   .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 4px; }
-  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 10px; }
+  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
   
-  .unit-slots {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
+  .unit-slots { display: flex; gap: 8px; margin-bottom: 8px; }
   .unit-card {
     flex: 1;
     background: #161b22;
@@ -278,22 +274,23 @@ rhythm_game_html = """
   }
   .unit-card.star-5 { border-color: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.3); }
   .unit-card.star-4 { border-color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
+  .unit-card.default { border-color: #8b949e; opacity: 0.7; }
   .unit-img {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     border: 2px solid currentColor;
   }
 
   .prep-skill-card {
     background: rgba(255, 121, 198, 0.1);
     border: 1px solid #ff79c6;
-    border-radius: 10px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    font-size: 12px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
   }
   .prep-footer {
     display: flex;
@@ -303,8 +300,8 @@ rhythm_game_html = """
   }
 
   .action-btn {
-    padding: 10px 24px;
-    font-size: 15px;
+    padding: 9px 22px;
+    font-size: 14px;
     font-weight: bold;
     color: #0e1117;
     background: #00f2fe;
@@ -318,50 +315,74 @@ rhythm_game_html = """
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 8px 16px;
-    margin: 4px 0 8px 0;
+    padding: 8px 14px;
+    margin: 2px 0 6px 0;
     width: 85%;
     text-align: left;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
   }
-  .controls-hint { margin-top: 6px; font-size: 11px; color: #8b949e; }
+  .controls-hint { margin-top: 4px; font-size: 10px; color: #8b949e; }
 
-  #yuni-popup {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 242, 254, 0.25);
-    border: 2px solid #00f2fe;
-    border-radius: 30px;
-    padding: 4px 12px 4px 4px;
-    z-index: 20;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-  }
-  #yuni-popup.show { opacity: 1; transform: translateY(0); }
-  #yuni-popup img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-
-  #skill-bar-container {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: rgba(14, 17, 23, 0.85);
+  /* 뽑기 탭 스타일 */
+  .gacha-box {
+    background: #161b22;
     border: 2px solid #30363d;
     border-radius: 14px;
-    padding: 8px 12px;
+    padding: 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .gacha-btn-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .gacha-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .gacha-btn.single { background: #21262d; color: #00f2fe; border: 1px solid #00f2fe; }
+  .gacha-btn.multi { background: #00f2fe; color: #0e1117; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+  #gacha-result-modal {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(14, 17, 23, 0.95);
     display: none;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    z-index: 20;
+    justify-content: center;
+    z-index: 25;
+    padding: 20px;
   }
-  .gauge-bg { width: 100px; height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
+
+  #yuni-popup {
+    position: absolute;
+    top: 15px; right: 15px;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0, 242, 254, 0.25);
+    border: 2px solid #00f2fe; border-radius: 30px;
+    padding: 4px 12px 4px 4px; z-index: 20;
+    opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events: none;
+  }
+  #yuni-popup.show { opacity: 1; transform: translateY(0); }
+  #yuni-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+
+  #skill-bar-container {
+    position: absolute; bottom: 12px; right: 12px;
+    background: rgba(14, 17, 23, 0.85); border: 2px solid #30363d; border-radius: 12px;
+    padding: 6px 10px; display: none; flex-direction: column; align-items: center; gap: 3px; z-index: 20;
+  }
+  .gauge-bg { width: 90px; height: 7px; background: #21262d; border-radius: 4px; overflow: hidden; }
   .gauge-fill { width: 0%; height: 100%; background: #ff79c6; transition: width 0.1s linear; }
 </style>
 </head>
@@ -379,37 +400,45 @@ rhythm_game_html = """
   
   <div id="yuni-popup">
     <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
-    <span style="font-size: 12px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
+    <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
   </div>
 
   <div id="skill-bar-container">
-    <div style="font-size: 10px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
+    <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
     <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
-    <div id="skill-status" style="font-size: 11px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
+    <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
   </div>
 
+  <!-- 뽑기 결과 모달 창 -->
+  <div id="gacha-result-modal">
+    <div style="font-size: 16px; font-weight: bold; color: #facc15; margin-bottom: 10px;">🎁 뽑기 결과</div>
+    <div id="gacha-result-list" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;"></div>
+    <button id="gacha-close-btn" class="action-btn">확인</button>
+  </div>
+
+  <!-- 유닛 편성창 -->
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
     <div class="prep-sub">출전할 유니트와 캐릭터 스킬 및 시너지를 확인하세요[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span).</div>
 
     <div class="unit-slots">
-      <div class="unit-card star-5">
-        <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="unit-img" style="color: #facc15;">
-        <div style="font-size: 10px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
-        <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
-        <div style="font-size: 10px; color: #00f2fe;">주능력: 점수 5%[span_2](start_span)[span_2](end_span)</div>
+      <div id="slot-yuni" class="unit-card default">
+        <div id="slot-yuni-img-box" style="font-size: 28px; margin-bottom: 3px;">👤</div>
+        <div id="slot-yuni-badge" style="font-size: 10px; font-weight: bold; color: #8b949e;">미획득</div>
+        <div id="slot-yuni-name" style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
+        <div id="slot-yuni-desc" style="font-size: 9px; color: #8b949e;">뽑기 필요</div>
       </div>
-      <div class="unit-card star-4">
-        <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" class="unit-img" style="color: #c084fc;">
-        <div style="font-size: 10px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
-        <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
-        <div style="font-size: 10px; color: #c084fc;">팬 서포터</div>
+      <div id="slot-arunyang" class="unit-card default">
+        <div id="slot-arunyang-img-box" style="font-size: 28px; margin-bottom: 3px;">👤</div>
+        <div id="slot-arunyang-badge" style="font-size: 10px; font-weight: bold; color: #8b949e;">미획득</div>
+        <div id="slot-arunyang-name" style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
+        <div id="slot-arunyang-desc" style="font-size: 9px; color: #8b949e;">뽑기 필요</div>
       </div>
     </div>
 
-    <div class="prep-skill-card">
-      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
-      <div style="font-size: 11px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본 노트 및 롱노트 점수 <b>상시 15% 증가!</b>[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)</div>
+    <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 보유/장착 시 100콤보 이상 점수 +15%[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span)</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -424,14 +453,20 @@ rhythm_game_html = """
   </div>
 
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin: 0 0 6px 0; color: #00f2fe; font-size: 20px;">RHYTHM STAR</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
+      <h1 id="main-title" style="margin: 0; color: #00f2fe; font-size: 18px;">RHYTHM STAR</h1>
+      <div style="background: #161b22; border: 1px solid #facc15; border-radius: 12px; padding: 3px 10px; font-size: 12px; font-weight: bold; color: #facc15;">
+        ⭐ 스텔라: <span id="stella-count">100</span>개
+      </div>
+    </div>
     
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
-      <button class="nav-tab" data-tab="gacha">✨ 뽑기</button>
+      <button class="nav-tab" data-tab="gacha">🎁 스카우트</button>
       <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
     </div>
 
+    <!-- 1. 악보 탭 -->
     <div id="tab-songs" class="tab-content">
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
@@ -439,7 +474,7 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_5](start_span)[span_5](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)[span_4](start_span)[span_4](end_span)</div>
         <div class="difficulty-select-container">
           <div class="diff-card" data-diff="easy"><div class="diff-lv">Lv. 5</div><div class="diff-name">EASY</div></div>
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv">Lv. 11</div><div class="diff-name">NORMAL</div></div>
@@ -454,25 +489,34 @@ rhythm_game_html = """
       </div>
     </div>
 
+    <!-- 2. 뽑기 탭 -->
     <div id="tab-gacha" class="tab-content" style="display: none;">
-      <div class="unit-card" style="width: 85%; padding: 24px; align-items: center; justify-content: center;">
-        <div style="font-size: 32px;">🎁</div>
-        <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-top: 4px;">스타 스카우트 (뽑기)</div>
-        <div style="font-size: 11px; color: #8b949e;">새로운 팬 캐릭터를 획득할 수 있습니다!</div>
+      <div class="gacha-box">
+        <div style="font-size: 32px;">🌟</div>
+        <div style="font-size: 15px; font-weight: bold; color: #00f2fe;">스타 스카우트 (캐릭터 뽑기)</div>
+        <div style="font-size: 11px; color: #8b949e; text-align: center; line-height: 1.3;">
+          • 5성 아야츠노 유니 (확률 5%)<br>• 4성 아르냥 팬 캐릭터 (확률 95%)
+        </div>
+        <div style="font-size: 12px; color: #facc15; font-weight: bold; margin: 4px 0;">소모 재화: 1회당 스텔라 10개</div>
+        <div class="gacha-btn-group">
+          <button id="gacha-1-btn" class="gacha-btn single">1회 스카우트 (10개)</button>
+          <button id="gacha-10-btn" class="gacha-btn multi">10회 스카우트 (100개)</button>
+        </div>
       </div>
     </div>
 
+    <!-- 3. 캐릭터 탭 -->
     <div id="tab-characters" class="tab-content" style="display: none;">
-      <div class="section-title">보유 캐릭터 유니트</div>
+      <div class="section-title">보유 캐릭터 유니트 상태</div>
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-top: 8px;">
-        <div style="background: #161b22; border: 2px solid #facc15; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center;">
-          <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #facc15; margin-bottom: 4px;">
-          <div style="font-size: 10px; font-weight: bold; color: #facc15;">⭐⭐⭐⭐⭐</div>
+        <div id="char-card-yuni" class="unit-card default">
+          <div id="char-yuni-img-box" style="font-size: 26px; margin-bottom: 2px;">👤</div>
+          <div id="char-yuni-badge" style="font-size: 10px; font-weight: bold; color: #8b949e;">미획득</div>
           <div style="font-size: 11px; font-weight: bold;">아야츠노 유니</div>
         </div>
-        <div style="background: #161b22; border: 2px solid #c084fc; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center;">
-          <img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #c084fc; margin-bottom: 4px;">
-          <div style="font-size: 10px; font-weight: bold; color: #c084fc;">⭐⭐⭐⭐</div>
+        <div id="char-card-arunyang" class="unit-card default">
+          <div id="char-arunyang-img-box" style="font-size: 26px; margin-bottom: 2px;">👤</div>
+          <div id="char-arunyang-badge" style="font-size: 10px; font-weight: bold; color: #8b949e;">미획득</div>
           <div style="font-size: 11px; font-weight: bold;">아르냥 (팬)</div>
         </div>
       </div>
@@ -499,6 +543,13 @@ const yuniPopup = document.getElementById('yuni-popup');
 const skillBarContainer = document.getElementById('skill-bar-container');
 const gaugeFill = document.getElementById('gauge-fill');
 const skillStatus = document.getElementById('skill-status');
+const stellaCountEl = document.getElementById('stella-count');
+
+const gacha1Btn = document.getElementById('gacha-1-btn');
+const gacha10Btn = document.getElementById('gacha-10-btn');
+const gachaModal = document.getElementById('gacha-result-modal');
+const gachaResultList = document.getElementById('gacha-result-list');
+const gachaCloseBtn = document.getElementById('gacha-close-btn');
 
 const mainTitle = document.getElementById('main-title');
 const statsContainer = document.getElementById('stats-container');
@@ -537,6 +588,13 @@ let audioCtx = null;
 let currentSong = 'startrail';
 let currentDifficulty = 'normal';
 
+// 재화 및 보유 캐릭터 상태
+let stella = 100; // 초기 스텔라 제공
+let ownedCharacters = {
+  yuni: false,
+  arunyang: false
+};
+
 let bestRecords = {
   easy: { score: 0, rank: '-', color: '#94a3b8' },
   normal: { score: 0, rank: '-', color: '#94a3b8' },
@@ -563,6 +621,95 @@ let hornGlowTimer = 0;
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
+
+function updateInventoryUI() {
+  stellaCountEl.innerText = stella;
+
+  // 편성창 및 캐릭터 탭 업데이트
+  const slotYuni = document.getElementById('slot-yuni');
+  const slotArunyang = document.getElementById('slot-arunyang');
+  const synergyCard = document.getElementById('synergy-card');
+
+  const charYuniCard = document.getElementById('char-card-yuni');
+  const charArunyangCard = document.getElementById('char-card-arunyang');
+
+  if (ownedCharacters.yuni) {
+    slotYuni.className = "unit-card star-5";
+    document.getElementById('slot-yuni-img-box').innerHTML = `<img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="unit-img" style="color:#facc15;">`;
+    document.getElementById('slot-yuni-badge').innerHTML = "⭐⭐⭐⭐⭐";
+    document.getElementById('slot-yuni-name').innerText = "아야츠노 유니";
+    document.getElementById('slot-yuni-desc').innerText = "주능력 활성";
+
+    charYuniCard.className = "unit-card star-5";
+    document.getElementById('char-yuni-img-box').innerHTML = `<img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER" class="unit-img" style="color:#facc15;">`;
+    document.getElementById('char-yuni-badge').innerHTML = "⭐⭐⭐⭐⭐ (보유)";
+  }
+
+  if (ownedCharacters.arunyang) {
+    slotArunyang.className = "unit-card star-4";
+    document.getElementById('slot-arunyang-img-box').innerHTML = `<img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" class="unit-img" style="color:#c084fc;">`;
+    document.getElementById('slot-arunyang-badge').innerHTML = "⭐⭐⭐⭐";
+    document.getElementById('slot-arunyang-name').innerText = "아르냥 (팬)";
+    document.getElementById('slot-arunyang-desc').innerText = "시너지 지원";
+
+    charArunyangCard.className = "unit-card star-4";
+    document.getElementById('char-arunyang-img-box').innerHTML = `<img src="data:image/jpeg;base64,USER_IMG_PLACEHOLDER" class="unit-img" style="color:#c084fc;">`;
+    document.getElementById('char-arunyang-badge').innerHTML = "⭐⭐⭐⭐ (보유)";
+  }
+
+  // 둘 다 보유 시 시너지 활성
+  if (ownedCharacters.yuni && ownedCharacters.arunyang) {
+    synergyCard.style.opacity = "1";
+    synergyCard.style.borderColor = "#ff79c6";
+    synergyCard.innerHTML = `
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_5](start_span)[span_5](end_span)[span_6](start_span)[span_6](end_span)</div>
+    `;
+  }
+}
+
+// 뽑기 로직 (5성 5%, 4성 95%)
+function executeGacha(count) {
+  const cost = count * 10;
+  if (stella < cost) {
+    alert("스텔라 재화가 부족합니다! 곡을 클리어하여 모아보세요.");
+    return;
+  }
+  stella -= cost;
+  updateInventoryUI();
+
+  let results = [];
+  for (let i = 0; i < count; i++) {
+    const rand = Math.random() * 100;
+    if (rand < 5.0) {
+      ownedCharacters.yuni = true;
+      results.push({ name: "아야츠노 유니 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "YUNI_IMG_PLACEHOLDER" });
+    } else {
+      ownedCharacters.arunyang = true;
+      results.push({ name: "아르냥 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "USER_IMG_PLACEHOLDER" });
+    }
+  }
+
+  updateInventoryUI();
+
+  // 결과 모달 표시
+  gachaResultList.innerHTML = "";
+  results.forEach(res => {
+    const item = document.createElement('div');
+    item.style.cssText = "background:#21262d; border:1px solid " + res.color + "; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; width:90px;";
+    item.innerHTML = `
+      <img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;">
+      <div style="font-size:9px; color:${res.color};">${res.star}</div>
+      <div style="font-size:10px; font-weight:bold; margin-top:2px;">${res.name.split(' ')[0]}</div>
+    `;
+    gachaResultList.appendChild(item);
+  });
+  gachaModal.style.display = "flex";
+}
+
+gacha1Btn.addEventListener('click', () => executeGacha(1));
+gacha10Btn.addEventListener('click', () => executeGacha(10));
+gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none"; });
 
 function renderSongList() {
   songListContainer.innerHTML = '';
@@ -679,15 +826,20 @@ function generateBeatmap(difficulty) {
 
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
-  if (yuniSkillActivated) mult *= 1.05;
+  
+  // 유니 보유 시 주능력 발동 중 점수 5% 추가
+  if (ownedCharacters.yuni && yuniSkillActivated) {
+    mult *= 1.05;
+  }
 
-  if (combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
-    mult *= 1.15;[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
+  // 유니와 아르냥 모두 보유 시 [유니냥] 시너지 (100콤보 이상 시 기본/롱노트 15% 증가)
+  if (ownedCharacters.yuni && ownedCharacters.arunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
+    mult *= 1.15;[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)
   }
 
   if (note.type === 'bonus') playBonusSound();
 
-  if (!yuniSkillActivated) {
+  if (ownedCharacters.yuni && !yuniSkillActivated) {
     skillGauge = Math.min(100, skillGauge + 0.8);
     updateSkillUI();
   }
@@ -713,7 +865,7 @@ function applyHitScore(note, minDiff) {
 
 function updateSkillUI() {
   gaugeFill.style.width = skillGauge + '%';
-  if (skillGauge >= 100 && !yuniSkillActivated) {
+  if (skillGauge >= 100 && !yuniSkillActivated && ownedCharacters.yuni) {
     triggerYuniSkill();
   }
 }
@@ -774,11 +926,11 @@ function handleSwipe(lane, dir) {
   if (targetNote && minDiff <= 0.26 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
     let addScore = 120 + combo * 2;
-    if (yuniSkillActivated) addScore *= 1.05;
+    if (ownedCharacters.yuni && yuniSkillActivated) addScore *= 1.05;
     score += Math.round(addScore);
     combo++;
     stats.perfect++;
-    if (!yuniSkillActivated) {
+    if (ownedCharacters.yuni && !yuniSkillActivated) {
       skillGauge = Math.min(100, skillGauge + 0.8);
       updateSkillUI();
     }
@@ -798,12 +950,12 @@ function handleTapUp(lane) {
 
       if (diff <= 0.26) {
         let addScore = 50;
-        if (yuniSkillActivated) addScore *= 1.05;
-        if (combo >= 100) addScore *= 1.15;[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
+        if (ownedCharacters.yuni && yuniSkillActivated) addScore *= 1.05;
+        if (ownedCharacters.yuni && ownedCharacters.arunyang && combo >= 100) addScore *= 1.15;[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
-        if (!yuniSkillActivated) {
+        if (ownedCharacters.yuni && !yuniSkillActivated) {
           skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
@@ -817,7 +969,8 @@ function handleTapUp(lane) {
 
 function handleMiss() {
   stats.miss++;
-  if (missShieldCount > 0) {
+  // 유니 보유 시에만 미스 방어 실드 작동
+  if (ownedCharacters.yuni && missShieldCount > 0) {
     missShieldCount--;
     hornGlowTimer = 40;
     showJudgement("UNI SHIELD! (콤보 유지)", "#ff79c6");
@@ -1031,12 +1184,12 @@ function updateAndDraw() {
         note.holding = false;
         note.tailHit = true;
         let addScore = 50;
-        if (yuniSkillActivated) addScore *= 1.05;
-        if (combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
+        if (ownedCharacters.yuni && yuniSkillActivated) addScore *= 1.05;
+        if (ownedCharacters.yuni && ownedCharacters.arunyang && combo >= 100) addScore *= 1.15;[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
-        if (!yuniSkillActivated) {
+        if (ownedCharacters.yuni && !yuniSkillActivated) {
           skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
@@ -1107,16 +1260,16 @@ function updateAndDraw() {
   ctx.textAlign = 'left';
   ctx.fillText(`SCORE: ${score}`, 18, 36);
 
-  if (yuniSkillActivated) {
+  if (ownedCharacters.yuni && yuniSkillActivated) {
     ctx.fillStyle = '#ff79c6';
     ctx.font = 'bold 13px sans-serif';
     ctx.fillText('✨ [뭘뽀노?] 보너스 점수 +5%', 18, 56);
   }
 
-  if (combo >= 100) {
+  if (ownedCharacters.yuni && ownedCharacters.arunyang && combo >= 100) {
     ctx.fillStyle = '#c084fc';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span)
   }
 
   if (combo > 1) {
@@ -1160,10 +1313,14 @@ function startGame() {
   yuniSkillActivated = false;
   missShieldCount = 2;
   
-  skillBarContainer.style.display = 'flex';
-  skillStatus.innerText = "자동 충전 중...";
-  skillStatus.style.color = "#8b949e";
-  gaugeFill.style.width = '0%';
+  if (ownedCharacters.yuni) {
+    skillBarContainer.style.display = 'flex';
+    skillStatus.innerText = "자동 충전 중...";
+    skillStatus.style.color = "#8b949e";
+    gaugeFill.style.width = '0%';
+  } else {
+    skillBarContainer.style.display = 'none';
+  }
 
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   activeTouches.clear();
@@ -1207,6 +1364,10 @@ function endGame() {
     clearTitle = "🎉 NEW RECORD! " + clearTitle;
   }
 
+  // 곡 클리어 보상으로 스텔라 25개 지급
+  stella += 25;
+  updateInventoryUI();
+
   mainTitle.innerHTML = clearTitle;
   mainTitle.style.color = titleColor;
   mainTitle.style.fontSize = "17px";
@@ -1217,7 +1378,7 @@ function endGame() {
       <div class="rank-badge" style="color: ${rankInfo.color};">${rankInfo.rank}</div>
     </div>
     <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentDifficulty].score.toLocaleString()})</div>
-    <div>💎 최대 콤보: ${maxCombo}</div>
+    <div>💎 최대 콤보: ${maxCombo} | <span style="color: #facc15;">🌟 스텔라 +25 획득!</span></div>
     <div style="margin-top: 4px; border-top: 1px solid #30363d; padding-top: 4px;">
       ✨ PERFECT: <span style="color: #00f2fe;">${stats.perfect}</span> | 🌟 GREAT: <span style="color: #4ade80;">${stats.great}</span><br>
       ⚡ GOOD: <span style="color: #facc15;">${stats.good}</span> | ❌ MISS: <span style="color: #ff4b4b;">${stats.miss}</span>
@@ -1236,6 +1397,7 @@ function endGame() {
 }
 
 startBtn.addEventListener('click', startGame);
+updateInventoryUI();
 </script>
 </body>
 </html>
