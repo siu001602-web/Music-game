@@ -1,14 +1,15 @@
+import base64
+import os
 import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Tablet 4-Key Rhythm Game",
+    page_title="Custom BGM Rhythm Game",
     page_icon="🎵",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Streamlit 기본 여백 최소화 (태블릿 화면 확보)
 st.markdown("""
     <style>
         .block-container {
@@ -21,20 +22,32 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-rhythm_game_html = """
+# 1. 로컬에 업로드된 m4a 파일 읽어서 Base64로 변환
+music_file_path = "music.m4a"
+audio_base64 = ""
+
+if os.path.exists(music_file_path):
+    with open(music_file_path, "rb") as f:
+        audio_bytes = f.read()
+        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+else:
+    st.warning("⚠️ 'music.m4a' 파일을 찾을 수 없습니다. 깃허브 폴더에 음원 파일을 추가해 주세요!")
+
+# HTML에 Base64 음원 데이터 주입
+rhythm_game_html = f"""
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-  * {
+  * {{
     box-sizing: border-box;
-    touch-action: manipulation; /* 더블탭 줌 방지 */
+    touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
-  }
-  body {
+  }}
+  body {{
     margin: 0;
     background-color: #0e1117;
     color: white;
@@ -44,24 +57,24 @@ rhythm_game_html = """
     align-items: center;
     justify-content: center;
     overflow: hidden;
-  }
-  #game-container {
+  }}
+  #game-container {{
     position: relative;
     width: 100%;
-    max-width: 540px; /* 태블릿에서 넓게 보이도록 확장 */
+    max-width: 540px;
     display: flex;
     justify-content: center;
-  }
-  canvas {
+  }}
+  canvas {{
     width: 100%;
     height: auto;
     background-color: #161b22;
     border: 2px solid #30363d;
     border-radius: 12px;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
-    touch-action: none; /* 캔버스 내부 스크롤/스와이프 완전 차단 */
-  }
-  #ui-overlay {
+    touch-action: none;
+  }}
+  #ui-overlay {{
     position: absolute;
     top: 0;
     left: 0;
@@ -75,8 +88,8 @@ rhythm_game_html = """
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-  }
-  button {
+  }}
+  button {{
     padding: 16px 36px;
     font-size: 20px;
     font-weight: bold;
@@ -87,28 +100,33 @@ rhythm_game_html = """
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
     transition: transform 0.1s, background 0.2s;
-  }
-  button:active {
+  }}
+  button:active {{
     transform: scale(0.95);
     background: #4facfe;
-  }
-  .controls-info {
+  }}
+  .controls-info {{
     margin-top: 18px;
     font-size: 15px;
     color: #8b949e;
     line-height: 1.5;
-  }
+  }}
 </style>
 </head>
 <body>
+
+<!-- 백그라운드 음악 오디오 객체 -->
+<audio id="bgm" preload="auto">
+  <source src="data:audio/mp4;base64,{audio_base64}" type="audio/mp4">
+</audio>
 
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
     <h1 id="title-text" style="margin-bottom: 24px; color: #00f2fe; font-size: 32px;">NEON BEAT</h1>
-    <button id="start-btn">터치하여 시작 (Start)</button>
+    <button id="start-btn">게임 시작 (Start)</button>
     <div class="controls-info">
-      📱 태블릿/모바일: 하단 4개 레인 직접 터치 (멀티터치 지원)<br>
+      📱 태블릿/모바일: 하단 4개 레인 직접 터치 (멀티터치)<br>
       💻 PC: 키보드 [ D ] [ F ] [ J ] [ K ]
     </div>
   </div>
@@ -120,17 +138,15 @@ const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('ui-overlay');
 const startBtn = document.getElementById('start-btn');
 const titleText = document.getElementById('title-text');
+const bgm = document.getElementById('bgm');
 
-// 게임 설정 (태블릿 터치 영역 확보를 위해 판정선 위치 조정)
 const LANES = 4;
 const LANE_WIDTH = canvas.width / LANES;
 const HIT_Y = 510;
 const NOTE_SPEED = 420;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
-const FREQS = [261.63, 329.63, 392.00, 523.25];
 
-let audioCtx = null;
 let isPlaying = false;
 let startTime = 0;
 let score = 0;
@@ -141,36 +157,19 @@ let judgementColor = "#fff";
 let judgementTimer = 0;
 
 let keyPressed = [false, false, false, false];
-let activeTouches = new Map(); // 멀티터치 추적용 (touch.identifier -> lane)
+let activeTouches = new Map();
 let notes = [];
-
-function playTone(freq, duration = 0.15, type = 'triangle') {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  
-  gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
-}
 
 function generateBeatmap() {
   notes = [];
   const bpm = 120;
   const beatInterval = 60 / bpm;
-  let currentTime = 2.0;
+  let currentTime = 2.0; // 음악 시작 후 2초 뒤부터 노트 낙하 시작
 
-  for (let i = 0; i < 64; i++) {
+  for (let i = 0; i < 80; i++) {
     const lane = Math.floor(Math.random() * LANES);
     notes.push({ time: currentTime, lane: lane, hit: false, missed: false });
 
-    // 동시타 (멀티터치 테스트용)
     if (i % 4 === 0 && i > 0) {
       let secondLane = (lane + 2) % LANES;
       notes.push({ time: currentTime, lane: secondLane, hit: false, missed: false });
@@ -199,10 +198,8 @@ function checkHit(lane) {
     }
   }
 
-  // 태블릿 터치 오차를 고려해 판정 범위를 약간 여유롭게 설정 (0.20초)
   if (targetNote && minDiff <= 0.20) {
     targetNote.hit = true;
-    playTone(FREQS[lane], 0.2, 'sine');
     
     if (minDiff <= 0.07) {
       score += 100 + combo * 2;
@@ -218,8 +215,6 @@ function checkHit(lane) {
       showJudgement("GOOD", "#facc15");
     }
     if (combo > maxCombo) maxCombo = combo;
-  } else {
-    playTone(100, 0.05, 'sawtooth');
   }
 }
 
@@ -229,7 +224,6 @@ function showJudgement(text, color) {
   judgementTimer = 30;
 }
 
-// 터치 좌표를 캔버스 레인(0~3)으로 변환
 function getLaneFromTouch(clientX) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -238,7 +232,6 @@ function getLaneFromTouch(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
-// 멀티터치 시작
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
@@ -255,7 +248,6 @@ canvas.addEventListener('touchstart', (e) => {
   }
 }, { passive: false });
 
-// 멀티터치 종료 및 취소
 function handleTouchEnd(e) {
   e.preventDefault();
   for (let i = 0; i < e.changedTouches.length; i++) {
@@ -263,7 +255,6 @@ function handleTouchEnd(e) {
     const lane = activeTouches.get(touch.identifier);
     activeTouches.delete(touch.identifier);
 
-    // 같은 레인을 누르고 있는 다른 손가락이 없을 때만 버튼 해제
     if (lane !== undefined) {
       let stillPressed = false;
       for (let activeLane of activeTouches.values()) {
@@ -279,7 +270,6 @@ function handleTouchEnd(e) {
 canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
-// PC 키보드 이벤트 병행 지원
 window.addEventListener('keydown', (e) => {
   const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1 && !keyPressed[idx]) {
@@ -301,11 +291,9 @@ function updateAndDraw() {
   const currentTime = (performance.now() - startTime) / 1000;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1. 레인 및 하단 터치 패드 영역 그리기
   for (let i = 0; i < LANES; i++) {
     const x = i * LANE_WIDTH;
     
-    // 상단 레인 이펙트
     if (keyPressed[i]) {
       const grad = ctx.createLinearGradient(0, HIT_Y - 180, 0, HIT_Y);
       grad.addColorStop(0, 'rgba(0, 242, 254, 0)');
@@ -314,11 +302,9 @@ function updateAndDraw() {
       ctx.fillRect(x, HIT_Y - 180, LANE_WIDTH, 180);
     }
 
-    // 하단 대형 터치 패드 UI (판정선 아래 영역)
     ctx.fillStyle = keyPressed[i] ? LANE_COLORS[i] : '#1f2630';
     ctx.fillRect(x + 4, HIT_Y + 8, LANE_WIDTH - 8, canvas.height - HIT_Y - 14);
 
-    // 레인 구분선
     ctx.strokeStyle = '#30363d';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -326,14 +312,12 @@ function updateAndDraw() {
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
 
-    // 터치 패드 안내 텍스트
     ctx.fillStyle = keyPressed[i] ? '#0e1117' : '#8b949e';
     ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
   }
 
-  // 2. 판정선
   ctx.strokeStyle = '#00f2fe';
   ctx.lineWidth = 4;
   ctx.beginPath();
@@ -341,7 +325,6 @@ function updateAndDraw() {
   ctx.lineTo(canvas.width, HIT_Y);
   ctx.stroke();
 
-  // 3. 노트 렌더링
   let remainingNotes = 0;
   for (let note of notes) {
     if (note.hit || note.missed) continue;
@@ -360,7 +343,7 @@ function updateAndDraw() {
     if (y >= -25 && y <= HIT_Y + 20) {
       const x = note.lane * LANE_WIDTH + 10;
       const w = LANE_WIDTH - 20;
-      const h = 24; // 태블릿 시인성을 위해 노트 두께 증가
+      const h = 24;
 
       ctx.fillStyle = LANE_COLORS[note.lane];
       ctx.beginPath();
@@ -369,7 +352,6 @@ function updateAndDraw() {
     }
   }
 
-  // 4. 점수 및 판정 UI
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 22px sans-serif';
   ctx.textAlign = 'left';
@@ -390,7 +372,8 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  if (remainingNotes === 0) {
+  // 음악이 끝나거나 노트를 다 치면 종료
+  if (bgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
     endGame();
     return;
   }
@@ -399,13 +382,6 @@ function updateAndDraw() {
 }
 
 function startGame() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
   score = 0;
   combo = 0;
   maxCombo = 0;
@@ -414,6 +390,12 @@ function startGame() {
   keyPressed = [false, false, false, false];
   generateBeatmap();
   
+  // 음악 재생 시작
+  bgm.currentTime = 0;
+  bgm.play().catch(error => {
+    console.log("Audio play failed:", error);
+  });
+
   isPlaying = true;
   startTime = performance.now();
   overlay.style.display = 'none';
@@ -422,12 +404,12 @@ function startGame() {
 
 function endGame() {
   isPlaying = false;
+  bgm.pause();
   titleText.innerHTML = `CLEAR!<br><span style="font-size:20px; color:white;">Score: ${score} | Max Combo: ${maxCombo}</span>`;
   startBtn.innerText = "다시 하기 (Retry)";
   overlay.style.display = 'flex';
 }
 
-// 터치 및 클릭 모두 반응하도록 설정
 startBtn.addEventListener('click', startGame);
 </script>
 </body>
