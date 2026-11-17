@@ -22,7 +22,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 음원 및 이미지 파일 로드 및 Base64 인코딩
 music_file_path = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 image_file_path = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
@@ -93,49 +92,82 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.85), rgba(14, 17, 23, 0.85)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.88), rgba(14, 17, 23, 0.88)), url('data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     border-radius: 12px;
-    padding: 20px;
+    padding: 16px;
     text-align: center;
     z-index: 10;
   }
   .section-title {
-    font-size: 13px;
+    font-size: 12px;
     color: #8b949e;
     margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 1px;
-  }
-  .song-selector {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .song-btn {
-    padding: 8px 20px;
-    font-size: 14px;
     font-weight: bold;
-    color: #8b949e;
-    background: #21262d;
-    border: 2px solid #30363d;
-    border-radius: 20px;
-    cursor: pointer;
   }
-  .song-btn.selected {
-    color: #0e1117;
-    background: #4facfe;
-    border-color: #4facfe;
+  /* 곡 선택 그리드 카드 스타일 */
+  .song-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-height: 190px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    padding: 4px;
+  }
+  .song-card {
+    background: #161b22;
+    border: 2px solid #30363d;
+    border-radius: 10px;
+    padding: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .song-card.selected {
+    border-color: #00f2fe;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    background: #1f2630;
+  }
+  .song-thumb {
+    width: 100%;
+    height: 75px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-bottom: 4px;
+  }
+  .song-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .new-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ff4b4b;
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 4px;
   }
   .difficulty-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 18px;
+    gap: 8px;
+    margin-bottom: 14px;
   }
   .diff-btn {
-    padding: 8px 18px;
-    font-size: 14px;
+    padding: 6px 16px;
+    font-size: 13px;
     font-weight: bold;
     color: #8b949e;
     background: #21262d;
@@ -149,8 +181,8 @@ rhythm_game_html = """
     border-color: #00f2fe;
   }
   #start-btn {
-    padding: 12px 34px;
-    font-size: 17px;
+    padding: 10px 30px;
+    font-size: 16px;
     font-weight: bold;
     color: #0e1117;
     background: #00f2fe;
@@ -160,7 +192,7 @@ rhythm_game_html = """
     box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
   }
   .rank-badge {
-    font-size: 50px;
+    font-size: 45px;
     font-weight: 900;
     margin: 2px 0;
     line-height: 1;
@@ -170,18 +202,17 @@ rhythm_game_html = """
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid #30363d;
     border-radius: 10px;
-    padding: 10px 18px;
-    margin: 8px 0 12px 0;
+    padding: 8px 16px;
+    margin: 6px 0 10px 0;
     width: 82%;
     text-align: left;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.4;
   }
   .controls-hint {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 11px;
     color: #8b949e;
-    line-height: 1.4;
   }
 </style>
 </head>
@@ -194,15 +225,14 @@ rhythm_game_html = """
 <div id="game-container">
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <div id="ui-overlay">
-    <h1 id="main-title" style="margin-bottom: 6px; color: #00f2fe; font-size: 24px;">RHYTHM STAR</h1>
+    <h1 id="main-title" style="margin-bottom: 4px; color: #00f2fe; font-size: 22px;">RHYTHM STAR</h1>
     
-    <div id="menu-group">
-      <div class="section-title">Select Song</div>
-      <div class="song-selector">
-        <button class="song-btn selected" data-song="startrail">Star Trail</button>
-      </div>
+    <div id="menu-group" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <div class="section-title">Select Song (악보 카테고리)</div>
+      <!-- 곡 카드 리스트 영역 -->
+      <div id="song-list" class="song-grid"></div>
 
-      <div class="section-title">Difficulty</div>
+      <div class="section-title">Difficulty (난이도)</div>
       <div class="difficulty-container">
         <button class="diff-btn" data-diff="easy">하 (Easy)</button>
         <button class="diff-btn selected" data-diff="normal">중 (Normal)</button>
@@ -231,7 +261,12 @@ const menuGroup = document.getElementById('menu-group');
 const statsContainer = document.getElementById('stats-container');
 const controlsHint = document.getElementById('controls-hint');
 const diffBtns = document.querySelectorAll('.diff-btn');
-const songBtns = document.querySelectorAll('.song-btn');
+const songListContainer = document.getElementById('song-list');
+
+// 🎵 등록된 곡 리스트 (나중에 여기에 곡을 계속 추가할 수 있습니다!)
+const songs = [
+  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE_BASE64_PLACEHOLDER' }
+];
 
 const LANES = 4;
 const LANE_WIDTH = canvas.width / LANES;
@@ -257,13 +292,27 @@ let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
-songBtns.forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    songBtns.forEach(b => b.classList.remove('selected'));
-    e.target.classList.add('selected');
-    currentSong = e.target.getAttribute('data-song');
+// 곡 선택 UI 동적 생성 함수
+function renderSongList() {
+  songListContainer.innerHTML = '';
+  songs.forEach(song => {
+    const card = document.createElement('div');
+    card.className = `song-card ${song.id === currentSong ? 'selected' : ''}`;
+    card.innerHTML = `
+      <div style="position:relative;">
+        <img src="${song.thumb}" class="song-thumb">
+        <span class="new-badge">NEW</span>
+      </div>
+      <div class="song-name">🎵 ${song.title}</div>
+    `;
+    card.addEventListener('click', () => {
+      currentSong = song.id;
+      renderSongList();
+    });
+    songListContainer.appendChild(card);
   });
-});
+}
+renderSongList();
 
 diffBtns.forEach(btn => {
   btn.addEventListener('click', (e) => {
@@ -778,11 +827,11 @@ function endGame() {
 
   mainTitle.innerHTML = clearTitle;
   mainTitle.style.color = titleColor;
-  mainTitle.style.fontSize = "20px";
+  mainTitle.style.fontSize = "18px";
 
   statsContainer.innerHTML = `
     <div style="text-align: center; margin-bottom: 2px;">
-      <div style="font-size: 11px; color: #8b949e;">RANK</div>
+      <div style="font-size: 10px; color: #8b949e;">RANK</div>
       <div class="rank-badge" style="color: ${rankInfo.color};">${rankInfo.rank}</div>
     </div>
     <div>🏆 최종 점수: <b>${score.toLocaleString()}</b></div>
@@ -793,7 +842,7 @@ function endGame() {
     </div>
   `;
   statsContainer.style.display = 'block';
-  menuGroup.style.display = 'block';
+  menuGroup.style.display = 'flex';
   controlsHint.style.display = 'block';
 
   startBtn.innerText = "다시 하기 (Retry)";
@@ -806,7 +855,6 @@ startBtn.addEventListener('click', startGame);
 </html>
 """
 
-# Placeholders 치환
 rhythm_game_html = rhythm_game_html.replace("AUDIO_BASE64_PLACEHOLDER", audio_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE_BASE64_PLACEHOLDER", image_base64)
 
