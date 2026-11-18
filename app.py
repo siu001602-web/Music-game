@@ -141,12 +141,12 @@ rhythm_game_html = """
   }
 
   .nav-tabs {
-    display: flex; gap: 8px; width: 100%;
-    background: rgba(22, 27, 34, 0.9); padding: 6px;
+    display: flex; gap: 4px; width: 100%;
+    background: rgba(22, 27, 34, 0.9); padding: 5px;
     border-radius: 12px; border: 1px solid #30363d; margin-bottom: 8px;
   }
   .nav-tab {
-    flex: 1; padding: 6px 0; font-size: 12px; font-weight: bold;
+    flex: 1; padding: 6px 0; font-size: 11px; font-weight: bold;
     color: #8b949e; background: transparent; border: none; border-radius: 8px; cursor: pointer;
   }
   .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
@@ -157,14 +157,14 @@ rhythm_game_html = """
 
   .song-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-    width: 100%; max-height: 135px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
+    width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
   }
   .song-card {
     background: #161b22; border: 2px solid #30363d; border-radius: 10px;
     padding: 6px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative;
   }
   .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .song-thumb { width: 100%; height: 50px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
+  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
   .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
 
@@ -291,6 +291,11 @@ rhythm_game_html = """
   }
   .gauge-bg { width: 95px; height: 6px; background: #21262d; border-radius: 4px; overflow: hidden; }
   .gauge-fill { width: 0%; height: 100%; transition: width 0.1s linear; }
+
+  .mission-card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 10px;
+    width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+  }
 </style>
 </head>
 <body>
@@ -323,8 +328,9 @@ rhythm_game_html = """
     
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
-      <button class="nav-tab" data-tab="gacha">🎁 스카우트</button>
+      <button class="nav-tab" data-tab="gacha">🎁 뽑기</button>
       <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
+      <button class="nav-tab" data-tab="missions">📋 임무</button>
     </div>
 
     <div id="tab-songs" class="tab-content">
@@ -389,6 +395,33 @@ rhythm_game_html = """
           <div id="char-baku-badge" style="font-size: 9px; font-weight: bold; color: #8b949e;">미획득</div>
           <div style="font-size: 11px; font-weight: bold; margin-top: 2px;">바쿠 (팬)</div>
         </div>
+      </div>
+    </div>
+
+    <div id="tab-missions" class="tab-content" style="display: none; align-items: flex-start; padding: 4px;">
+      <div class="section-title">출석 체크 (매일 보상)</div>
+      <div class="mission-card">
+        <div style="font-size: 11px; text-align: left;">
+          <b>📅 일일 출석 보상</b><br>
+          <span style="color: #8b949e; font-size: 10px;">매일 접속하고 스텔라 30개를 받으세요!</span>
+        </div>
+        <button id="attendance-btn" onclick="claimAttendance()" style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #00f2fe; color: #0e1117; border: none; border-radius: 12px; cursor: pointer;">수령하기</button>
+      </div>
+
+      <div class="section-title" style="margin-top: 8px;">일일 임무</div>
+      <div class="mission-card">
+        <div style="font-size: 11px; text-align: left;">
+          <b>🎵 라이브 3회 플레이</b><br>
+          <span id="mission-play-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 3</span>
+        </div>
+        <button id="mission-play-btn" onclick="claimMission('play')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+30)</button>
+      </div>
+      <div class="mission-card">
+        <div style="font-size: 11px; text-align: left;">
+          <b>🎁 스카우트 1회 진행</b><br>
+          <span id="mission-gacha-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 1</span>
+        </div>
+        <button id="mission-gacha-btn" onclick="claimMission('gacha')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+20)</button>
       </div>
     </div>
   </div>
@@ -533,7 +566,8 @@ const navTabs = document.querySelectorAll('.nav-tab');
 const tabContents = {
   songs: document.getElementById('tab-songs'),
   gacha: document.getElementById('tab-gacha'),
-  characters: document.getElementById('tab-characters')
+  characters: document.getElementById('tab-characters'),
+  missions: document.getElementById('tab-missions')
 };
 
 function switchView(viewName) {
@@ -590,6 +624,49 @@ let bestRecords = {
   bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
   constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
 };
+
+let missionData = {
+  attendanceClaimed: false,
+  playCount: 0,
+  gachaCount: 0,
+  playClaimed: false,
+  gachaClaimed: false
+};
+
+// 로컬 스토리지에서 저장된 데이터 불러오기 (Load)
+function loadGameData() {
+  const savedStella = localStorage.getItem('rhythm_stella');
+  if (savedStella !== null) stella = parseInt(savedStella);
+
+  const savedChars = localStorage.getItem('rhythm_chars');
+  if (savedChars !== null) ownedCharacters = JSON.parse(savedChars);
+
+  const savedRecords = localStorage.getItem('rhythm_records');
+  if (savedRecords !== null) bestRecords = JSON.parse(savedRecords);
+
+  const savedMissions = localStorage.getItem('rhythm_missions');
+  if (savedMissions !== null) {
+    const parsed = JSON.parse(savedMissions);
+    const today = new Date().toDateString();
+    if (parsed.date === today) {
+      missionData = parsed;
+    } else {
+      missionData = { attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: today };
+    }
+  } else {
+    missionData.date = new Date().toDateString();
+  }
+}
+
+// 로컬 스토리지에 데이터 저장하기 (Save)
+function saveGameData() {
+  localStorage.setItem('rhythm_stella', stella);
+  localStorage.setItem('rhythm_chars', JSON.stringify(ownedCharacters));
+  localStorage.setItem('rhythm_records', JSON.stringify(bestRecords));
+  localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
+}
+
+loadGameData();
 
 let isPlaying = false;
 let startTime = 0;
@@ -714,9 +791,94 @@ function renderSongList() {
   });
 }
 
+function updateMissionUI() {
+  const attBtn = document.getElementById('attendance-btn');
+  if (missionData.attendanceClaimed) {
+    attBtn.innerText = "수령 완료";
+    attBtn.style.background = "#21262d";
+    attBtn.style.color = "#8b949e";
+    attBtn.disabled = true;
+  } else {
+    attBtn.innerText = "수령하기";
+    attBtn.style.background = "#00f2fe";
+    attBtn.style.color = "#0e1117";
+    attBtn.disabled = false;
+  }
+
+  const playCountSpan = document.getElementById('mission-play-count');
+  const playBtn = document.getElementById('mission-play-btn');
+  playCountSpan.innerText = `진행도: ${missionData.playCount} / 3`;
+  if (missionData.playClaimed) {
+    playBtn.innerText = "완료됨";
+    playBtn.style.background = "#21262d";
+    playBtn.style.color = "#8b949e";
+    playBtn.disabled = true;
+  } else if (missionData.playCount >= 3) {
+    playBtn.innerText = "수령 가능 (+30)";
+    playBtn.style.background = "#4ade80";
+    playBtn.style.color = "#0e1117";
+    playBtn.disabled = false;
+  } else {
+    playBtn.innerText = "진행 중";
+    playBtn.style.background = "#21262d";
+    playBtn.style.color = "#8b949e";
+    playBtn.disabled = true;
+  }
+
+  const gachaCountSpan = document.getElementById('mission-gacha-count');
+  const gachaBtn = document.getElementById('mission-gacha-btn');
+  gachaCountSpan.innerText = `진행도: ${missionData.gachaCount} / 1`;
+  if (missionData.gachaClaimed) {
+    gachaBtn.innerText = "완료됨";
+    gachaBtn.style.background = "#21262d";
+    gachaBtn.style.color = "#8b949e";
+    gachaBtn.disabled = true;
+  } else if (missionData.gachaCount >= 1) {
+    gachaBtn.innerText = "수령 가능 (+20)";
+    gachaBtn.style.background = "#4ade80";
+    gachaBtn.style.color = "#0e1117";
+    gachaBtn.disabled = false;
+  } else {
+    gachaBtn.innerText = "진행 중";
+    gachaBtn.style.background = "#21262d";
+    gachaBtn.style.color = "#8b949e";
+    gachaBtn.disabled = true;
+  }
+}
+
+function claimAttendance() {
+  if (!missionData.attendanceClaimed) {
+    missionData.attendanceClaimed = true;
+    stella += 30;
+    updateInventoryUI();
+    updateMissionUI();
+    saveGameData();
+    alert("📅 일일 출석 보상으로 스텔라 30개를 획득하셨습니다!");
+  }
+}
+
+function claimMission(type) {
+  if (type === 'play' && missionData.playCount >= 3 && !missionData.playClaimed) {
+    missionData.playClaimed = true;
+    stella += 30;
+    updateInventoryUI();
+    updateMissionUI();
+    saveGameData();
+    alert("🎵 라이브 플레이 임무 보상으로 스텔라 30개를 획득하셨습니다!");
+  } else if (type === 'gacha' && missionData.gachaCount >= 1 && !missionData.gachaClaimed) {
+    missionData.gachaClaimed = true;
+    stella += 20;
+    updateInventoryUI();
+    updateMissionUI();
+    saveGameData();
+    alert("🎁 뽑기 임무 보상으로 스텔라 20개를 획득하셨습니다!");
+  }
+}
+
 renderSongList();
 renderDifficultyButtons();
 updateSelectedRecordDisplay();
+updateMissionUI();
 
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
@@ -871,7 +1033,12 @@ function executeGacha(count) {
     return;
   }
   stella -= cost;
+  
+  // 미션 진행도 반영 및 저장
+  missionData.gachaCount += 1;
+  updateMissionUI();
   updateInventoryUI();
+  saveGameData();
 
   let results = [];
   for (let i = 0; i < count; i++) {
@@ -896,6 +1063,7 @@ function executeGacha(count) {
   }
 
   updateInventoryUI();
+  saveGameData();
 
   gachaResultList.innerHTML = "";
   results.forEach(res => {
@@ -1155,8 +1323,8 @@ function triggerYuniSkill() {
 }
 
 function triggerHuyaSkill() {
-  huyaSkillGauge = 0;
   huyaGaugeFill.style.width = '0%';
+  huyaSkillGauge = 0;
   huyaSkillActivated = true;
 
   const baseSec = 15;
@@ -1810,6 +1978,7 @@ function triggerGameOver() {
   tabContents.songs.style.display = 'flex';
   tabContents.gacha.style.display = 'none';
   tabContents.characters.style.display = 'none';
+  tabContents.missions.style.display = 'none';
 
   statsContainer.style.display = 'block';
   nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
@@ -1846,8 +2015,11 @@ function endGame() {
   }
 
   stella += 25;
+  missionData.playCount += 1; // 라이브 플레이 미션 카운트 증가
   updateInventoryUI();
+  updateMissionUI();
   updateSelectedRecordDisplay();
+  saveGameData(); // 데이터 자동 저장
 
   const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
@@ -1872,6 +2044,7 @@ function endGame() {
   tabContents.songs.style.display = 'flex';
   tabContents.gacha.style.display = 'none';
   tabContents.characters.style.display = 'none';
+  tabContents.missions.style.display = 'none';
 
   statsContainer.style.display = 'block';
   nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
@@ -1880,6 +2053,7 @@ function endGame() {
 
 startBtn.addEventListener('click', startGame);
 updateInventoryUI();
+updateMissionUI();
 </script>
 </body>
 </html>
