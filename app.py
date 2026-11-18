@@ -38,11 +38,9 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# 새로운 곡 '봄꿈' (3분 5초 = 185초) 및 전용 이미지 적용
 song_bom_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
 song_bom_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
 
-# 캐릭터 및 보이스 경로 설정
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     
 maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"       
 huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"       
@@ -91,7 +89,6 @@ rhythm_game_html = """
 <style>
   * {
     box-sizing: border-box;
-    touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -121,6 +118,8 @@ rhythm_game_html = """
     border-right: 2px solid #30363d;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   #menu-screen {
@@ -135,14 +134,18 @@ rhythm_game_html = """
     background-position: center;
     padding: 14px;
     text-align: center;
+    z-index: 10;
   }
 
   #play-screen {
     width: 100%;
     height: 100%;
     display: none;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     background-color: #161b22;
+    z-index: 20;
   }
 
   canvas {
@@ -159,6 +162,7 @@ rhythm_game_html = """
     display: flex; gap: 3px; width: 100%;
     background: rgba(22, 27, 34, 0.9); padding: 5px;
     border-radius: 12px; border: 1px solid #30363d; margin-bottom: 8px;
+    z-index: 15; position: relative;
   }
   .nav-tab {
     flex: 1; padding: 6px 0; font-size: 10px; font-weight: bold;
@@ -166,7 +170,7 @@ rhythm_game_html = """
   }
   .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
 
-  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
+  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; }
 
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
@@ -177,24 +181,26 @@ rhythm_game_html = """
   .song-card {
     background: #161b22; border: 2px solid #30363d; border-radius: 10px;
     padding: 6px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative;
+    pointer-events: auto;
   }
   .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
-  .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; pointer-events: none; }
+  .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
   .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
 
   .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
   .diff-card {
     flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px;
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
+    pointer-events: auto;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
   .diff-card[data-diff="extreme"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
-  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
-  .diff-name { font-size: 11px; font-weight: 900; }
+  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; pointer-events: none; }
+  .diff-name { font-size: 11px; font-weight: 900; pointer-events: none; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
   .diff-card[data-diff="extreme"] .diff-name { color: #c084fc; }
@@ -215,6 +221,7 @@ rhythm_game_html = """
   #prep-screen {
     width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.98); padding: 16px; display: none; flex-direction: column; text-align: left;
+    position: absolute; top: 0; left: 0; z-index: 15;
   }
   .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
   .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
@@ -224,6 +231,7 @@ rhythm_game_html = """
     flex: 1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px;
     height: 105px; display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.2s; position: relative; padding: 6px; text-align: center;
+    pointer-events: auto;
   }
   .unit-slot.filled { border-style: solid; }
   .unit-slot.filled.star-5 { border-color: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.3); }
@@ -240,6 +248,7 @@ rhythm_game_html = """
   .char-option-card {
     background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 10px;
     display: flex; flex-direction: column; align-items: center; cursor: pointer; text-align: center;
+    pointer-events: auto;
   }
   .char-option-card.owned { border-color: #00f2fe; }
 
@@ -250,8 +259,11 @@ rhythm_game_html = """
   .prep-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
 
   .action-btn {
-    padding: 9px 22px; font-size: 14px; font-weight: bold; color: #0e1117; background: #00f2fe;
+    padding: 10px 22px; font-size: 14px; font-weight: bold; color: #0e1117; background: #00f2fe;
     border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+    pointer-events: auto;
+    z-index: 20;
+    position: relative;
   }
 
   .stats-box {
@@ -265,7 +277,7 @@ rhythm_game_html = """
     width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;
   }
   .gacha-btn-group { display: flex; gap: 10px; width: 100%; }
-  .gacha-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; }
+  .gacha-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; pointer-events: auto; }
   .gacha-btn.single { background: #21262d; color: #00f2fe; border: 1px solid #00f2fe; }
   .gacha-btn.multi { background: #00f2fe; color: #0e1117; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
 
@@ -290,7 +302,7 @@ rhythm_game_html = """
     position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
     background: rgba(255, 75, 75, 0.2); border: 2px solid #ff4b4b; border-radius: 50%;
     color: #ff4b4b; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 25; transition: all 0.2s;
+    cursor: pointer; z-index: 25; transition: all 0.2s; pointer-events: auto;
   }
   #giveup-btn:hover { background: rgba(255, 75, 75, 0.4); transform: scale(1.05); }
 
@@ -316,6 +328,7 @@ rhythm_game_html = """
   .mission-card {
     background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 10px;
     width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    pointer-events: auto;
   }
 </style>
 </head>
@@ -443,7 +456,7 @@ rhythm_game_html = """
           <b>📅 일일 출석 보상</b><br>
           <span style="color: #8b949e; font-size: 10px;">매일 접속하고 스텔라 30개를 받으세요!</span>
         </div>
-        <button id="attendance-btn" onclick="claimAttendance()" style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #00f2fe; color: #0e1117; border: none; border-radius: 12px; cursor: pointer;">수령하기</button>
+        <button id="attendance-btn" onclick="claimAttendance()" style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #00f2fe; color: #0e1117; border: none; border-radius: 12px; cursor: pointer; pointer-events: auto;">수령하기</button>
       </div>
 
       <div class="section-title" style="margin-top: 8px;">일일 임무</div>
@@ -452,14 +465,14 @@ rhythm_game_html = """
           <b>🎵 라이브 3회 플레이</b><br>
           <span id="mission-play-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 3</span>
         </div>
-        <button id="mission-play-btn" onclick="claimMission('play')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+30)</button>
+        <button id="mission-play-btn" onclick="claimMission('play')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer; pointer-events: auto;">완료 (+30)</button>
       </div>
       <div class="mission-card">
         <div style="font-size: 11px; text-align: left;">
           <b>🎁 스카우트 1회 진행</b><br>
           <span id="mission-gacha-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 1</span>
         </div>
-        <button id="mission-gacha-btn" onclick="claimMission('gacha')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+20)</button>
+        <button id="mission-gacha-btn" onclick="claimMission('gacha')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer; pointer-events: auto;">완료 (+20)</button>
       </div>
     </div>
 
@@ -474,7 +487,7 @@ rhythm_game_html = """
           <button onclick="exportSaveData()" class="gacha-btn" style="background: #21262d; color: #4ade80; border: 1px solid #4ade80;">데이터 내보내기</button>
           <button onclick="importSaveDataPrompt()" class="gacha-btn" style="background: #00f2fe; color: #0e1117;">데이터 불러오기</button>
         </div>
-        <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px;">데이터 초기화 (문제 해결용)</button>
+        <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px; pointer-events: auto;">데이터 초기화 (문제 해결용)</button>
       </div>
     </div>
   </div>
@@ -505,7 +518,7 @@ rhythm_game_html = """
     </div>
 
     <div class="prep-footer">
-      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
+      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer; pointer-events: auto;">취소</button>
       <button id="prep-start-btn" class="action-btn" style="padding: 8px 22px; font-size: 14px;">결정 (라이브 시작)</button>
     </div>
   </div>
@@ -544,7 +557,7 @@ rhythm_game_html = """
   <div id="char-select-modal">
     <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-bottom: 10px;">👤 편성할 캐릭터 선택</div>
     <div class="char-select-grid" id="char-select-list"></div>
-    <button id="modal-close-btn" style="padding: 6px 20px; font-size: 12px; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">닫기</button>
+    <button id="modal-close-btn" style="padding: 6px 20px; font-size: 12px; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer; pointer-events: auto;">닫기</button>
   </div>
 
   <div id="gacha-result-modal">
@@ -857,7 +870,7 @@ function renderSongList() {
     const card = document.createElement('div');
     card.className = `song-card ${song.id === currentSongId ? 'selected' : ''}`;
     card.innerHTML = `
-      <div style="position:relative;">
+      <div style="position:relative; pointer-events: none;">
         <img src="${song.thumb}" class="song-thumb">
         ${song.id === 'bom' ? '<span class="new-badge">NEW</span>' : ''}
       </div>
@@ -1014,15 +1027,15 @@ function updateInventoryUI() {
       const m = charMeta[charId];
       slotEl.className = `unit-slot filled ${m.cls}`;
       slotEl.innerHTML = `
-        <img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color};">
-        <div style="font-size:10px; font-weight:bold; color:${m.color};">${m.star}</div>
-        <div style="font-size:10px; font-weight:bold;">${m.name}</div>
+        <img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color}; pointer-events: none;">
+        <div style="font-size:10px; font-weight:bold; color:${m.color}; pointer-events: none;">${m.star}</div>
+        <div style="font-size:10px; font-weight:bold; pointer-events: none;">${m.name}</div>
       `;
     } else {
       slotEl.className = "unit-slot";
       slotEl.innerHTML = `
-        <div class="plus-icon">+</div>
-        <div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>
+        <div class="plus-icon" style="pointer-events: none;">+</div>
+        <div style="font-size: 10px; color: #8b949e; pointer-events: none;">슬롯 ${i+1}</div>
       `;
     }
   }
@@ -1052,7 +1065,7 @@ function updateInventoryUI() {
       const m = charMeta[key];
       const card = document.getElementById(`char-card-${key}`);
       card.style.borderColor = m.color;
-      document.getElementById(`char-${key}-img-box`).innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color};">`;
+      document.getElementById(`char-${key}-img-box`).innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color}; pointer-events: none;">`;
       document.getElementById(`char-${key}-badge`).innerHTML = `${m.star} (보유)`;
       document.getElementById(`char-${key}-badge`).style.color = m.color;
     }
@@ -1080,10 +1093,10 @@ function openCharSelector(slotIndex) {
     card.className = `char-option-card ${char.owned && !alreadyEquipped ? 'owned' : ''}`;
     card.style.opacity = (char.owned && !alreadyEquipped) ? "1" : "0.45";
     card.innerHTML = `
-      <img src="data:image/jpeg;base64,${char.img}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; margin-bottom:4px; border:2px solid ${char.color};">
-      <div style="font-size:9px; color:${char.color};">${char.star}</div>
-      <div style="font-size:11px; font-weight:bold; margin-top:2px;">${char.name}</div>
-      <div style="font-size:9px; color:${char.owned ? (alreadyEquipped ? '#facc15' : '#00f2fe') : '#8b949e'}; margin-top:2px;">
+      <img src="data:image/jpeg;base64,${char.img}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; margin-bottom:4px; border:2px solid ${char.color}; pointer-events: none;">
+      <div style="font-size:9px; color:${char.color}; pointer-events: none;">${char.star}</div>
+      <div style="font-size:11px; font-weight:bold; margin-top:2px; pointer-events: none;">${char.name}</div>
+      <div style="font-size:9px; color:${char.owned ? (alreadyEquipped ? '#facc15' : '#00f2fe') : '#8b949e'}; margin-top:2px; pointer-events: none;">
         ${!char.owned ? '미획득' : (alreadyEquipped ? '편성 중' : '선택 가능')}
       </div>
     `;
@@ -1154,9 +1167,9 @@ function executeGacha(count) {
     const item = document.createElement('div');
     item.style.cssText = "background:#21262d; border:1px solid " + res.color + "; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; width:88px;";
     item.innerHTML = `
-      <img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;">
-      <div style="font-size:9px; color:${res.color};">${res.star}</div>
-      <div style="font-size:10px; font-weight:bold; margin-top:2px;">${res.name.split(' ')[0]}</div>
+      <img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px; pointer-events: none;">
+      <div style="font-size:9px; color:${res.color}; pointer-events: none;">${res.star}</div>
+      <div style="font-size:10px; font-weight:bold; margin-top:2px; pointer-events: none;">${res.name.split(' ')[0]}</div>
     `;
     gachaResultList.appendChild(item);
   });
@@ -2068,7 +2081,7 @@ rhythm_game_html = rhythm_game_html.replace("IMAGE_BOM_BASE64_PLACEHOLDER", imag
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_base64)
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
-rhythm_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
+rhythm_game_html = rhythe_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_base64)
 rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang_base64)
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
@@ -2077,4 +2090,4 @@ rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", mashiro
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", huya_voice_base64)
 
-components.html(rhythm_game_html, height=820)
+components.html(rhythm_game_html, height=880)
