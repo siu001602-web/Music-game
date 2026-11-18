@@ -484,7 +484,6 @@ let yuniSkillTimer = 0;
 let missShieldCount = 2;
 let hornGlowTimer = 0;
 
-let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
@@ -858,33 +857,6 @@ function handleSwipe(lane, dir) {
   }
 }
 
-function handleTapUp(lane) {
-  const currentTime = (performance.now() - startTime) / 1000;
-  for (let note of notes) {
-    if (note.type === 'long' && note.holding && !note.tailHit && note.lane === lane) {
-      const endTime = note.time + note.duration;
-      // 🌟 핵심 수정: 롱노트 누름 유지(Hold) 중에는 손가락을 떼지 않는 한 중간에 임의로 끊기지 않도록 관대하게 판정
-      if (currentTime >= note.time) {
-        note.holding = false;
-        note.tailHit = true;
-        let addScore = 50;
-        const hasYuni = equippedUnit.includes('yuni');
-        const hasArunyang = equippedUnit.includes('arunyang');
-        if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
-        score += Math.round(addScore);
-        combo++;
-        stats.perfect++;
-        if (hasYuni && !yuniSkillActivated) {
-          skillGauge = Math.min(100, skillGauge + 0.8);
-          updateSkillUI();
-        }
-        showJudgement("HOLD CLEAR", "#00f2fe");
-      }
-    }
-  }
-}
-
 function handleMiss() {
   stats.miss++;
   const hasYuni = equippedUnit.includes('yuni');
@@ -915,15 +887,13 @@ function getLaneFromPointer(clientX) {
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 canvas.addEventListener('selectstart', (e) => e.preventDefault());
 
+// 🌟 멀티터치 레인 독립 관리 및 씹힘 방지 포인터 리스너
 canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
   const lane = getLaneFromPointer(e.clientX);
   activeTouches.set(e.pointerId, { lane: lane, startX: e.clientX, swiped: false });
-  if (!keyPressed[lane]) {
-    keyPressed[lane] = true;
-    handleTapDown(lane);
-  }
+  handleTapDown(lane);
 }, { passive: false });
 
 canvas.addEventListener('pointermove', (e) => {
@@ -944,16 +914,27 @@ function handlePointerUp(e) {
   const data = activeTouches.get(e.pointerId);
   activeTouches.delete(e.pointerId);
   if (data !== undefined) {
-    let stillPressed = false;
-    for (let activeData of activeTouches.values()) {
-      if (activeData.lane === data.lane) stillPressed = true;
-    }
-    if (!stillPressed) {
-      // 🌟 롱노트 도중 다른 손가락이 떨어질 때 오인식으로 홀드가 풀리는 현상 방지
-      let hasActiveLongInLane = notes.some(n => n.type === 'long' && n.holding && n.lane === data.lane);
-      if (!hasActiveLongInLane) {
-        keyPressed[data.lane] = false;
-        handleTapUp(data.lane);
+    // 손가락을 뗄 때 해당 레인에 대기 중이거나 홀드 중인 롱노트가 있다면 완료 처리
+    const currentTime = (performance.now() - startTime) / 1000;
+    for (let note of notes) {
+      if (note.type === 'long' && note.holding && !note.tailHit && note.lane === data.lane) {
+        if (currentTime >= note.time) {
+          note.holding = false;
+          note.tailHit = true;
+          let addScore = 50;
+          const hasYuni = equippedUnit.includes('yuni');
+          const hasArunyang = equippedUnit.includes('arunyang');
+          if (hasYuni && yuniSkillActivated) addScore *= 1.05;
+          if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
+          score += Math.round(addScore);
+          combo++;
+          stats.perfect++;
+          if (hasYuni && !yuniSkillActivated) {
+            skillGauge = Math.min(100, skillGauge + 0.8);
+            updateSkillUI();
+          }
+          showJudgement("HOLD CLEAR", "#00f2fe");
+        }
       }
     }
   }
@@ -976,17 +957,8 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   const idx = KEYS.indexOf(key);
-  if (idx !== -1 && !keyPressed[idx]) {
-    keyPressed[idx] = true;
-    handleTapDown(idx);
-  }
-});
-
-window.addEventListener('keyup', (e) => {
-  const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1) {
-    keyPressed[idx] = false;
-    handleTapUp(idx);
+    handleTapDown(idx);
   }
 });
 
@@ -1030,10 +1002,21 @@ function updateAndDraw() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // 현재 활성화된 터치 레인 확인
+  let pressedLanes = [false, false, false, false];
+  for (let touch of activeTouches.values()) {
+    pressedLanes[touch.lane] = true;
+  }
+  for (let note of notes) {
+    if (note.type === 'long' && note.holding) {
+      pressedLanes[note.lane] = true;
+    }
+  }
+
   for (let i = 0; i < LANES; i++) {
     const x = i * LANE_WIDTH;
     
-    if (keyPressed[i]) {
+    if (pressedLanes[i]) {
       const grad = ctx.createLinearGradient(0, HIT_Y - 200, 0, HIT_Y);
       grad.addColorStop(0, 'rgba(0, 242, 254, 0)');
       grad.addColorStop(1, 'rgba(0, 242, 254, 0.35)');
@@ -1041,7 +1024,7 @@ function updateAndDraw() {
       ctx.fillRect(x, HIT_Y - 200, LANE_WIDTH, 200);
     }
 
-    ctx.fillStyle = keyPressed[i] ? LANE_COLORS[i] : '#1f2630';
+    ctx.fillStyle = pressedLanes[i] ? LANE_COLORS[i] : '#1f2630';
     ctx.fillRect(x + 4, HIT_Y + 8, LANE_WIDTH - 8, canvas.height - HIT_Y - 14);
 
     ctx.strokeStyle = '#30363d';
@@ -1051,7 +1034,7 @@ function updateAndDraw() {
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
 
-    ctx.fillStyle = keyPressed[i] ? '#0e1117' : '#8b949e';
+    ctx.fillStyle = pressedLanes[i] ? '#0e1117' : '#8b949e';
     ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
@@ -1241,7 +1224,6 @@ function startGame() {
 
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   activeTouches.clear();
-  keyPressed = [false, false, false, false];
   
   generateBeatmap(currentDifficulty);
   
@@ -1304,7 +1286,6 @@ function endGame() {
     </div>
   `;
   
-  `탭 컨텐츠 초기화`
   navTabs.forEach(t => t.classList.remove('active'));
   navTabs[0].classList.add('active');
   tabContents.songs.style.display = 'flex';
