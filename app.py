@@ -141,12 +141,12 @@ rhythm_game_html = """
   }
 
   .nav-tabs {
-    display: flex; gap: 4px; width: 100%;
+    display: flex; gap: 3px; width: 100%;
     background: rgba(22, 27, 34, 0.9); padding: 5px;
     border-radius: 12px; border: 1px solid #30363d; margin-bottom: 8px;
   }
   .nav-tab {
-    flex: 1; padding: 6px 0; font-size: 11px; font-weight: bold;
+    flex: 1; padding: 6px 0; font-size: 10px; font-weight: bold;
     color: #8b949e; background: transparent; border: none; border-radius: 8px; cursor: pointer;
   }
   .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
@@ -329,8 +329,9 @@ rhythm_game_html = """
     <div id="nav-tabs" class="nav-tabs">
       <button class="nav-tab active" data-tab="songs">🎵 악보</button>
       <button class="nav-tab" data-tab="gacha">🎁 뽑기</button>
-      <button class="nav-tab" data-tab="characters">👤 캐릭터</button>
+      <button class="nav-tab" data-tab="characters">👤 도감</button>
       <button class="nav-tab" data-tab="missions">📋 임무</button>
+      <button class="nav-tab" data-tab="settings">💾 데이터</button>
     </div>
 
     <div id="tab-songs" class="tab-content">
@@ -422,6 +423,23 @@ rhythm_game_html = """
           <span id="mission-gacha-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 1</span>
         </div>
         <button id="mission-gacha-btn" onclick="claimMission('gacha')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+20)</button>
+      </div>
+    </div>
+
+    <div id="tab-settings" class="tab-content" style="display: none; align-items: center; justify-content: center; padding: 10px;">
+      <div class="gacha-box">
+        <div style="font-size: 24px;">💾</div>
+        <div style="font-size: 14px; font-weight: bold; color: #00f2fe;">게임 데이터 백업 및 복원</div>
+        <div style="font-size: 11px; color: #8b949e; text-align: center; line-height: 1.4;">
+          코드가 바뀌거나 브라우저 캐시가 초기화되어도<br>데이터를 파일로 백업해 두면 안전하게 복구할 수 있습니다!
+        </div>
+        <div style="display: flex; gap: 8px; width: 100%; margin-top: 8px;">
+          <button onclick="exportSaveData()" class="gacha-btn" style="background: #21262d; color: #4ade80; border: 1px solid #4ade80;">데이터 내보내기</button>
+          <label class="gacha-btn" style="background: #00f2fe; color: #0e1117; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            데이터 불러오기
+            <input type="file" id="import-file-input" style="display: none;" accept=".json" onchange="importSaveData(event)">
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -567,7 +585,8 @@ const tabContents = {
   songs: document.getElementById('tab-songs'),
   gacha: document.getElementById('tab-gacha'),
   characters: document.getElementById('tab-characters'),
-  missions: document.getElementById('tab-missions')
+  missions: document.getElementById('tab-missions'),
+  settings: document.getElementById('tab-settings')
 };
 
 function switchView(viewName) {
@@ -662,6 +681,48 @@ function saveGameData() {
   localStorage.setItem('rhythm_chars', JSON.stringify(ownedCharacters));
   localStorage.setItem('rhythm_records', JSON.stringify(bestRecords));
   localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
+}
+
+// 데이터 내보내기 (JSON 파일 다운로드)
+function exportSaveData() {
+  const saveData = {
+    stella: stella,
+    ownedCharacters: ownedCharacters,
+    bestRecords: bestRecords,
+    missionData: missionData
+  };
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "rhythm_star_save.json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+// 데이터 불러오기 (JSON 파일 업로드 복원)
+function importSaveData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.stella !== undefined) stella = parsed.stella;
+      if (parsed.ownedCharacters) ownedCharacters = parsed.ownedCharacters;
+      if (parsed.bestRecords) bestRecords = parsed.bestRecords;
+      if (parsed.missionData) missionData = parsed.missionData;
+      
+      saveGameData();
+      updateInventoryUI();
+      updateMissionUI();
+      updateSelectedRecordDisplay();
+      alert("💾 데이터가 성공적으로 복원되었습니다!");
+    } catch (err) {
+      alert("❌ 잘못된 형식의 세이브 파일입니다.");
+    }
+  };
+  reader.readAsText(file);
 }
 
 loadGameData();
@@ -1976,6 +2037,7 @@ function triggerGameOver() {
   tabContents.gacha.style.display = 'none';
   tabContents.characters.style.display = 'none';
   tabContents.missions.style.display = 'none';
+  tabContents.settings.style.display = 'none';
 
   statsContainer.style.display = 'block';
   nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
@@ -2042,6 +2104,7 @@ function endGame() {
   tabContents.gacha.style.display = 'none';
   tabContents.characters.style.display = 'none';
   tabContents.missions.style.display = 'none';
+  tabContents.settings.style.display = 'none';
 
   statsContainer.style.display = 'block';
   nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
