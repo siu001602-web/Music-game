@@ -28,6 +28,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 곡 경로 설정
 song1_music = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 song1_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
@@ -36,6 +37,10 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
+
+# 새로 추가된 '봄꿈' 곡 경로 (3분 5초 = 185초)
+song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
+song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
 # 캐릭터 및 보이스 경로 설정
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     # 시로 (네네코 마시로)
@@ -63,6 +68,9 @@ image2_base64 = get_base64(song2_img)
 
 audio3_base64 = get_base64(song3_music)
 image3_base64 = get_base64(song3_img)
+
+audio4_base64 = get_base64(song4_music)
+image4_base64 = get_base64(song4_img)
 
 mashiro_base64 = get_base64(mashiro_img_path)
 maro_base64 = get_base64(maro_img_path)
@@ -122,7 +130,7 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.90), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     padding: 14px;
@@ -141,7 +149,7 @@ rhythm_game_html = """
     width: 100%;
     height: 100%;
     display: block;
-    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     touch-action: none;
@@ -160,20 +168,92 @@ rhythm_game_html = """
 
   .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
 
-  .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+  .section-title { font-size: 11px; color: #8b949e; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
+  /* 첨부 이미지 스타일: 가로 일렬 스크롤 앨범 리스트 */
   .song-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-    width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 6px 4px 10px 4px;
+    margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #00f2fe #161b22;
   }
+  .song-grid::-webkit-scrollbar {
+    height: 5px;
+  }
+  .song-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+  .song-grid::-webkit-scrollbar-thumb {
+    background: #00f2fe;
+    border-radius: 4px;
+  }
+
   .song-card {
-    background: #161b22; border: 2px solid #30363d; border-radius: 10px;
-    padding: 6px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative;
+    flex: 0 0 102px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.2s ease;
+    position: relative;
   }
-  .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
-  .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
+  .song-card:hover {
+    transform: translateY(-2px);
+  }
+  .song-thumb-wrapper {
+    position: relative;
+    width: 102px;
+    height: 102px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2.5px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+  }
+  .song-card.selected .song-thumb-wrapper {
+    border-color: #00f2fe;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.65);
+    transform: scale(1.03);
+  }
+  .song-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .new-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(255, 255, 255, 0.85);
+    color: #ff4b82;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .song-name {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #e6edf3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 2px;
+  }
+  .song-card.selected .song-name {
+    color: #00f2fe;
+  }
 
   .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
   .diff-card {
@@ -181,17 +261,15 @@ rhythm_game_html = """
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
-  .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+  .diff-card[data-diff="extreme"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
   .diff-name { font-size: 11px; font-weight: 900; }
-  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
-  .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
+  .diff-card[data-diff="extreme"] .diff-name { color: #c084fc; }
 
   .selected-diff-record-box {
     width: 100%;
@@ -326,6 +404,9 @@ rhythm_game_html = """
 <audio id="bgm3" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO3_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
+<audio id="bgm4" preload="auto">
+  <source src="data:audio/mp4;base64,AUDIO4_BASE64_PLACEHOLDER" type="audio/mp4">
+</audio>
 <audio id="mashiro-voice" preload="auto">
   <source src="data:audio/mp4;base64,MASHIRO_VOICE_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -358,7 +439,7 @@ rhythm_game_html = """
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
       <div id="menu-group" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        <div class="section-title">Select Song (악보 선택)</div>
+        <div class="section-title">Select Song (좌우로 밀어 악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
         <div class="section-title">Difficulty (난이도 선택)</div>
@@ -373,7 +454,7 @@ rhythm_game_html = """
       <button id="next-prep-btn" class="action-btn" style="margin-top: 4px; padding: 9px 22px; font-size: 14px;">유니트 편성 및 라이브</button>
 
       <div id="controls-hint" class="controls-hint">
-        🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
+        🎹 노트: <b>[D] [F] [J] [K]</b> | 터치: <b>화면 각 레인 탭</b>
       </div>
     </div>
 
@@ -382,7 +463,7 @@ rhythm_game_html = """
         <div style="font-size: 32px;">🌟</div>
         <div style="font-size: 15px; font-weight: bold; color: #00f2fe;">스타 스카우트 (캐릭터 뽑기)</div>
         <div style="font-size: 11px; color: #8b949e; text-align: center; line-height: 1.4;">
-          • ⭐⭐⭐⭐⭐ 5성 픽업 (합산 3%): 시로(마시로), 후야, 유니<br>
+          • ⭐⭐⭐⭐⭐ 5성 픽업 (합산 3%): 시로, 후야, 유니<br>
           • ⭐⭐⭐⭐ 4성 픽업 (합산 97%): 마로, 아르냥, 바쿠
         </div>
         <div style="font-size: 12px; color: #facc15; font-weight: bold; margin: 4px 0;">소모 재화: 1회당 스텔라 10개</div>
@@ -438,42 +519,23 @@ rhythm_game_html = """
         </div>
         <button id="attendance-btn" onclick="claimAttendance()" style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #00f2fe; color: #0e1117; border: none; border-radius: 12px; cursor: pointer;">수령하기</button>
       </div>
-
-      <div class="section-title" style="margin-top: 8px;">일일 임무</div>
-      <div class="mission-card">
-        <div style="font-size: 11px; text-align: left;">
-          <b>🎵 라이브 3회 플레이</b><br>
-          <span id="mission-play-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 3</span>
-        </div>
-        <button id="mission-play-btn" onclick="claimMission('play')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+30)</button>
-      </div>
-      <div class="mission-card">
-        <div style="font-size: 11px; text-align: left;">
-          <b>🎁 스카우트 1회 진행</b><br>
-          <span id="mission-gacha-count" style="color: #8b949e; font-size: 10px;">진행도: 0 / 1</span>
-        </div>
-        <button id="mission-gacha-btn" onclick="claimMission('gacha')" disabled style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 12px; cursor: pointer;">완료 (+20)</button>
-      </div>
     </div>
 
     <div id="tab-settings" class="tab-content" style="display: none; align-items: center; justify-content: center; padding: 10px;">
       <div class="gacha-box">
         <div style="font-size: 24px;">💾</div>
         <div style="font-size: 14px; font-weight: bold; color: #00f2fe;">게임 데이터 백업 및 복원</div>
-        <div style="font-size: 11px; color: #8b949e; text-align: center; line-height: 1.4;">
-          코드가 바뀌거나 브라우저 캐시가 초기화되어도<br>데이터를 파일로 백업해 두면 안전하게 복구할 수 있습니다!
-        </div>
         <div style="display: flex; gap: 8px; width: 100%; margin-top: 8px;">
           <button onclick="exportSaveData()" class="gacha-btn" style="background: #21262d; color: #4ade80; border: 1px solid #4ade80;">데이터 내보내기</button>
           <button onclick="importSaveDataPrompt()" class="gacha-btn" style="background: #00f2fe; color: #0e1117;">데이터 불러오기</button>
         </div>
-        <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px;">데이터 초기화 (문제 해결용)</button>
+        <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px;">데이터 초기화</button>
       </div>
     </div>
   </div>
 
   <div id="prep-screen">
-    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
+    <div class="prep-header" id="prep-song-title">🎵 봄꿈</div>
     <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터 2명을 편성하세요.</div>
 
     <div class="unit-slots">
@@ -489,7 +551,6 @@ rhythm_game_html = """
 
     <div id="synergy-card" class="prep-skill-card" style="opacity: 0.5;">
       <div style="font-weight: bold; color: #8b949e; margin-bottom: 2px;">✨ 활성화된 시너지 없음</div>
-      <div style="font-size: 10px; color: #8b949e;">• [네네코 마시로 + 마로] 편성 시 [냥냥 집사의 특급 후원] 발동!</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -592,6 +653,7 @@ const hpText = document.getElementById('hp-text');
 const bgm1 = document.getElementById('bgm1');
 const bgm2 = document.getElementById('bgm2');
 const bgm3 = document.getElementById('bgm3');
+const bgm4 = document.getElementById('bgm4');
 
 const mashiroVoice = document.getElementById('mashiro-voice');
 const yuniVoice = document.getElementById('yuni-voice');
@@ -656,21 +718,23 @@ navTabs.forEach(tab => {
   });
 });
 
+// 일렬 나열될 악보 목록 (모두 실행 가능)
 const songs = [
   { 
+    id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185,
+    levels: { normal: 'Lv. 8', hard: 'Lv. 15', extreme: 'Lv. 25' } 
+  },
+  { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
-    type: 'starter',
-    levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } 
+    levels: { normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 26' } 
   },
   { 
     id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144,
-    type: 'starter',
-    levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } 
+    levels: { normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 27' } 
   },
   { 
     id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255,
-    type: 'advanced',
-    levels: { normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' } 
+    levels: { normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 29' } 
   }
 ];
 
@@ -680,7 +744,7 @@ const HIT_Y = 570;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
-let currentSongId = 'startrail';
+let currentSongId = 'springdream';
 let currentDifficulty = 'normal';
 
 let stella = 100;
@@ -689,9 +753,10 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
-  bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
-  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
+  springdream: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
 let missionData = {
@@ -710,19 +775,9 @@ function loadGameData() {
   if (savedChars !== null) ownedCharacters = JSON.parse(savedChars);
 
   const savedRecords = localStorage.getItem('rhythm_records');
-  if (savedRecords !== null) bestRecords = JSON.parse(savedRecords);
-
-  const savedMissions = localStorage.getItem('rhythm_missions');
-  if (savedMissions !== null) {
-    const parsed = JSON.parse(savedMissions);
-    const today = new Date().toDateString();
-    if (parsed.date === today) {
-      missionData = parsed;
-    } else {
-      missionData = { attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: today };
-    }
-  } else {
-    missionData.date = new Date().toDateString();
+  if (savedRecords !== null) {
+    const parsed = JSON.parse(savedRecords);
+    bestRecords = { ...bestRecords, ...parsed };
   }
 }
 
@@ -730,23 +785,17 @@ function saveGameData() {
   localStorage.setItem('rhythm_stella', stella);
   localStorage.setItem('rhythm_chars', JSON.stringify(ownedCharacters));
   localStorage.setItem('rhythm_records', JSON.stringify(bestRecords));
-  localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
 }
 
 function resetGameData() {
-  if (confirm("⚠️ 모든 게임 데이터가 초기화됩니다. 정말 진행하시겠습니까?")) {
+  if (confirm("⚠️ 모든 게임 데이터가 초기화됩니다.")) {
     localStorage.clear();
     location.reload();
   }
 }
 
 function exportSaveData() {
-  const saveData = {
-    stella: stella,
-    ownedCharacters: ownedCharacters,
-    bestRecords: bestRecords,
-    missionData: missionData
-  };
+  const saveData = { stella, ownedCharacters, bestRecords };
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
@@ -757,30 +806,17 @@ function exportSaveData() {
 }
 
 function importSaveDataPrompt() {
-  const inputString = prompt("백업했던 세이브 파일의 JSON 텍스트를 여기에 붙여넣어 주세요:");
+  const inputString = prompt("세이브 파일의 JSON 텍스트를 붙여넣어 주세요:");
   if (!inputString) return;
-
   try {
-    let fileContent = inputString.trim();
-    if (fileContent.includes('%7B') || fileContent.includes('%22') || fileContent.startsWith('%')) {
-      fileContent = decodeURIComponent(fileContent);
-    }
-
-    const parsed = JSON.parse(fileContent);
+    const parsed = JSON.parse(inputString.trim());
     if (parsed.stella !== undefined) stella = parsed.stella;
     if (parsed.ownedCharacters) ownedCharacters = parsed.ownedCharacters;
     if (parsed.bestRecords) bestRecords = parsed.bestRecords;
-    if (parsed.missionData) missionData = parsed.missionData;
-    
     saveGameData();
-    updateInventoryUI();
-    updateMissionUI();
-    updateSelectedRecordDisplay();
-    
-    alert("💾 데이터가 성공적으로 복원되었습니다!");
+    alert("데이터가 복원되었습니다!");
   } catch (err) {
-    console.error(err);
-    alert("❌ 잘못된 형식의 세이브 데이터입니다.");
+    alert("잘못된 형식입니다.");
   }
 }
 
@@ -791,7 +827,6 @@ let startTime = 0;
 let score = 0;
 let combo = 0;
 let maxCombo = 0;
-
 let currentHp = 100;
 const maxHp = 100;
 
@@ -800,36 +835,25 @@ let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
 
-// 스킬 및 시너지 상태 변수
-let mashiroSkillGauge = 0, mashiroSkillActivated = false, mashiroSkillTimer = 0;
-let yuniSkillGauge = 0, yuniSkillActivated = false, yuniSkillTimer = 0;
-let huyaSkillGauge = 0, huyaSkillActivated = false, huyaSkillTimer = 0;
-
-let yuniMissProtectionCount = 2; // 유니 패시브 (미스 콤보 보호 최대 2회)
-let yuniArunyangHealCounter = 0; // 유니&아르냥 체력 회복 타이머
-let yuniArunyangSkillBonus = 0; // 유니&아르냥 스킬 횟수 추가
-
-let huyaBakuComboCounter = 0; // 후야&바쿠 100콤보 보너스 카운터
-let huyaBakuActiveBonusTimer = 0; // 후야&바쿠 스킬 지속 시간 연장(+2초)
-let yuniHuyaDoubleSkillActive = false; // 유니&후야 더블 스킬 여부
-
-let pawPrintAnimTimer = 0;
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
 function getActiveBgm() {
   const s = songs.find(item => item.id === currentSongId);
-  return s ? s.audio : bgm1;
+  return s ? s.audio : bgm4;
 }
 
 function updateSelectedRecordDisplay() {
+  if (!bestRecords[currentSongId]) {
+    bestRecords[currentSongId] = { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } };
+  }
   if (!bestRecords[currentSongId][currentDifficulty]) {
     currentDifficulty = 'normal';
   }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
-  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
+  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
@@ -845,24 +869,11 @@ function renderDifficultyButtons() {
   const song = songs.find(s => s.id === currentSongId);
   difficultyContainer.innerHTML = '';
   
-  let diffs = [];
-  if (song.type === 'starter') {
-    diffs = [
-      { key: 'easy', label: '쉬움', lv: song.levels.easy },
-      { key: 'normal', label: '보통', lv: song.levels.normal },
-      { key: 'hard', label: '하드', lv: song.levels.hard }
-    ];
-  } else {
-    diffs = [
-      { key: 'normal', label: '보통', lv: song.levels.normal },
-      { key: 'hard', label: '하드', lv: song.levels.hard },
-      { key: 'expert', label: '익스퍼트', lv: song.levels.expert }
-    ];
-  }
-
-  if (!diffs.some(d => d.key === currentDifficulty)) {
-    currentDifficulty = diffs[0].key;
-  }
+  const diffs = [
+    { key: 'normal', label: '보통', lv: song.levels.normal },
+    { key: 'hard', label: '하드', lv: song.levels.hard },
+    { key: 'extreme', label: '익스트림', lv: song.levels.extreme }
+  ];
 
   diffs.forEach(d => {
     const card = document.createElement('div');
@@ -889,11 +900,11 @@ function renderSongList() {
     const card = document.createElement('div');
     card.className = `song-card ${song.id === currentSongId ? 'selected' : ''}`;
     card.innerHTML = `
-      <div style="position:relative;">
+      <div class="song-thumb-wrapper">
         <img src="${song.thumb}" class="song-thumb">
-        <span class="new-badge">NEW</span>
+        <span class="new-badge">NEW!</span>
       </div>
-      <div class="song-name">🎵 ${song.title}</div>
+      <div class="song-name">♬ ${song.title}</div>
     `;
     card.addEventListener('click', () => {
       currentSongId = song.id;
@@ -902,7 +913,7 @@ function renderSongList() {
       mainTitle.style.color = '#00f2fe';
       
       canvas.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('${song.thumb}')`;
-      menuScreen.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('${song.thumb}')`;
+      menuScreen.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.90), rgba(14, 17, 23, 0.94)), url('${song.thumb}')`;
       
       renderSongList();
       renderDifficultyButtons();
@@ -919,51 +930,6 @@ function updateMissionUI() {
     attBtn.style.background = "#21262d";
     attBtn.style.color = "#8b949e";
     attBtn.disabled = true;
-  } else {
-    attBtn.innerText = "수령하기";
-    attBtn.style.background = "#00f2fe";
-    attBtn.style.color = "#0e1117";
-    attBtn.disabled = false;
-  }
-
-  const playCountSpan = document.getElementById('mission-play-count');
-  const playBtn = document.getElementById('mission-play-btn');
-  playCountSpan.innerText = `진행도: ${missionData.playCount} / 3`;
-  if (missionData.playClaimed) {
-    playBtn.innerText = "완료됨";
-    playBtn.style.background = "#21262d";
-    playBtn.style.color = "#8b949e";
-    playBtn.disabled = true;
-  } else if (missionData.playCount >= 3) {
-    playBtn.innerText = "수령 가능 (+30)";
-    playBtn.style.background = "#4ade80";
-    playBtn.style.color = "#0e1117";
-    playBtn.disabled = false;
-  } else {
-    playBtn.innerText = "진행 중";
-    playBtn.style.background = "#21262d";
-    playBtn.style.color = "#8b949e";
-    playBtn.disabled = true;
-  }
-
-  const gachaCountSpan = document.getElementById('mission-gacha-count');
-  const gachaBtn = document.getElementById('mission-gacha-btn');
-  gachaCountSpan.innerText = `진행도: ${missionData.gachaCount} / 1`;
-  if (missionData.gachaClaimed) {
-    gachaBtn.innerText = "완료됨";
-    gachaBtn.style.background = "#21262d";
-    gachaBtn.style.color = "#8b949e";
-    gachaBtn.disabled = true;
-  } else if (missionData.gachaCount >= 1) {
-    gachaBtn.innerText = "수령 가능 (+20)";
-    gachaBtn.style.background = "#4ade80";
-    gachaBtn.style.color = "#0e1117";
-    gachaBtn.disabled = false;
-  } else {
-    gachaBtn.innerText = "진행 중";
-    gachaBtn.style.background = "#21262d";
-    gachaBtn.style.color = "#8b949e";
-    gachaBtn.disabled = true;
   }
 }
 
@@ -974,25 +940,7 @@ function claimAttendance() {
     updateInventoryUI();
     updateMissionUI();
     saveGameData();
-    alert("📅 일일 출석 보상으로 스텔라 30개를 획득하셨습니다!");
-  }
-}
-
-function claimMission(type) {
-  if (type === 'play' && missionData.playCount >= 3 && !missionData.playClaimed) {
-    missionData.playClaimed = true;
-    stella += 30;
-    updateInventoryUI();
-    updateMissionUI();
-    saveGameData();
-    alert("🎵 라이브 플레이 임무 보상으로 스텔라 30개를 획득하셨습니다!");
-  } else if (type === 'gacha' && missionData.gachaCount >= 1 && !missionData.gachaClaimed) {
-    missionData.gachaClaimed = true;
-    stella += 20;
-    updateInventoryUI();
-    updateMissionUI();
-    saveGameData();
-    alert("🎁 뽑기 임무 보상으로 스텔라 20개를 획득하셨습니다!");
+    alert("출석 보상으로 스텔라 30개를 획득하셨습니다!");
   }
 }
 
@@ -1003,40 +951,30 @@ updateMissionUI();
 
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
-  const diffNameMap = { 
-    easy: `쉬움 (${song.levels.easy})`, 
-    normal: `보통 (${song.levels.normal})`, 
-    hard: `하드 (${song.levels.hard})`, 
-    expert: `익스퍼트 (${song.levels.expert})` 
-  };
+  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
-  prepRecordTitle.innerHTML = `🏆 [${diffNameUI[currentDifficulty]}] 최고 기록`;
+  prepRecordTitle.innerHTML = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   if (rec && rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
   } else {
-    prepRecordContent.innerHTML = `기록 없음 (첫 클리어에 도전하세요!)`;
+    prepRecordContent.innerHTML = `기록 없음`;
   }
-
   switchView('prep');
 });
 
-prepBackBtn.addEventListener('click', () => {
-  switchView('menu');
-});
+prepBackBtn.addEventListener('click', () => { switchView('menu'); });
 
 function updateInventoryUI() {
   stellaCountEl.innerText = stella;
-
   const charMeta = {
-    mashiro: { name: '네네코 마시로 (시로)', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'MASHIRO_IMG_PLACEHOLDER' },
+    mashiro: { name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'MASHIRO_IMG_PLACEHOLDER' },
     huya: { name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'HUYA_IMG_PLACEHOLDER' },
     yuni: { name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'YUNI_IMG_PLACEHOLDER' },
-    maro: { name: '마로 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'MARO_IMG_PLACEHOLDER' },
-    arunyang: { name: '아르냥 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'ARUNYANG_IMG_PLACEHOLDER' },
-    baku: { name: '바쿠 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'BAKU_IMG_PLACEHOLDER' }
+    maro: { name: '마로', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'MARO_IMG_PLACEHOLDER' },
+    arunyang: { name: '아르냥', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'ARUNYANG_IMG_PLACEHOLDER' },
+    baku: { name: '바쿠', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'BAKU_IMG_PLACEHOLDER' }
   };
 
   for (let i = 0; i < 2; i++) {
@@ -1045,65 +983,22 @@ function updateInventoryUI() {
     if (charId && charMeta[charId]) {
       const m = charMeta[charId];
       slotEl.className = `unit-slot filled ${m.cls}`;
-      slotEl.innerHTML = `
-        <img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color};">
-        <div style="font-size:10px; font-weight:bold; color:${m.color};">${m.star}</div>
-        <div style="font-size:10px; font-weight:bold;">${m.name}</div>
-      `;
+      slotEl.innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img"><div style="font-size:10px; font-weight:bold;">${m.name}</div>`;
     } else {
       slotEl.className = "unit-slot";
-      slotEl.innerHTML = `
-        <div class="plus-icon">+</div>
-        <div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>
-      `;
+      slotEl.innerHTML = `<div class="plus-icon">+</div><div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>`;
     }
   }
-
-  const synergyCard = document.getElementById('synergy-card');
-  const hasMashiro = equippedUnit.includes('mashiro');
-  const hasMaro = equippedUnit.includes('maro');
-  const hasYuni = equippedUnit.includes('yuni');
-  const hasArunyang = equippedUnit.includes('arunyang');
-  const hasHuya = equippedUnit.includes('huya');
-  const hasBaku = equippedUnit.includes('baku');
-
-  let synergyText = "✨ 활성화된 시너지 없음";
-  let synergyDesc = "• [네네코 마시로 + 마로] 편성 시 [냥냥 집사의 특급 후원] 발동!";
-  let synergyColor = "#8b949e";
-
-  if (hasMashiro && hasMaro) {
-    synergyText = "🐾 [냥냥 집사의 특급 후원]";
-    synergyDesc = "• 200콤보 이상 & HP 100% 유지 시: 모든 노트 기본 점수 상시 15% 증가!";
-    synergyColor = "#facc15";
-  } else if (hasYuni && hasArunyang) {
-    synergyText = "💖 [유니&아르냥 생존 시너지]";
-    synergyDesc = "• 체력 50% 미만 시 초당 HP 0.5% 회복 및 방어 스킬 사용 횟수 +1회!";
-    synergyColor = "#c084fc";
-  } else if (hasHuya && hasBaku) {
-    synergyText = "💤 [조용히, 깨우지 마세요]";
-    synergyDesc = "• 풀피(100%) 유지 시 스킬 지속 시간 +2초 및 100콤보 달성 시 추가 보너스 점수 지급!";
-    synergyColor = "#ff79c6";
-  } else if (hasYuni && hasHuya) {
-    synergyText = "⭐ [에버리스! (더블 스킬)]";
-    synergyDesc = "• 유니 & 후야 스킬 지속 시간 +2초 연장 및 스킬 겹침(더블 스킬) 시 팀 전체 점수 +25% 추가 상승!";
-    synergyColor = "#00f2fe";
-  }
-
-  synergyCard.style.opacity = (synergyColor === "#8b949e") ? "0.5" : "1";
-  synergyCard.style.borderColor = synergyColor;
-  synergyCard.innerHTML = `
-    <div style="font-weight: bold; color: ${synergyColor}; margin-bottom: 2px;">${synergyText}</div>
-    <div style="font-size: 10px; color: #fff;">${synergyDesc}</div>
-  `;
 
   Object.keys(charMeta).forEach(key => {
     if (ownedCharacters[key]) {
       const m = charMeta[key];
       const card = document.getElementById(`char-card-${key}`);
-      card.style.borderColor = m.color;
-      document.getElementById(`char-${key}-img-box`).innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img" style="color:${m.color};">`;
-      document.getElementById(`char-${key}-badge`).innerHTML = `${m.star} (보유)`;
-      document.getElementById(`char-${key}-badge`).style.color = m.color;
+      if (card) {
+        card.style.borderColor = m.color;
+        document.getElementById(`char-${key}-img-box`).innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img">`;
+        document.getElementById(`char-${key}-badge`).innerHTML = `${m.star} (보유)`;
+      }
     }
   });
 }
@@ -1111,33 +1006,21 @@ function updateInventoryUI() {
 function openCharSelector(slotIndex) {
   activeSlotIndex = slotIndex;
   charSelectList.innerHTML = "";
-
   const availableChars = [
-    { id: 'mashiro', name: '네네코 마시로 (시로)', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.mashiro, img: 'MASHIRO_IMG_PLACEHOLDER', color: '#facc15' },
+    { id: 'mashiro', name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.mashiro, img: 'MASHIRO_IMG_PLACEHOLDER', color: '#facc15' },
     { id: 'huya', name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.huya, img: 'HUYA_IMG_PLACEHOLDER', color: '#facc15' },
     { id: 'yuni', name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.yuni, img: 'YUNI_IMG_PLACEHOLDER', color: '#facc15' },
-    { id: 'maro', name: '마로 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.maro, img: 'MARO_IMG_PLACEHOLDER', color: '#c084fc' },
-    { id: 'arunyang', name: '아르냥 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.arunyang, img: 'ARUNYANG_IMG_PLACEHOLDER', color: '#c084fc' },
-    { id: 'baku', name: '바쿠 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.baku, img: 'BAKU_IMG_PLACEHOLDER', color: '#c084fc' }
+    { id: 'maro', name: '마로', star: '⭐⭐⭐⭐', owned: ownedCharacters.maro, img: 'MARO_IMG_PLACEHOLDER', color: '#c084fc' },
+    { id: 'arunyang', name: '아르냥', star: '⭐⭐⭐⭐', owned: ownedCharacters.arunyang, img: 'ARUNYANG_IMG_PLACEHOLDER', color: '#c084fc' },
+    { id: 'baku', name: '바쿠', star: '⭐⭐⭐⭐', owned: ownedCharacters.baku, img: 'BAKU_IMG_PLACEHOLDER', color: '#c084fc' }
   ];
 
   availableChars.forEach(char => {
-    const otherSlot = slotIndex === 0 ? 1 : 0;
-    const alreadyEquipped = equippedUnit[otherSlot] === char.id;
-
     const card = document.createElement('div');
-    card.className = `char-option-card ${char.owned && !alreadyEquipped ? 'owned' : ''}`;
-    card.style.opacity = (char.owned && !alreadyEquipped) ? "1" : "0.45";
-    card.innerHTML = `
-      <img src="data:image/jpeg;base64,${char.img}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; margin-bottom:4px; border:2px solid ${char.color};">
-      <div style="font-size:9px; color:${char.color};">${char.star}</div>
-      <div style="font-size:11px; font-weight:bold; margin-top:2px;">${char.name}</div>
-      <div style="font-size:9px; color:${char.owned ? (alreadyEquipped ? '#facc15' : '#00f2fe') : '#8b949e'}; margin-top:2px;">
-        ${!char.owned ? '미획득' : (alreadyEquipped ? '편성 중' : '선택 가능')}
-      </div>
-    `;
-
-    if (char.owned && !alreadyEquipped) {
+    card.className = `char-option-card ${char.owned ? 'owned' : ''}`;
+    card.style.opacity = char.owned ? "1" : "0.45";
+    card.innerHTML = `<img src="data:image/jpeg;base64,${char.img}" style="width:38px; height:38px; border-radius:50%; object-fit:cover;"><div style="font-size:11px; font-weight:bold; margin-top:2px;">${char.name}</div>`;
+    if (char.owned) {
       card.addEventListener('click', () => {
         equippedUnit[activeSlotIndex] = char.id;
         charSelectModal.style.display = "none";
@@ -1146,7 +1029,6 @@ function openCharSelector(slotIndex) {
     }
     charSelectList.appendChild(card);
   });
-
   charSelectModal.style.display = "flex";
 }
 
@@ -1154,59 +1036,32 @@ modalCloseBtn.addEventListener('click', () => { charSelectModal.style.display = 
 
 function executeGacha(count) {
   const cost = count * 10;
-  if (stella < cost) {
-    alert("스텔라 재화가 부족합니다! 곡을 클리어하여 모아보세요.");
-    return;
-  }
+  if (stella < cost) { alert("스텔라가 부족합니다!"); return; }
   stella -= cost;
-  
-  missionData.gachaCount += 1;
-  updateMissionUI();
   updateInventoryUI();
   saveGameData();
 
   let results = [];
   for (let i = 0; i < count; i++) {
-    const rand = Math.random() * 100;
-    if (rand < 3.0) {
-      const r5 = Math.random();
-      if (r5 < 0.33) {
-        ownedCharacters.mashiro = true;
-        results.push({ name: "네네코 마시로 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "MASHIRO_IMG_PLACEHOLDER" });
-      } else if (r5 < 0.66) {
-        ownedCharacters.huya = true;
-        results.push({ name: "사키하네 후야 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "HUYA_IMG_PLACEHOLDER" });
-      } else {
-        ownedCharacters.yuni = true;
-        results.push({ name: "아야츠노 유니 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "YUNI_IMG_PLACEHOLDER" });
-      }
+    const rand = Math.random();
+    if (rand < 0.33) {
+      ownedCharacters.mashiro = true;
+      results.push({ name: "네네코 마시로", color: "#facc15", img: "MASHIRO_IMG_PLACEHOLDER" });
+    } else if (rand < 0.66) {
+      ownedCharacters.yuni = true;
+      results.push({ name: "아야츠노 유니", color: "#facc15", img: "YUNI_IMG_PLACEHOLDER" });
     } else {
-      const r4 = Math.random();
-      if (r4 < 0.33) {
-        ownedCharacters.maro = true;
-        results.push({ name: "마로 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "MARO_IMG_PLACEHOLDER" });
-      } else if (r4 < 0.66) {
-        ownedCharacters.arunyang = true;
-        results.push({ name: "아르냥 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "ARUNYANG_IMG_PLACEHOLDER" });
-      } else {
-        ownedCharacters.baku = true;
-        results.push({ name: "바쿠 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "BAKU_IMG_PLACEHOLDER" });
-      }
+      ownedCharacters.huya = true;
+      results.push({ name: "사키하네 후야", color: "#facc15", img: "HUYA_IMG_PLACEHOLDER" });
     }
   }
-
   updateInventoryUI();
   saveGameData();
-
   gachaResultList.innerHTML = "";
   results.forEach(res => {
     const item = document.createElement('div');
     item.style.cssText = "background:#21262d; border:1px solid " + res.color + "; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; width:88px;";
-    item.innerHTML = `
-      <img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;">
-      <div style="font-size:9px; color:${res.color};">${res.star}</div>
-      <div style="font-size:10px; font-weight:bold; margin-top:2px;">${res.name.split(' ')[0]}</div>
-    `;
+    item.innerHTML = `<img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%;"><div style="font-size:10px; font-weight:bold; margin-top:3px;">${res.name}</div>`;
     gachaResultList.appendChild(item);
   });
   gachaModal.style.display = "flex";
@@ -1218,132 +1073,58 @@ gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none
 
 function generateBeatmap(songId, difficulty) {
   notes = [];
-  
-  let seed = 1000;
-  if (songId === 'bbijilge') seed = 2000;
-  else if (songId === 'constellation') seed = 3000;
-
-  if (difficulty === 'easy') seed += 50;
-  else if (difficulty === 'normal') seed += 100;
-  else if (difficulty === 'hard') seed += 200;
-  else if (difficulty === 'expert') seed += 300;
-
+  let seed = songId === 'springdream' ? 4000 : (songId === 'startrail' ? 1000 : (songId === 'bbijilge' ? 2000 : 3000));
   function seededRandom() {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
   }
 
   const songObj = songs.find(s => s.id === songId);
-  const bpm = 125;
-  const beatInterval = 60 / bpm; 
+  const beatInterval = 0.55; 
   let currentTime = 2.0;
-  const totalDuration = songObj ? songObj.duration : 225.0;
+  const totalDuration = songObj ? songObj.duration : 185.0;
 
-  let speed = 420;
-  if (difficulty === 'normal') speed = 450;
-  if (difficulty === 'hard') speed = 490;
-  if (difficulty === 'expert') speed = 520;
-  window.NOTE_SPEED = speed;
+  window.NOTE_SPEED = difficulty === 'normal' ? 420 : (difficulty === 'hard' ? 480 : 540);
 
-  let activeLongEndTimes = [0, 0, 0, 0];
   let index = 0;
-
-  while (currentTime < totalDuration - 5.0) {
+  while (currentTime < totalDuration - 3.0) {
     const lane = Math.floor(seededRandom() * LANES);
-    const rand = seededRandom();
+    const isLong = difficulty !== 'normal' && index % 4 === 0 && seededRandom() < 0.35;
 
-    if (currentTime < activeLongEndTimes[lane]) {
-      currentTime += beatInterval * 1.0;
-      index++;
-      continue;
-    }
-
-    if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
-      const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
+    if (isLong) {
+      const longDuration = beatInterval * 1.5;
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
-      activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
     } else {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    currentTime += beatInterval * (difficulty === 'easy' ? 1.5 : 0.8);
+    currentTime += difficulty === 'normal' ? 1.2 : (difficulty === 'hard' ? 0.85 : 0.55);
     index++;
   }
 }
 
-function incrementComboAndCheckMilestone() {
+function incrementCombo() {
   combo++;
   if (combo > maxCombo) maxCombo = combo;
-
-  // 후야 & 바쿠 시너지: 100콤보 단위 달성 시 추가 보너스 점수 지급
-  const hasHuya = equippedUnit.includes('huya');
-  const hasBaku = equippedUnit.includes('baku');
-  if (hasHuya && hasBaku && currentHp >= maxHp && combo % 100 === 0) {
-    score += 5000;
-    showJudgement("100 COMBO BONUS!", "#ff79c6");
-  }
 }
 
 function applyHitScore(note, minDiff) {
-  let mult = note.type === 'bonus' ? 3 : 1;
-  const hasMashiro = equippedUnit.includes('mashiro');
-  const hasMaro = equippedUnit.includes('maro');
-  const hasYuni = equippedUnit.includes('yuni');
-  const hasHuya = equippedUnit.includes('huya');
-  const hasBaku = equippedUnit.includes('baku');
-
-  // 네네코 마시로 스킬 효과
-  if (hasMashiro && mashiroSkillActivated && (note.type === 'swipe' || note.type === 'zigzag' || note.type === 'bridge')) {
-    mult *= 1.40;
-  }
-  // 유니 액티브 스킬 효과 ([뭘뽀노?]: 기본 점수 120% 증가)
-  if (hasYuni && yuniSkillActivated) {
-    mult *= 1.20;
-  }
-
-  // 냥냥 집사의 특급 후원 시너지
-  if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) {
-    mult *= 1.15;
-  }
-  // 유니 & 후야 더블 스킬 시너지
-  if (yuniHuyaDoubleSkillActive) {
-    mult *= 1.25;
-  }
-
-  let effectiveCombo = combo;
-  if (hasMashiro && mashiroSkillActivated) effectiveCombo += 50;
-
-  // 게이지 충전
-  let chargeRate = 0.8;
-  if (hasMashiro && !mashiroSkillActivated) {
-    mashiroSkillGauge = Math.min(100, mashiroSkillGauge + chargeRate);
-    updateSkillUI();
-  }
-  if (hasYuni && !yuniSkillActivated) {
-    yuniSkillGauge = Math.min(100, yuniSkillGauge + chargeRate);
-    updateSkillUI();
-  }
-  if (hasHuya && !huyaSkillActivated) {
-    let huyaBoost = (hasBaku && currentHp >= maxHp) ? 1.15 : 1.0;
-    huyaSkillGauge = Math.min(100, huyaSkillGauge + (chargeRate * huyaBoost));
-    updateSkillUI();
-  }
-
+  let mult = 1;
   if (minDiff <= 0.12) {
-    score += Math.round((100 + (effectiveCombo * 2)) * mult);
-    incrementComboAndCheckMilestone();
+    score += Math.round((100 + (combo * 2)) * mult);
+    incrementCombo();
     stats.perfect++;
     healHp(1.2);
     showJudgement("PERFECT!", "#00f2fe");
   } else if (minDiff <= 0.22) {
-    score += Math.round((70 + effectiveCombo) * mult);
-    incrementComboAndCheckMilestone();
+    score += Math.round((70 + combo) * mult);
+    incrementCombo();
     stats.great++;
     healHp(0.6);
     showJudgement("GREAT!", "#4ade80");
   } else {
     score += Math.round(30 * mult);
-    incrementComboAndCheckMilestone();
+    incrementCombo();
     stats.good++;
     showJudgement("GOOD", "#facc15");
   }
@@ -1355,129 +1136,28 @@ function healHp(amount) {
 }
 
 function damageHp(amount) {
-  const hasYuni = equippedUnit.includes('yuni');
-  // 유니 패시브 [유니는 실수하지 않아!]: 최대 2회 미스 시 콤보 유지 및 데미지 방어
-  if (hasYuni && yuniMissProtectionCount > 0) {
-    yuniMissProtectionCount--;
-    yuniVoice.currentTime = 0;
-    yuniVoice.play().catch(e => {});
-    showJudgement("PASS! (COMBO SAVED)", "#c084fc");
-    stats.miss++;
-    return; // 콤보 초기화 및 HP 감소 방지
-  }
-
-  // 후야 & 바쿠 시너지 체크 (미스 시 풀피 조건 깨짐)
   currentHp = Math.max(0, currentHp - amount);
   updateHpUI();
-  if (currentHp <= 0) {
-    triggerGameOver();
-  }
+  if (currentHp <= 0) triggerGameOver();
 }
 
 function updateHpUI() {
   const percent = (currentHp / maxHp) * 100;
   hpFill.style.width = percent + '%';
   hpText.innerText = Math.round(currentHp) + ' / ' + maxHp;
-  
-  if (percent > 50) {
-    hpFill.style.backgroundColor = '#4ade80';
-  } else if (percent > 25) {
-    hpFill.style.backgroundColor = '#facc15';
-  } else {
-    hpFill.style.backgroundColor = '#ff4b4b';
-  }
 }
 
-function updateSkillUI() {
-  mashiroGaugeFill.style.width = mashiroSkillGauge + '%';
-  if (mashiroSkillGauge >= 100 && !mashiroSkillActivated && equippedUnit.includes('mashiro')) {
-    triggerMashiroSkill();
-  }
-
-  yuniGaugeFill.style.width = yuniSkillGauge + '%';
-  if (yuniSkillGauge >= 100 && !yuniSkillActivated && equippedUnit.includes('yuni')) {
-    triggerYuniSkill();
-  }
-
-  huyaGaugeFill.style.width = huyaSkillGauge + '%';
-  if (huyaSkillGauge >= 100 && !huyaSkillActivated && equippedUnit.includes('huya')) {
-    triggerHuyaSkill();
-  }
-}
-
-function triggerMashiroSkill() {
-  mashiroSkillGauge = 0;
-  mashiroGaugeFill.style.width = '0%';
-  mashiroSkillActivated = true;
-  let duration = 12 * 60;
-  if (equippedUnit.includes('huya') && equippedUnit.includes('yuni')) duration += 2 * 60; // 유니&후야 시너지 (+2초)
-  mashiroSkillTimer = duration;
-
-  mashiroSkillStatus.innerText = "🐾 발동 중!";
-  mashiroSkillStatus.style.color = "#facc15";
-
-  mashiroVoice.currentTime = 0;
-  mashiroVoice.play().catch(e => {});
-  mashiroPopup.classList.add('show');
-  pawPrintAnimTimer = 40;
-}
-
-function triggerYuniSkill() {
-  yuniSkillGauge = 0;
-  yuniGaugeFill.style.width = '0%';
-  yuniSkillActivated = true;
-  let duration = 10 * 60; // 기본 10초
-  if (equippedUnit.includes('huya')) duration += 2 * 60; // 유니&후야 시너지 (+2초)
-  yuniSkillTimer = duration;
-
-  yuniSkillStatus.innerText = "✨ 뭘뽀노? 발동!";
-  yuniSkillStatus.style.color = "#c084fc";
-
-  yuniVoice.currentTime = 0;
-  yuniVoice.play().catch(e => {});
-  yuniPopup.classList.add('show');
-  checkDoubleSkill();
-}
-
-function triggerHuyaSkill() {
-  huyaSkillGauge = 0;
-  huyaGaugeFill.style.width = '0%';
-  huyaSkillActivated = true;
-  let duration = 15 * 60; // 기본 15초
-  if (equippedUnit.includes('yuni')) duration += 2 * 60; // 유니&후야 시너지 (+2초)
-  huyaSkillTimer = duration;
-
-  huyaSkillStatus.innerText = "💤 꿈결 발동!";
-  huyaSkillStatus.style.color = "#ff79c6";
-
-  huyaVoice.currentTime = 0;
-  huyaVoice.play().catch(e => {});
-  huyaPopup.classList.add('show');
-  checkDoubleSkill();
-}
-
-function checkDoubleSkill() {
-  if ((yuniSkillActivated && huyaSkillActivated) || (mashiroSkillActivated && yuniSkillActivated) || (mashiroSkillActivated && huyaSkillActivated)) {
-    yuniHuyaDoubleSkillActive = true;
-    feverPopup.classList.add('show');
-  }
+function showJudgement(text, color) {
+  judgementText = text;
+  judgementColor = color;
+  judgementTimer = 30;
 }
 
 function requestGiveUp() {
   if (!isPlaying) return;
   isPlaying = false;
   getActiveBgm().pause();
-
-  if (confirm("정말 나가겠습니까? (진행 중인 게임은 저장되지 않습니다)")) {
-    mashiroPopup.classList.remove('show');
-    yuniPopup.classList.remove('show');
-    huyaPopup.classList.remove('show');
-    feverPopup.classList.remove('show');
-
-    mainTitle.innerHTML = "RHYTHM STAR";
-    mainTitle.style.color = "#00f2fe";
-    statsContainer.style.display = 'none';
-    nextPrepBtn.innerText = "유니트 편성 및 라이브";
+  if (confirm("정말 포기하시겠습니까?")) {
     switchView('menu');
   } else {
     isPlaying = true;
@@ -1501,103 +1181,41 @@ function handleTapDown(lane) {
     }
   }
 
-  if (targetNote && minDiff <= 0.32) {
+  if (targetNote && minDiff <= 0.35) {
     targetNote.hit = true;
-    if (targetNote.type === 'long') {
-      targetNote.holding = true;
-    }
+    if (targetNote.type === 'long') targetNote.holding = true;
     applyHitScore(targetNote, minDiff);
   }
 }
 
-function handleTapUp(lane) {
-  const currentTime = (performance.now() - startTime) / 1000;
-  for (let note of notes) {
-    if (note.type === 'long' && note.holding && !note.tailHit && note.lane === lane) {
-      const endTime = note.time + note.duration;
-      const diff = Math.abs(endTime - currentTime);
-      note.holding = false;
-      note.tailHit = true;
-
-      if (diff <= 0.35 || currentTime >= endTime - 0.2) {
-        score += 50;
-        incrementComboAndCheckMilestone();
-        stats.perfect++;
-        healHp(1.0);
-        showJudgement("HOLD CLEAR", "#00f2fe");
-      } else {
-        handleMiss();
-      }
-    }
-  }
-}
-
 function handleMiss() {
-  const hasYuni = equippedUnit.includes('yuni');
-  if (hasYuni && yuniMissProtectionCount > 0) {
-    yuniMissProtectionCount--;
-    yuniVoice.currentTime = 0;
-    yuniVoice.play().catch(e => {});
-    showJudgement("PASS! (COMBO SAVED)", "#c084fc");
-    stats.miss++;
-    return;
-  }
-
   stats.miss++;
   combo = 0;
-  damageHp(10);
+  damageHp(12);
   showJudgement("MISS", "#ff4b4b");
-}
-
-function showJudgement(text, color) {
-  judgementText = text;
-  judgementColor = color;
-  judgementTimer = 30;
 }
 
 function getLaneFromTouch(clientX) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
-  const canvasX = (clientX - rect.left) * scaleX;
-  const lane = Math.floor(canvasX / LANE_WIDTH);
-  return Math.max(0, Math.min(LANES - 1, lane));
+  return Math.max(0, Math.min(LANES - 1, Math.floor(((clientX - rect.left) * scaleX) / LANE_WIDTH)));
 }
 
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
   for (let i = 0; i < e.changedTouches.length; i++) {
-    const touch = e.changedTouches[i];
-    const lane = getLaneFromTouch(touch.clientX);
-    activeTouches.set(touch.identifier, { lane: lane });
-    if (!keyPressed[lane]) {
-      keyPressed[lane] = true;
-      handleTapDown(lane);
-    }
+    const lane = getLaneFromTouch(e.changedTouches[i].clientX);
+    keyPressed[lane] = true;
+    handleTapDown(lane);
   }
 }, { passive: false });
 
-function handleTouchEnd(e) {
+const handleTouchEnd = (e) => {
   e.preventDefault();
-  for (let i = 0; i < e.changedTouches.length; i++) {
-    const touch = e.changedTouches[i];
-    const data = activeTouches.get(touch.identifier);
-    activeTouches.delete(touch.identifier);
-    if (data !== undefined) {
-      let stillPressed = false;
-      for (let activeData of activeTouches.values()) {
-        if (activeData.lane === data.lane) stillPressed = true;
-      }
-      if (!stillPressed) {
-        keyPressed[data.lane] = false;
-        handleTapUp(data.lane);
-      }
-    }
-  }
-}
-
+  keyPressed = [false, false, false, false];
+};
 canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   const idx = KEYS.indexOf(e.key.toLowerCase());
@@ -1606,115 +1224,35 @@ window.addEventListener('keydown', (e) => {
     handleTapDown(idx);
   }
 });
-
 window.addEventListener('keyup', (e) => {
   const idx = KEYS.indexOf(e.key.toLowerCase());
-  if (idx !== -1) {
-    keyPressed[idx] = false;
-    handleTapUp(idx);
-  }
+  if (idx !== -1) keyPressed[idx] = false;
 });
 
-function calculateRank(songId, difficulty, finalScore) {
-  let multiplier = 1.0;
-  if (songId === 'constellation') multiplier = 1.35;
-  else if (songId === 'bbijilge') multiplier = 0.85;
-
-  if (difficulty === 'easy') {
-    if (finalScore >= 90000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 75000 * multiplier) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 60000 * multiplier) return { rank: 'A', color: '#00f2fe' };
-    return { rank: 'B', color: '#4ade80' };
-  } else if (difficulty === 'normal') {
-    if (finalScore >= 180000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 145000 * multiplier) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 115000 * multiplier) return { rank: 'A', color: '#00f2fe' };
-    return { rank: 'B', color: '#4ade80' };
-  } else {
-    if (finalScore >= 260000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 210000 * multiplier) return { rank: 'S', color: '#facc15' };
-    return { rank: 'A', color: '#00f2fe' };
-  }
+function calculateRank(finalScore, difficulty) {
+  let threshold = difficulty === 'normal' ? 150000 : (difficulty === 'hard' ? 240000 : 350000);
+  if (finalScore >= threshold * 0.95) return { rank: 'SS', color: '#ff79c6' };
+  if (finalScore >= threshold * 0.80) return { rank: 'S', color: '#facc15' };
+  if (finalScore >= threshold * 0.65) return { rank: 'A', color: '#00f2fe' };
+  if (finalScore >= threshold * 0.50) return { rank: 'B', color: '#4ade80' };
+  if (finalScore >= threshold * 0.30) return { rank: 'C', color: '#fb923c' };
+  return { rank: 'D', color: '#94a3b8' };
 }
 
 function updateAndDraw() {
   if (!isPlaying) return;
-
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 유니 & 아르냥 시너지: 체력 50% 미만 시 초당 HP 0.5% 자동 회복
-  const hasYuni = equippedUnit.includes('yuni');
-  const hasArunyang = equippedUnit.includes('arunyang');
-  if (hasYuni && hasArunyang && currentHp < (maxHp / 2)) {
-    yuniArunyangHealCounter++;
-    if (yuniArunyangHealCounter >= 60) { // 약 1초마다
-      healHp(0.5);
-      yuniArunyangHealCounter = 0;
-    }
-  }
-
-  // 스킬 지속 타이머 감소 처리
-  if (mashiroSkillActivated) {
-    mashiroSkillTimer--;
-    if (mashiroSkillTimer <= 0) {
-      mashiroSkillActivated = false;
-      mashiroPopup.classList.remove('show');
-      mashiroSkillStatus.innerText = "충전 중...";
-      mashiroSkillStatus.style.color = "#8b949e";
-      yuniHuyaDoubleSkillActive = false;
-      feverPopup.classList.remove('show');
-    }
-  }
-  if (yuniSkillActivated) {
-    yuniSkillTimer--;
-    if (yuniSkillTimer <= 0) {
-      yuniSkillActivated = false;
-      yuniPopup.classList.remove('show');
-      yuniSkillStatus.innerText = "충전 중...";
-      yuniSkillStatus.style.color = "#8b949e";
-      yuniHuyaDoubleSkillActive = false;
-      feverPopup.classList.remove('show');
-    }
-  }
-  if (huyaSkillActivated) {
-    huyaSkillTimer--;
-    if (huyaSkillTimer <= 0) {
-      huyaSkillActivated = false;
-      huyaPopup.classList.remove('show');
-      huyaSkillStatus.innerText = "충전 중...";
-      huyaSkillStatus.style.color = "#8b949e";
-      yuniHuyaDoubleSkillActive = false;
-      feverPopup.classList.remove('show');
-    }
-  }
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (pawPrintAnimTimer > 0) {
-    ctx.fillStyle = 'rgba(250, 204, 21, 0.35)';
-    ctx.font = '24px sans-serif';
-    ctx.fillText('🐾', 20, 250);
-    ctx.fillText('🐾', 430, 250);
-    pawPrintAnimTimer--;
-  }
 
   for (let i = 0; i < LANES; i++) {
     const x = i * LANE_WIDTH;
     ctx.fillStyle = keyPressed[i] ? LANE_COLORS[i] : '#1f2630';
     ctx.fillRect(x + 4, HIT_Y + 8, LANE_WIDTH - 8, canvas.height - HIT_Y - 14);
-
     ctx.strokeStyle = '#30363d';
     ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
-    ctx.stroke();
-
-    ctx.fillStyle = keyPressed[i] ? '#0e1117' : '#8b949e';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
+    ctx.strokeRect(x, 0, LANE_WIDTH, canvas.height);
   }
 
   ctx.strokeStyle = '#00f2fe';
@@ -1733,25 +1271,13 @@ function updateAndDraw() {
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
     if (note.type === 'long' && note.holding) {
-      const endY = HIT_Y - ((note.time + note.duration - currentTime) * window.NOTE_SPEED);
-      const x = note.lane * LANE_WIDTH + 14;
-      const w = LANE_WIDTH - 28;
-      ctx.fillStyle = 'rgba(250, 204, 21, 0.45)';
-      ctx.fillRect(x, Math.max(0, endY), w, HIT_Y - Math.max(0, endY));
-
-      // 후야 액티브 스킬 효과 ([포근한 꿈결 속으로]: 홀드 중 체력 회복)
-      if (huyaSkillActivated) {
-        healHp(0.08);
-      }
-
       if (currentTime >= note.time + note.duration) {
         note.holding = false;
         note.tailHit = true;
         score += 50;
-        incrementComboAndCheckMilestone();
+        incrementCombo();
         stats.perfect++;
         healHp(1.0);
-        showJudgement("HOLD CLEAR", "#00f2fe");
       }
       continue;
     }
@@ -1765,56 +1291,16 @@ function updateAndDraw() {
     if (y >= -50 && y <= HIT_Y + 20) {
       const x = note.lane * LANE_WIDTH + 10;
       const w = LANE_WIDTH - 20;
-
-      if (note.type === 'long') {
-        const tailY = y - (note.duration * window.NOTE_SPEED);
-        ctx.fillStyle = 'rgba(250, 204, 21, 0.3)';
-        ctx.fillRect(x + 4, tailY, w - 8, y - tailY);
-        ctx.fillStyle = '#facc15';
-        ctx.beginPath();
-        ctx.roundRect(x, y - 12, w, 24, 6);
-        ctx.fill();
-      } else {
-        ctx.fillStyle = LANE_COLORS[note.lane];
-        ctx.beginPath();
-        ctx.roundRect(x, y - 12, w, 24, 6);
-        ctx.fill();
-      }
+      ctx.fillStyle = LANE_COLORS[note.lane];
+      ctx.beginPath();
+      ctx.roundRect(x, y - 12, w, 24, 6);
+      ctx.fill();
     }
   }
 
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 22px sans-serif';
-  ctx.textAlign = 'left';
   ctx.fillText(`SCORE: ${score}`, 18, 56);
-
-  let statusY = 76;
-  const hasMashiro = equippedUnit.includes('mashiro');
-  const hasHuya = equippedUnit.includes('huya');
-
-  if (hasMashiro && mashiroSkillActivated) {
-    ctx.fillStyle = '#facc15';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('🐾 [반갑쟈나~] 발동 중', 18, statusY);
-    statusY += 18;
-  }
-  if (hasYuni && yuniSkillActivated) {
-    ctx.fillStyle = '#c084fc';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('✨ [뭘뽀노?] 점수 +20% 발동 중', 18, statusY);
-    statusY += 18;
-  }
-  if (hasHuya && huyaSkillActivated) {
-    ctx.fillStyle = '#ff79c6';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('💤 [포근한 꿈결] HP 회복 중', 18, statusY);
-    statusY += 18;
-  }
-  if (yuniHuyaDoubleSkillActive) {
-    ctx.fillStyle = '#00f2fe';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('🌟 [더블 스킬] 점수 추가 폭발 중!', 18, statusY);
-  }
 
   if (combo > 1) {
     ctx.fillStyle = '#00f2fe';
@@ -1832,7 +1318,7 @@ function updateAndDraw() {
   }
 
   const songObj = songs.find(s => s.id === currentSongId);
-  const durationLimit = songObj ? songObj.duration : 225.0;
+  const durationLimit = songObj ? songObj.duration : 185.0;
 
   if (currentBgm.ended || (remainingNotes === 0 && currentTime > durationLimit - 2.0)) {
     endGame();
@@ -1843,32 +1329,9 @@ function updateAndDraw() {
 }
 
 function startGame() {
-  score = 0;
-  combo = 0;
-  maxCombo = 0;
-  judgementTimer = 0;
-  
-  mashiroSkillGauge = 0; mashiroSkillActivated = false; mashiroSkillTimer = 0;
-  yuniSkillGauge = 0; yuniSkillActivated = false; yuniSkillTimer = 0;
-  huyaSkillGauge = 0; huyaSkillActivated = false; huyaSkillTimer = 0;
-  yuniHuyaDoubleSkillActive = false;
-  yuniMissProtectionCount = 2;
-  yuniArunyangHealCounter = 0;
-  
+  score = 0; combo = 0; maxCombo = 0; judgementTimer = 0;
   currentHp = 100;
   updateHpUI();
-  
-  const hasMashiro = equippedUnit.includes('mashiro');
-  const hasYuni = equippedUnit.includes('yuni');
-  const hasHuya = equippedUnit.includes('huya');
-
-  mashiroSkillBar.style.display = hasMashiro ? 'flex' : 'none';
-  yuniSkillBar.style.display = hasYuni ? 'flex' : 'none';
-  huyaSkillBar.style.display = hasHuya ? 'flex' : 'none';
-
-  // 후야 패시브 [나른한 낮잠 시간]: 곡 시작 시 10초 동안 스킬 초기 쿨타임 충전 속도 15% 빠르게
-  // (구현부에서 게이지 충전량에 반영)
-
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   activeTouches.clear();
   keyPressed = [false, false, false, false];
@@ -1878,141 +1341,64 @@ function startGame() {
   const currentBgm = getActiveBgm();
   currentBgm.pause();
   currentBgm.currentTime = 0;
-  currentBgm.play().catch(error => {});
+  currentBgm.play().catch(e => {});
 
   isPlaying = true;
   startTime = performance.now();
-  
   switchView('play');
   requestAnimationFrame(updateAndDraw);
 }
 
 function triggerGameOver() {
   isPlaying = false;
-  const currentBgm = getActiveBgm();
-  currentBgm.pause();
-  mashiroPopup.classList.remove('show');
-  yuniPopup.classList.remove('show');
-  huyaPopup.classList.remove('show');
-  feverPopup.classList.remove('show');
-
-  mashiroSkillBar.style.display = 'none';
-  yuniSkillBar.style.display = 'none';
-  huyaSkillBar.style.display = 'none';
-
-  mainTitle.innerHTML = "💔 GAME OVER (체력 소진)";
+  getActiveBgm().pause();
+  mainTitle.innerHTML = "💔 GAME OVER";
   mainTitle.style.color = "#ff4b4b";
-  mainTitle.style.fontSize = "16px";
-
-  statsContainer.innerHTML = `
-    <div style="text-align: center; margin-bottom: 2px;">
-      <div style="font-size: 10px; color: #ff4b4b; font-weight: bold;">FAILED</div>
-      <div style="color: #ff4b4b; font-size: 16px; font-weight: bold;">체력이 모두 소진되었습니다.</div>
-    </div>
-    <div>🏆 중단 당시 점수: <b>${score.toLocaleString()}</b></div>
-    <div>💎 최대 콤보: ${maxCombo} | 미스 횟수: ${stats.miss}회</div>
-  `;
-  
-  navTabs.forEach(t => t.classList.remove('active'));
-  navTabs[0].classList.add('active');
-  tabContents.songs.style.display = 'flex';
-  tabContents.gacha.style.display = 'none';
-  tabContents.characters.style.display = 'none';
-  tabContents.missions.style.display = 'none';
-  tabContents.settings.style.display = 'none';
-
+  statsContainer.innerHTML = `체력이 소진되었습니다. 최종 점수: ${score.toLocaleString()}`;
   statsContainer.style.display = 'block';
-  nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
   switchView('menu');
 }
 
 function endGame() {
   isPlaying = false;
-  const currentBgm = getActiveBgm();
-  currentBgm.pause();
-  mashiroPopup.classList.remove('show');
-  yuniPopup.classList.remove('show');
-  huyaPopup.classList.remove('show');
-  feverPopup.classList.remove('show');
+  getActiveBgm().pause();
 
-  mashiroSkillBar.style.display = 'none';
-  yuniSkillBar.style.display = 'none';
-  huyaSkillBar.style.display = 'none';
-
-  let clearTitle = "CLEAR!";
-  let titleColor = "#ffffff";
-
-  if (stats.miss === 0) {
-    if (stats.great === 0 && stats.good === 0) {
-      clearTitle = "퍼펙트 풀콤보! (ALL PERFECTION)";
-      titleColor = '#c084fc';
-    } else {
-      clearTitle = "풀콤보! (FULL COMBO)";
-      titleColor = '#00f2fe';
-    }
-  }
-
-  const rankInfo = calculateRank(currentSongId, currentDifficulty, score);
-
+  const rankInfo = calculateRank(score, currentDifficulty);
   if (!bestRecords[currentSongId][currentDifficulty] || score > bestRecords[currentSongId][currentDifficulty].score) {
     bestRecords[currentSongId][currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
-    clearTitle = "🎉 NEW RECORD! " + clearTitle;
   }
 
   stella += 25;
-  missionData.playCount += 1;
-  updateInventoryUI();
-  updateMissionUI();
-  updateSelectedRecordDisplay();
   saveGameData();
+  updateSelectedRecordDisplay();
 
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
-  mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
-  mainTitle.style.color = titleColor;
-  mainTitle.style.fontSize = "16px";
+  mainTitle.innerHTML = `CLEAR! RANK ${rankInfo.rank}`;
+  mainTitle.style.color = rankInfo.color;
 
   statsContainer.innerHTML = `
-    <div style="text-align: center; margin-bottom: 2px;">
-      <div style="font-size: 10px; color: #8b949e;">[${diffNameUI[currentDifficulty]}] PLAY RESULT</div>
-      <div class="rank-badge" style="color: ${rankInfo.color}; font-size: 18px; font-weight: bold;">RANK ${rankInfo.rank}</div>
-    </div>
-    <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentSongId][currentDifficulty].score.toLocaleString()})</div>
-    <div>💎 최대 콤보: ${maxCombo} | <span style="color: #facc15;">🌟 스텔라 +25 획득!</span></div>
-    <div style="margin-top: 4px; border-top: 1px solid #30363d; padding-top: 4px;">
-      ✨ PERFECT: <span style="color: #00f2fe;">${stats.perfect}</span> | 🌟 GREAT: <span style="color: #4ade80;">${stats.great}</span><br>
-      ⚡ GOOD: <span style="color: #facc15;">${stats.good}</span> | ❌ MISS: <span style="color: #ff4b4b;">${stats.miss}</span>
-    </div>
+    <div>최종 점수: <b>${score.toLocaleString()}</b></div>
+    <div>최대 콤보: ${maxCombo} | 스텔라 +25 획득!</div>
   `;
-  
-  navTabs.forEach(t => t.classList.remove('active'));
-  navTabs[0].classList.add('active');
-  tabContents.songs.style.display = 'flex';
-  tabContents.gacha.style.display = 'none';
-  tabContents.characters.style.display = 'none';
-  tabContents.missions.style.display = 'none';
-  tabContents.settings.style.display = 'none';
-
   statsContainer.style.display = 'block';
-  nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
   switchView('menu');
 }
 
 startBtn.addEventListener('click', startGame);
 updateInventoryUI();
-updateMissionUI();
 </script>
 </body>
 </html>
 """
 
+# 치환 처리 (오타 수정 완료)
 rhythm_game_html = rhythm_game_html.replace("AUDIO1_BASE64_PLACEHOLDER", audio1_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE1_BASE64_PLACEHOLDER", image1_base64)
-
 rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_base64)
-
 rhythm_game_html = rhythm_game_html.replace("AUDIO3_BASE64_PLACEHOLDER", audio3_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE3_BASE64_PLACEHOLDER", image3_base64)
+rhythm_game_html = rhythm_game_html.replace("AUDIO4_BASE64_PLACEHOLDER", audio4_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE4_BASE64_PLACEHOLDER", image4_base64)
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_base64)
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
