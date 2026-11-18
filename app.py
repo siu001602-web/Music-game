@@ -249,18 +249,20 @@ rhythm_game_html = """
     color: #00f2fe;
   }
 
-  .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
+  .difficulty-select-container { display: flex. gap: 6px; width: 100%; justify-content: center; margin-bottom: 8px; }
   .diff-card {
     flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px;
-    padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
+    padding: 6px 2px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
+  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
   .diff-card[data-diff="extreme"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
-  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
-  .diff-name { font-size: 11px; font-weight: 900; }
+  .diff-lv { font-size: 9px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
+  .diff-name { font-size: 10px; font-weight: 900; }
+  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
   .diff-card[data-diff="extreme"] .diff-name { color: #c084fc; }
@@ -716,19 +718,19 @@ navTabs.forEach(tab => {
 const songs = [
   { 
     id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185,
-    levels: { normal: 'Lv. 8', hard: 'Lv. 15', extreme: 'Lv. 25' } 
+    levels: { easy: 'Lv. 4', normal: 'Lv. 9', hard: 'Lv. 16', extreme: 'Lv. 26' } 
   },
   { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
-    levels: { normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 26' } 
+    levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 27' } 
   },
   { 
     id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144,
-    levels: { normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 27' } 
+    levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 28' } 
   },
   { 
     id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255,
-    levels: { normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 29' } 
+    levels: { easy: 'Lv. 7', normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 30' } 
   }
 ];
 
@@ -747,10 +749,10 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  springdream: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
+  springdream: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  constellation: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
 let missionData = {
@@ -839,7 +841,7 @@ let mashiroGauge = 0;
 
 let yuniSkillTimer = 0;
 let yuniGauge = 0;
-let yuniMissProtects = 2; // 유니 패시브: Miss 콤보 유지 최대 2회
+let yuniMissProtects = 2;
 
 let huyaSkillTimer = 0;
 let huyaGauge = 0;
@@ -855,14 +857,14 @@ function getActiveBgm() {
 
 function updateSelectedRecordDisplay() {
   if (!bestRecords[currentSongId]) {
-    bestRecords[currentSongId] = { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } };
+    bestRecords[currentSongId] = { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } };
   }
   if (!bestRecords[currentSongId][currentDifficulty]) {
     currentDifficulty = 'normal';
   }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
-  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
+  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
+  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', extreme: '익스트림' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
@@ -879,6 +881,7 @@ function renderDifficultyButtons() {
   difficultyContainer.innerHTML = '';
   
   const diffs = [
+    { key: 'easy', label: '쉬움', lv: song.levels.easy },
     { key: 'normal', label: '보통', lv: song.levels.normal },
     { key: 'hard', label: '하드', lv: song.levels.hard },
     { key: 'extreme', label: '익스트림', lv: song.levels.extreme }
@@ -960,7 +963,7 @@ updateMissionUI();
 
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
-  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
+  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', extreme: '익스트림' };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
   const rec = bestRecords[currentSongId][currentDifficulty];
@@ -984,22 +987,18 @@ function updateSynergyDisplay() {
     return;
   }
 
-  // 마시로 & 마로 시너지: 냥냥 집사의 특급 후원
   if ((c1 === 'mashiro' && c2 === 'maro') || (c1 === 'maro' && c2 === 'mashiro')) {
     synergyCard.style.opacity = "1";
     synergyCard.innerHTML = `<div style="font-weight: bold; color: #facc15; margin-bottom: 2px;">✨ [냥냥 집사의 특급 후원] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 200 콤보 이상 & HP 100% 유지 시 모든 노트 기본 점수 상시 15% 증가!</div>`;
   }
-  // 유니 & 후야 시너지: 애버리스!
   else if ((c1 === 'yuni' && c2 === 'huya') || (c1 === 'huya' && c2 === 'yuni')) {
     synergyCard.style.opacity = "1";
     synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [애버리스!] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 유니·후야 액티브 지속 시간 각각 +2초 연장 & 겹침 발동 시(더블 스킬) 노트 점수 +25% 추가 상승!</div>`;
   } 
-  // 유니 & 아르냥 시너지
   else if ((c1 === 'yuni' && c2 === 'arunyang') || (c1 === 'arunyang' && c2 === 'yuni')) {
     synergyCard.style.opacity = "1";
     synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [유니&아르냥] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 체력 50% 미만일 때 초당 체력 0.5% 자동 회복 & 방어/생존 스킬 사용 횟수 +1회 추가!</div>`;
   } 
-  // 후야 & 바쿠 시너지: 조용히, 깨우지 마세요
   else if ((c1 === 'huya' && c2 === 'baku') || (c1 === 'baku' && c2 === 'huya')) {
     synergyCard.style.opacity = "1";
     synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [조용히, 깨우지 마세요] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 풀피 유지 시 스킬 지속 시간 +2초 늘어나며, 100콤보마다 추가 보너스 점수 즉시 지급!</div>`;
@@ -1125,25 +1124,59 @@ function generateBeatmap(songId, difficulty) {
   }
 
   const songObj = songs.find(s => s.id === songId);
-  const beatInterval = 0.55; 
   let currentTime = 2.0;
   const totalDuration = songObj ? songObj.duration : 185.0;
 
-  window.NOTE_SPEED = difficulty === 'normal' ? 420 : (difficulty === 'hard' ? 480 : 540);
+  // 난이도별 노트 스피드 및 생성 간격(밀도), 롱/슬라이드 확률 설정
+  let intervalStep = 1.4;
+  let longProb = 0.05;
+  let slideProb = 0.03;
+
+  if (difficulty === 'easy') {
+    window.NOTE_SPEED = 350;
+    intervalStep = 1.6;
+    longProb = 0.05;
+    slideProb = 0.0;
+  } else if (difficulty === 'normal') {
+    window.NOTE_SPEED = 420;
+    intervalStep = 1.1;
+    longProb = 0.15;
+    slideProb = 0.08;
+  } else if (difficulty === 'hard') {
+    window.NOTE_SPEED = 500;
+    intervalStep = 0.7;
+    longProb = 0.30;
+    slideProb = 0.20;
+  } else if (difficulty === 'extreme') {
+    window.NOTE_SPEED = 580;
+    intervalStep = 0.42;
+    longProb = 0.42;
+    slideProb = 0.35;
+  }
 
   let index = 0;
   while (currentTime < totalDuration - 3.0) {
     const lane = Math.floor(seededRandom() * LANES);
-    const isLong = difficulty !== 'normal' && index % 4 === 0 && seededRandom() < 0.35;
+    const randType = seededRandom();
 
-    if (isLong) {
-      const longDuration = beatInterval * 1.5;
+    if (randType < longProb && difficulty !== 'easy') {
+      // 롱 노트 (홀드 노트)
+      const longDuration = 1.2;
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
+    } else if (randType < longProb + slideProb && difficulty !== 'easy') {
+      // 지그재그 슬라이드 노트 (연속된 꺾쇠 패턴)
+      let currentLane = lane;
+      const slideSteps = difficulty === 'extreme' ? 4 : 3;
+      for (let s = 0; s < slideSteps; s++) {
+        notes.push({ time: currentTime + (s * 0.2), lane: currentLane, type: 'slide', hit: false, missed: false });
+        currentLane = (currentLane + 1) % LANES;
+      }
     } else {
+      // 일반 노트
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    currentTime += difficulty === 'normal' ? 1.2 : (difficulty === 'hard' ? 0.85 : 0.55);
+    currentTime += intervalStep;
     index++;
   }
 }
@@ -1152,7 +1185,6 @@ function incrementCombo() {
   combo++;
   if (combo > maxCombo) maxCombo = combo;
 
-  // 후야&바쿠 시너지: 100콤보 단위 달성 시 추가 보너스 점수 지급
   if (hasSynergy('huya', 'baku') && combo > 0 && combo % 100 === 0 && combo !== lastHundredComboChecked) {
     lastHundredComboChecked = combo;
     score += 5000;
@@ -1166,22 +1198,23 @@ function hasSynergy(cKey1, cKey2) {
 
 function applyHitScore(note, minDiff) {
   let baseMultiplier = 1;
-  if (mashiroSkillTimer > 0) baseMultiplier *= 1.4; // 마시로 스킬 발동 시 플릭/연타 점수 +40%
+  if (mashiroSkillTimer > 0) baseMultiplier *= 1.4;
   if (yuniSkillTimer > 0) baseMultiplier *= 1.2;
-  if (doubleSkillTimer > 0) baseMultiplier *= 1.25; // 애버리스 더블 스킬 보너스 (+25%)
+  if (doubleSkillTimer > 0) baseMultiplier *= 1.25;
 
-  // 마시로 + 마로 시너지: 200 콤보 이상 & HP 100% 유지 시 모든 노트 기본 점수 상시 15% 증가
   if (hasSynergy('mashiro', 'maro') && combo >= 200 && currentHp >= 100) {
     baseMultiplier *= 1.15;
   }
 
-  let longBonusMultiplier = 1;
+  let bonusMultiplier = 1;
   if (note.type === 'long') {
-    if (yuniSkillTimer > 0) longBonusMultiplier *= 1.5;
-    if (huyaSkillTimer > 0) longBonusMultiplier *= 1.2;
+    if (yuniSkillTimer > 0) bonusMultiplier *= 1.5;
+    if (huyaSkillTimer > 0) bonusMultiplier *= 1.2;
+  } else if (note.type === 'slide') {
+    if (mashiroSkillTimer > 0) bonusMultiplier *= 1.4; // 슬라이드/연타 점수 대폭 증가
   }
 
-  let finalAdd = Math.round((note.type === 'long' ? 150 : 100 + (combo * 2)) * baseMultiplier * longBonusMultiplier);
+  let finalAdd = Math.round((note.type === 'long' ? 150 : (note.type === 'slide' ? 130 : 100 + (combo * 2))) * baseMultiplier * bonusMultiplier);
 
   if (minDiff <= 0.12) {
     score += finalAdd;
@@ -1211,7 +1244,7 @@ function healHp(amount) {
 function damageHp(amount) {
   currentHp = Math.max(0, currentHp - amount);
   if (currentHp < maxHp) {
-    isFullHpMaintained = false; // 후야&바쿠 및 마시로&마로 시너지 조건 해제
+    isFullHpMaintained = false;
   }
   updateHpUI();
   if (currentHp <= 0) triggerGameOver();
@@ -1267,7 +1300,6 @@ function handleTapDown(lane) {
 function handleMiss() {
   stats.miss++;
   
-  // 유니 패시브: Miss 콤보 보호 판정 (최대 2회)
   let yuniEquipped = (equippedUnit[0] === 'yuni' || equippedUnit[1] === 'yuni');
   if (yuniEquipped && yuniMissProtects > 0) {
     yuniMissProtects--;
@@ -1316,7 +1348,7 @@ window.addEventListener('keyup', (e) => {
 });
 
 function calculateRank(finalScore, difficulty) {
-  let threshold = difficulty === 'normal' ? 150000 : (difficulty === 'hard' ? 240000 : 350000);
+  let threshold = difficulty === 'easy' ? 100000 : (difficulty === 'normal' ? 160000 : (difficulty === 'hard' ? 250000 : 380000));
   if (finalScore >= threshold * 0.95) return { rank: 'SS', color: '#ff79c6' };
   if (finalScore >= threshold * 0.80) return { rank: 'S', color: '#facc15' };
   if (finalScore >= threshold * 0.65) return { rank: 'A', color: '#00f2fe' };
@@ -1336,11 +1368,9 @@ function updateAndDraw(timestamp) {
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 캐릭터 스킬 게이지 및 지속시간 처리
   let extraDuration = (hasSynergy('yuni', 'huya') ? 2 : 0) + (isFullHpMaintained && hasSynergy('huya', 'baku') ? 2 : 0);
   let speedMultiplier = hasSynergy('huya', 'baku') && currentTime <= 10.0 ? 1.15 : 1.0;
 
-  // 마시로 스킬 충전 및 발동 관리
   if (equippedUnit.includes('mashiro')) {
     mashiroSkillBar.style.display = 'flex';
     if (mashiroSkillTimer > 0) {
@@ -1365,7 +1395,6 @@ function updateAndDraw(timestamp) {
     mashiroSkillBar.style.display = 'none';
   }
 
-  // 유니 스킬 충전 및 발동 관리
   if (equippedUnit.includes('yuni')) {
     yuniSkillBar.style.display = 'flex';
     if (yuniSkillTimer > 0) {
@@ -1388,14 +1417,13 @@ function updateAndDraw(timestamp) {
     yuniSkillBar.style.display = 'none';
   }
 
-  // 후야 스킬 충전 및 발동 관리
   if (equippedUnit.includes('huya')) {
     huyaSkillBar.style.display = 'flex';
     if (huyaSkillTimer > 0) {
       huyaSkillTimer -= dt;
       huyaGauge = (huyaSkillTimer / (15 + extraDuration)) * 100;
       huyaSkillStatus.innerText = `발동 중! (${huyaSkillTimer.toFixed(1)}s)`;
-      healHp(dt * 3); // 후야 치유 효과
+      healHp(dt * 3);
       document.getElementById('huya-popup').classList.add('show');
     } else {
       document.getElementById('huya-popup').classList.remove('show');
@@ -1412,7 +1440,6 @@ function updateAndDraw(timestamp) {
     huyaSkillBar.style.display = 'none';
   }
 
-  // 유니&후야 시너지: 애버리스 더블 스킬 판정
   if (hasSynergy('yuni', 'huya') && yuniSkillTimer > 0 && huyaSkillTimer > 0) {
     doubleSkillTimer = 10.0;
     feverPopup.classList.add('show');
@@ -1421,7 +1448,6 @@ function updateAndDraw(timestamp) {
     else feverPopup.classList.remove('show');
   }
 
-  // 유니&아르냥 시너지: 체력 50% 미만 시 초당 0.5% 자동 회복
   if (hasSynergy('yuni', 'arunyang') && currentHp < 50) {
     healHp(dt * 0.5);
   }
@@ -1473,10 +1499,34 @@ function updateAndDraw(timestamp) {
     if (y >= -50 && y <= HIT_Y + 20) {
       const x = note.lane * LANE_WIDTH + 10;
       const w = LANE_WIDTH - 20;
-      ctx.fillStyle = LANE_COLORS[note.lane];
-      ctx.beginPath();
-      ctx.roundRect(x, y - 12, w, 24, 6);
-      ctx.fill();
+      
+      if (note.type === 'slide') {
+        // 지그재그 슬라이드 노트 디자인 (보라빛 꺾쇠 모양)
+        ctx.fillStyle = '#c084fc';
+        ctx.beginPath();
+        ctx.moveTo(x + w / 2, y - 16);
+        ctx.lineTo(x + w, y);
+        ctx.lineTo(x + w / 2, y + 16);
+        ctx.lineTo(x, y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      } else if (note.type === 'long') {
+        // 롱 노트 (홀드 바 형태)
+        ctx.fillStyle = '#ff79c6';
+        ctx.beginPath();
+        ctx.roundRect(x, y - 18, w, 32, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      } else {
+        // 일반 노트
+        ctx.fillStyle = LANE_COLORS[note.lane];
+        ctx.beginPath();
+        ctx.roundRect(x, y - 12, w, 24, 6);
+        ctx.fill();
+      }
     }
   }
 
