@@ -435,10 +435,7 @@ rhythm_game_html = """
         </div>
         <div style="display: flex; gap: 8px; width: 100%; margin-top: 8px;">
           <button onclick="exportSaveData()" class="gacha-btn" style="background: #21262d; color: #4ade80; border: 1px solid #4ade80;">데이터 내보내기</button>
-          <label class="gacha-btn" style="background: #00f2fe; color: #0e1117; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            데이터 불러오기
-            <input type="file" id="import-file-input" style="display: none;" accept=".json,.txt" onchange="importSaveData(event)">
-          </label>
+          <button onclick="importSaveDataPrompt()" class="gacha-btn" style="background: #00f2fe; color: #0e1117;">데이터 불러오기</button>
         </div>
         <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px;">데이터 초기화 (문제 해결용)</button>
       </div>
@@ -709,40 +706,33 @@ function exportSaveData() {
   downloadAnchor.remove();
 }
 
-// 데이터 불러오기 (인코딩/일반 JSON 모두 완벽 호환 복원)
-function importSaveData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      let fileContent = e.target.result.trim();
-      
-      // %7B 등으로 인코딩된 상태로 읽혔을 경우 디코딩 수행
-      if (fileContent.includes('%7B') || fileContent.includes('%22') || fileContent.startsWith('%')) {
-        fileContent = decodeURIComponent(fileContent);
-      }
+// 데이터 불러오기 (프롬프트 창에 JSON 텍스트를 붙여넣어 복원하는 방식으로 개선)
+function importSaveDataPrompt() {
+  const inputString = prompt("백업했던 세이브 파일의 JSON 텍스트(또는 %7B로 시작하는 인코딩 텍스트)를 여기에 붙여넣어 주세요:");
+  if (!inputString) return;
 
-      const parsed = JSON.parse(fileContent);
-      if (parsed.stella !== undefined) stella = parsed.stella;
-      if (parsed.ownedCharacters) ownedCharacters = parsed.ownedCharacters;
-      if (parsed.bestRecords) bestRecords = parsed.bestRecords;
-      if (parsed.missionData) missionData = parsed.missionData;
-      
-      saveGameData();
-      updateInventoryUI();
-      updateMissionUI();
-      updateSelectedRecordDisplay();
-      
-      // 파일 input 초기화
-      document.getElementById('import-file-input').value = '';
-      alert("💾 데이터가 성공적으로 복원되었습니다!");
-    } catch (err) {
-      console.error(err);
-      alert("❌ 잘못된 형식의 세이브 파일입니다. 올바른 JSON 파일을 선택해 주세요.");
+  try {
+    let fileContent = inputString.trim();
+    if (fileContent.includes('%7B') || fileContent.includes('%22') || fileContent.startsWith('%')) {
+      fileContent = decodeURIComponent(fileContent);
     }
-  };
-  reader.readAsText(file);
+
+    const parsed = JSON.parse(fileContent);
+    if (parsed.stella !== undefined) stella = parsed.stella;
+    if (parsed.ownedCharacters) ownedCharacters = parsed.ownedCharacters;
+    if (parsed.bestRecords) bestRecords = parsed.bestRecords;
+    if (parsed.missionData) missionData = parsed.missionData;
+    
+    saveGameData();
+    updateInventoryUI();
+    updateMissionUI();
+    updateSelectedRecordDisplay();
+    
+    alert("💾 데이터가 성공적으로 복원되었습니다!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ 잘못된 형식의 세이브 데이터입니다. 올바른 JSON 텍스트를 입력해 주세요.");
+  }
 }
 
 loadGameData();
