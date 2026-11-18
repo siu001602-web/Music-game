@@ -712,8 +712,8 @@ function generateBeatmap(songId, difficulty) {
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
   
-  // 🌟 삐질게는 2분 20초(~140초) 길이에 맞춰 채보 생성, 스타트레일은 기존 유지
-  const totalDuration = (songId === 'bbijilge') ? 140.0 : 225.0;
+  // 🌟 삐질게는 2분 24초(~144초) 길이에 맞춰 채보 생성
+  const totalDuration = (songId === 'bbijilge') ? 144.0 : 225.0;
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
@@ -1006,28 +1006,56 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-function calculateRank(difficulty, finalScore) {
-  if (difficulty === 'easy') {
-    if (finalScore >= 90000) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 70000) return { rank: 'A', color: '#00f2fe' };
-    if (finalScore >= 60000) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
-    return { rank: 'D', color: '#94a3b8' };
-  } else if (difficulty === 'normal') {
-    if (finalScore >= 195000) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 150000) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 120000) return { rank: 'A', color: '#00f2fe' };
-    if (finalScore >= 95000) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 70000) return { rank: 'C', color: '#fb923c' };
-    return { rank: 'D', color: '#94a3b8' };
+// 🌟 곡별(Star Trail vs 삐질게) 전용 맞춤형 등급 판정 함수
+function calculateRank(songId, difficulty, finalScore) {
+  if (songId === 'bbijilge') {
+    // 🎵 '삐질게' 전용 맞춤형 등급 컷트라인 (2분 24초 곡 길이에 최적화)
+    if (difficulty === 'easy') {
+      if (finalScore >= 70000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 60000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 50000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 40000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 30000) return { rank: 'C', color: '#fb923c' };
+      return { rank: 'D', color: '#94a3b8' };
+    } else if (difficulty === 'normal') {
+      if (finalScore >= 140000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 115000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 90000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 70000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
+      return { rank: 'D', color: '#94a3b8' };
+    } else {
+      if (finalScore >= 210000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 180000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 145000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 110000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 75000) return { rank: 'C', color: '#00f2fe' };
+      return { rank: 'D', color: '#94a3b8' };
+    }
   } else {
-    if (finalScore >= 280000) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
-    if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 100000) return { rank: 'C', color: '#00f2fe' };
-    return { rank: 'D', color: '#94a3b8' };
+    // 🎵 'Star Trail' 전용 등급 컷트라인
+    if (difficulty === 'easy') {
+      if (finalScore >= 90000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 70000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 60000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
+      return { rank: 'D', color: '#94a3b8' };
+    } else if (difficulty === 'normal') {
+      if (finalScore >= 195000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 150000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 120000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 95000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 70000) return { rank: 'C', color: '#fb923c' };
+      return { rank: 'D', color: '#94a3b8' };
+    } else {
+      if (finalScore >= 280000) return { rank: 'SS', color: '#ff79c6' };
+      if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
+      if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
+      if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
+      if (finalScore >= 100000) return { rank: 'C', color: '#00f2fe' };
+      return { rank: 'D', color: '#94a3b8' };
+    }
   }
 }
 
@@ -1296,7 +1324,7 @@ function endGame() {
     }
   }
 
-  const rankInfo = calculateRank(currentDifficulty, score);
+  const rankInfo = calculateRank(currentSongId, currentDifficulty, score);
 
   if (score > bestRecords[currentSongId][currentDifficulty].score) {
     bestRecords[currentSongId][currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
