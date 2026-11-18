@@ -711,8 +711,6 @@ function generateBeatmap(songId, difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  
-  // 🌟 삐질게는 2분 24초(~144초) 길이에 맞춰 채보 생성
   const totalDuration = (songId === 'bbijilge') ? 144.0 : 225.0;
 
   let speed = 420;
@@ -720,26 +718,58 @@ function generateBeatmap(songId, difficulty) {
   if (difficulty === 'hard') speed = 490;
   window.NOTE_SPEED = speed;
 
+  let activeLongEndTimes = [0, 0, 0, 0];
+
   let index = 0;
   while (currentTime < totalDuration - 5.0) {
     const lane = Math.floor(seededRandom() * LANES);
     const rand = seededRandom();
 
+    if (currentTime < activeLongEndTimes[lane]) {
+      if (difficulty === 'easy') currentTime += beatInterval * 1.8;
+      else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
+      else currentTime += beatInterval * 0.85;
+      index++;
+      continue;
+    }
+
     if (index % 5 === 0 && rand < 0.35) {
       const pairLane = (lane + 2) % LANES;
-      const bridgeId = `bridge_${index}`;
-      notes.push({ time: currentTime, lane: lane, type: 'bridge', pairLane: pairLane, bridgeId: bridgeId, hit: false, missed: false });
-      notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
+      if (currentTime >= activeLongEndTimes[lane] && currentTime >= activeLongEndTimes[pairLane]) {
+        const bridgeId = `bridge_${index}`;
+        notes.push({ time: currentTime, lane: lane, type: 'bridge', pairLane: pairLane, bridgeId: bridgeId, hit: false, missed: false });
+        notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
+      }
     }
     else if (index % 4 === 0 && rand < 0.45) {
-      const dir = lane === 0 ? 'right' : (lane === 3 ? 'left' : (seededRandom() < 0.5 ? 'left' : 'right'));
-      notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: dir, hit: false, missed: false });
+      notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
     else if (difficulty !== 'easy' && index % 6 === 0 && rand < 0.5) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.45) {
-      notes.push({ time: currentTime, lane: lane, type: 'long', duration: beatInterval * (seededRandom() * 1.2 + 1.0), tailHit: false, holding: false, hit: false, missed: false });
+    // 🌟 3번: 지그재그 롱 노트 (Normal / Hard 난이도에서 등장)
+    else if (difficulty !== 'easy' && index % 7 === 0 && rand < 0.4) {
+      const zigzagDur = beatInterval * 1.5;
+      const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
+      if (currentTime >= activeLongEndTimes[targetLane]) {
+        notes.push({ 
+          time: currentTime, lane: lane, type: 'zigzag', duration: zigzagDur, 
+          targetLane: targetLane, tailHit: false, holding: false, hit: false, missed: false 
+        });
+        activeLongEndTimes[lane] = currentTime + zigzagDur + 0.3;
+        activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
+      }
+    }
+    // 🌟 4번: 타이밍 홀드 (Release) 노트 (Normal / Hard 난이도에서 등장)
+    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
+      const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
+      notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
+      activeLongEndTimes[lane] = currentTime + releaseDur + 0.3;
+    }
+    else if (difficulty !== 'easy' && index % 3 === 1 && rand < 0.45) {
+      const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
+      notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
+      activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
     }
     else {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
@@ -765,7 +795,7 @@ function applyHitScore(note, minDiff) {
     mult *= 1.05;
   }
 
-  if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
+  if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long' || note.type === 'release' || note.type === 'zigzag')) {
     mult *= 1.15;
   }
 
@@ -832,7 +862,9 @@ function handleTapDown(lane) {
 
   if (targetNote && minDiff <= 0.32) {
     targetNote.hit = true;
-    if (targetNote.type === 'long') targetNote.holding = true;
+    if (targetNote.type === 'long' || targetNote.type === 'release' || targetNote.type === 'zigzag') {
+      targetNote.holding = true;
+    }
     applyHitScore(targetNote, minDiff);
   }
 }
@@ -873,14 +905,17 @@ function handleSwipe(lane, dir) {
 function handleTapUp(lane) {
   const currentTime = (performance.now() - startTime) / 1000;
   for (let note of notes) {
-    if (note.type === 'long' && note.holding && !note.tailHit && note.lane === lane) {
+    if ((note.type === 'long' || note.type === 'release' || note.type === 'zigzag') && note.holding && !note.tailHit && (note.lane === lane || (note.type === 'zigzag' && note.targetLane === lane))) {
       const endTime = note.time + note.duration;
       const diff = Math.abs(endTime - currentTime);
       note.holding = false;
       note.tailHit = true;
 
-      if (diff <= 0.35 || currentTime >= endTime - 0.2) {
-        let addScore = 50;
+      // 🌟 4번 타이밍 홀드(Release) 노트는 뗄 때 정확한 타이밍 요구 (오차 0.25초 내외)
+      let releaseWindow = (note.type === 'release') ? 0.25 : 0.35;
+
+      if (diff <= releaseWindow || currentTime >= endTime - 0.2) {
+        let addScore = (note.type === 'release') ? 100 : 50;
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
@@ -892,7 +927,7 @@ function handleTapUp(lane) {
           skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
-        showJudgement("HOLD CLEAR", "#00f2fe");
+        showJudgement(note.type === 'release' ? "RELEASE PERFECT!" : "HOLD CLEAR", note.type === 'release' ? "#ff79c6" : "#00f2fe");
       } else {
         handleMiss();
       }
@@ -1006,10 +1041,8 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// 🌟 곡별(Star Trail vs 삐질게) 전용 맞춤형 등급 판정 함수
 function calculateRank(songId, difficulty, finalScore) {
   if (songId === 'bbijilge') {
-    // 🎵 '삐질게' 전용 맞춤형 등급 컷트라인 (2분 24초 곡 길이에 최적화)
     if (difficulty === 'easy') {
       if (finalScore >= 70000) return { rank: 'SS', color: '#ff79c6' };
       if (finalScore >= 60000) return { rank: 'S', color: '#facc15' };
@@ -1033,7 +1066,6 @@ function calculateRank(songId, difficulty, finalScore) {
       return { rank: 'D', color: '#94a3b8' };
     }
   } else {
-    // 🎵 'Star Trail' 전용 등급 컷트라인
     if (difficulty === 'easy') {
       if (finalScore >= 90000) return { rank: 'SS', color: '#ff79c6' };
       if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
@@ -1131,24 +1163,36 @@ function updateAndDraw() {
 
   let remainingNotes = 0;
   for (let note of notes) {
-    if (note.missed || (note.hit && (note.type !== 'long' || note.tailHit))) continue;
+    if (note.missed || (note.hit && (note.type !== 'long' && note.type !== 'release' && note.type !== 'zigzag' || note.tailHit))) continue;
     remainingNotes++;
 
     const timeDiff = note.time - currentTime;
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
-    if (note.type === 'long' && note.holding) {
+    // 롱 / 릴리즈 / 지그재그 누르고 있는 동안의 바디 렌더링
+    if ((note.type === 'long' || note.type === 'release' || note.type === 'zigzag') && note.holding) {
       const endY = HIT_Y - ((note.time + note.duration - currentTime) * window.NOTE_SPEED);
-      const x = note.lane * LANE_WIDTH + 14;
-      const w = LANE_WIDTH - 28;
       
-      ctx.fillStyle = 'rgba(250, 204, 21, 0.45)';
-      ctx.fillRect(x, Math.max(0, endY), w, HIT_Y - Math.max(0, endY));
+      if (note.type === 'zigzag') {
+        const x1 = note.lane * LANE_WIDTH + LANE_WIDTH / 2;
+        const x2 = note.targetLane * LANE_WIDTH + LANE_WIDTH / 2;
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.75)';
+        ctx.lineWidth = 12;
+        ctx.beginPath();
+        ctx.moveTo(x1, HIT_Y);
+        ctx.lineTo(x2, Math.max(0, endY));
+        ctx.stroke();
+      } else {
+        const x = note.lane * LANE_WIDTH + 14;
+        const w = LANE_WIDTH - 28;
+        ctx.fillStyle = note.type === 'release' ? 'rgba(255, 121, 198, 0.45)' : 'rgba(250, 204, 21, 0.45)';
+        ctx.fillRect(x, Math.max(0, endY), w, HIT_Y - Math.max(0, endY));
+      }
 
       if (currentTime >= note.time + note.duration) {
         note.holding = false;
         note.tailHit = true;
-        let addScore = 50;
+        let addScore = (note.type === 'release') ? 100 : 50;
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
@@ -1160,7 +1204,7 @@ function updateAndDraw() {
           skillGauge = Math.min(100, skillGauge + 0.8);
           updateSkillUI();
         }
-        showJudgement("HOLD CLEAR", "#00f2fe");
+        showJudgement(note.type === 'release' ? "RELEASE PERFECT!" : "HOLD CLEAR", note.type === 'release' ? "#ff79c6" : "#00f2fe");
       }
       continue;
     }
@@ -1184,6 +1228,29 @@ function updateAndDraw() {
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
       } 
+      else if (note.type === 'release') {
+        const tailY = y - (note.duration * window.NOTE_SPEED);
+        ctx.fillStyle = 'rgba(255, 121, 198, 0.3)';
+        ctx.fillRect(x + 4, tailY, w - 8, y - tailY);
+        ctx.fillStyle = '#ff79c6';
+        ctx.beginPath();
+        ctx.roundRect(x, y - 12, w, 24, 6);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('▲UP', x + w / 2, y + 4);
+      }
+      else if (note.type === 'zigzag') {
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath();
+        ctx.roundRect(x, y - 12, w, 24, 6);
+        ctx.fill();
+        ctx.fillStyle = '#0e1117';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ZIG', x + w / 2, y + 4);
+      }
       else if (note.type === 'swipe') {
         ctx.fillStyle = '#4ade80';
         ctx.beginPath();
