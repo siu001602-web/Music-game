@@ -38,9 +38,9 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# 새로 추가된 '봄꿈' 곡 경로 (3분 5초 = 185초)
+# '봄꿈' 곡 및 새로운 표지 이미지 경로 설정
 song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
-song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
+song4_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
 
 # 캐릭터 및 보이스 경로 설정
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     # 시로 (네네코 마시로)
@@ -170,7 +170,6 @@ rhythm_game_html = """
 
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-  /* 첨부 이미지 스타일: 가로 일렬 스크롤 앨범 리스트 */
   .song-grid {
     display: flex;
     flex-direction: row;
@@ -185,10 +184,6 @@ rhythm_game_html = """
   }
   .song-grid::-webkit-scrollbar {
     height: 5px;
-  }
-  .song-grid::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
   }
   .song-grid::-webkit-scrollbar-thumb {
     background: #00f2fe;
@@ -238,7 +233,6 @@ rhythm_game_html = """
     font-weight: 900;
     padding: 1px 5px;
     border-radius: 6px;
-    letter-spacing: 0.3px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .song-name {
@@ -718,7 +712,6 @@ navTabs.forEach(tab => {
   });
 });
 
-// 일렬 나열될 악보 목록 (모두 실행 가능)
 const songs = [
   { 
     id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185,
@@ -1390,7 +1383,7 @@ updateInventoryUI();
 </html>
 """
 
-# 치환 처리 (오타 수정 완료)
+# 치환 처리
 rhythm_game_html = rhythm_game_html.replace("AUDIO1_BASE64_PLACEHOLDER", audio1_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE1_BASE64_PLACEHOLDER", image1_base64)
 rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_base64)
