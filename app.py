@@ -262,7 +262,7 @@ rhythm_game_html = """
   }
 
   .skill-popup {
-    position: absolute; right: 15px;
+    position: absolute; right: 55px;
     display: flex; align-items: center; gap: 8px; background: rgba(0, 242, 254, 0.25);
     border: 2px solid #00f2fe; border-radius: 30px; padding: 4px 12px 4px 4px; z-index: 20;
     opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events: none;
@@ -270,8 +270,16 @@ rhythm_game_html = """
   .skill-popup.show { opacity: 1; transform: translateY(0); }
   .skill-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 
-  #yuni-popup { top: 15px; border-color: #00f2fe; }
-  #huya-popup { top: 62px; border-color: #c084fc; background: rgba(192, 132, 252, 0.25); }
+  #yuni-popup { top: 12px; border-color: #00f2fe; }
+  #huya-popup { top: 56px; border-color: #c084fc; background: rgba(192, 132, 252, 0.25); }
+
+  #giveup-btn {
+    position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
+    background: rgba(255, 75, 75, 0.2); border: 2px solid #ff4b4b; border-radius: 50%;
+    color: #ff4b4b; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 25; transition: all 0.2s;
+  }
+  #giveup-btn:hover { background: rgba(255, 75, 75, 0.4); transform: scale(1.05); }
 
   #hp-bar-container {
     position: absolute; top: 12px; left: 18px; width: 140px;
@@ -476,6 +484,8 @@ rhythm_game_html = """
   <div id="play-screen">
     <canvas id="gameCanvas" width="480" height="720"></canvas>
     
+    <button id="giveup-btn" onclick="requestGiveUp()" title="중도포기">✕</button>
+
     <div id="hp-bar-container">
       <div style="display: flex; justify-content: space-between; font-size: 9px; font-weight: bold; color: #4ade80;">
         <span>❤️ HP</span>
@@ -1174,7 +1184,7 @@ function generateBeatmap(songId, difficulty) {
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
   if (difficulty === 'hard') speed = 490;
-  if (difficulty === 'expert') speed = 520; // 🔹 익스퍼트 클리어 가능하도록 속도 소폭 완화
+  if (difficulty === 'expert') speed = 520;
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
@@ -1240,7 +1250,7 @@ function generateBeatmap(songId, difficulty) {
     } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.85;
     } else {
-      currentTime += beatInterval * 0.52; // 🔹 익스퍼트 노트 간격 소폭 완화하여 충분히 클리어 가능하도록 조정
+      currentTime += beatInterval * 0.52;
     }
     index++;
   }
@@ -1405,6 +1415,31 @@ function triggerHuyaSkill() {
 
   if (equippedUnit.includes('yuni') && yuniSkillActivated) {
     doubleSkillTimer = 10 * 60;
+  }
+}
+
+function requestGiveUp() {
+  if (!isPlaying) return;
+  isPlaying = false;
+  const currentBgm = getActiveBgm();
+  currentBgm.pause();
+
+  if (confirm("정말 나가겠습니까? (진행 중인 게임은 저장되지 않습니다)")) {
+    // 예 누를 시 로비(메뉴)로 이동
+    yuniPopup.classList.remove('show');
+    huyaPopup.classList.remove('show');
+    yuniSkillBar.style.display = 'none';
+    huyaSkillBar.style.display = 'none';
+
+    mainTitle.innerHTML = "RHYTHM STAR";
+    mainTitle.style.color = "#00f2fe";
+    statsContainer.style.display = 'none';
+    nextPrepBtn.innerText = "유니트 편성 및 라이브";
+    switchView('menu');
+  } else {
+    // 취소 누를 시 게임 재개
+    isPlaying = true;
+    requestAnimationFrame(updateAndDraw);
   }
 }
 
@@ -1763,7 +1798,7 @@ function updateAndDraw() {
       if (note.type === 'zigzag') {
         const x1 = note.lane * LANE_WIDTH + LANE_WIDTH / 2;
         const x2 = note.targetLane * LANE_WIDTH + LANE_WIDTH / 2;
-        ctx.strokeStyle = 'rgba(192, 132, 252, 0.85)'; // 🔹 지그재그 연결선 보라색(#c084fc)으로 변경
+        ctx.strokeStyle = 'rgba(192, 132, 252, 0.85)';
         ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.moveTo(x1, HIT_Y);
@@ -1838,7 +1873,7 @@ function updateAndDraw() {
         ctx.fillText('▲UP', x + w / 2, y + 4);
       }
       else if (note.type === 'zigzag') {
-        ctx.fillStyle = '#c084fc'; // 🔹 지그재그 노트 헤드 보라색(#c084fc)으로 변경
+        ctx.fillStyle = '#c084fc';
         ctx.beginPath();
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
