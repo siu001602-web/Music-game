@@ -48,80 +48,80 @@ def get_b64(path):
 
 b64 = {k: get_b64(v) for k, v in paths.items()}
 
-rhythm_game_html = f"""
+rhythm_game_html = """
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-  * {{ box-sizing: border-box; touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }}
-  html, body {{ margin: 0; padding: 0; width: 100vw; height: 100vh; background-color: #0e1117; color: white; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; overflow: hidden; }}
-  #app-wrapper {{ position: relative; width: 100%; max-width: 480px; height: 100vh; max-height: 840px; background-color: #0e1117; border-left: 2px solid #30363d; border-right: 2px solid #30363d; box-shadow: 0 0 25px rgba(0, 255, 255, 0.15); overflow: hidden; }}
-  #menu-screen {{ width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,{b64["s1_i"]}'); background-size: cover; background-position: center; padding: 14px; text-align: center; }}
-  #play-screen {{ width: 100%; height: 100%; display: none; position: relative; background-color: #161b22; }}
-  canvas {{ width: 100%; height: 100%; display: block; background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,{b64["s1_i"]}'); background-size: cover; background-position: center; touch-action: none; }}
-  .nav-tabs {{ display: flex; gap: 3px; width: 100%; background: rgba(22, 27, 34, 0.9); padding: 5px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 8px; }}
-  .nav-tab {{ flex: 1; padding: 6px 0; font-size: 10px; font-weight: bold; color: #8b949e; background: transparent; border: none; border-radius: 8px; cursor: pointer; }}
-  .nav-tab.active {{ color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }}
-  .tab-content {{ width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }}
-  .section-title {{ font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }}
-  .song-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px; }}
-  .song-card {{ background: #161b22; border: 2px solid #30363d; border-radius: 10px; padding: 6px; cursor: pointer; text-align: left; position: relative; }}
-  .song-card.selected {{ border-color: #00f2fe; background: #1f2630; }}
-  .song-thumb {{ width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }}
-  .song-name {{ font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-  .new-badge {{ position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }}
-  .difficulty-select-container {{ display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }}
-  .diff-card {{ flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px; padding: 6px 4px; cursor: pointer; text-align: center; }}
-  .diff-card.selected {{ border-color: #00f2fe; background: #1f2630; }}
-  .diff-lv {{ font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }}
-  .diff-name {{ font-size: 11px; font-weight: 900; }}
-  .selected-diff-record-box {{ width: 100%; background: rgba(22, 27, 34, 0.85); border: 1px solid #30363d; border-radius: 10px; padding: 7px 12px; margin-bottom: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }}
-  #prep-screen {{ width: 100%; height: 100%; background: rgba(14, 17, 23, 0.98); padding: 16px; display: none; flex-direction: column; text-align: left; }}
-  .prep-header {{ font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }}
-  .prep-sub {{ font-size: 11px; color: #8b949e; margin-bottom: 8px; }}
-  .unit-slots {{ display: flex; gap: 8px; margin-bottom: 8px; }}
-  .unit-slot {{ flex: 1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px; height: 105px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 6px; text-align: center; }}
-  .unit-slot.filled {{ border-style: solid; }}
-  .unit-slot.filled.star-5 {{ border-color: #facc15; }}
-  .unit-slot.filled.star-4 {{ border-color: #c084fc; }}
-  .plus-icon {{ font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; }}
-  .slot-img {{ width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; }}
-  #char-select-modal, #gacha-result-modal {{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14, 17, 23, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; padding: 20px; }}
-  .char-select-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 14px; max-height: 360px; overflow-y: auto; }}
-  .char-option-card {{ background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-align: center; }}
-  .prep-skill-card {{ background: rgba(255, 121, 198, 0.1); border: 1px solid #ff79c6; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 11px; }}
-  .prep-footer {{ display: flex; justify-content: space-between; align-items: center; margin-top: auto; }}
-  .action-btn {{ padding: 9px 22px; font-size: 14px; font-weight: bold; color: #0e1117; background: #00f2fe; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); }}
-  .stats-box {{ background: rgba(255, 255, 255, 0.08); border: 1px solid #30363d; border-radius: 10px; padding: 8px 14px; margin: 2px 0 8px 0; width: 100%; text-align: left; font-size: 11px; line-height: 1.4; }}
-  .controls-hint {{ margin-top: 6px; font-size: 10px; color: #8b949e; }}
-  .gacha-box {{ background: #161b22; border: 2px solid #30363d; border-radius: 14px; padding: 16px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }}
-  .gacha-btn-group {{ display: flex; gap: 10px; width: 100%; }}
-  .gacha-btn {{ flex: 1; padding: 10px; font-size: 13px; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; }}
-  .gacha-btn.single {{ background: #21262d; color: #00f2fe; border: 1px solid #00f2fe; }}
-  .gacha-btn.multi {{ background: #00f2fe; color: #0e1117; }}
-  .skill-popup {{ position: absolute; right: 55px; display: flex; align-items: center; gap: 8px; background: rgba(0, 242, 254, 0.25); border: 2px solid #00f2fe; border-radius: 30px; padding: 4px 12px 4px 4px; z-index: 20; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events: none; }}
-  .skill-popup.show {{ opacity: 1; transform: translateY(0); }}
-  .skill-popup img {{ width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }}
-  #giveup-btn {{ position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: rgba(255, 75, 75, 0.2); border: 2px solid #ff4b4b; border-radius: 50%; color: #ff4b4b; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 25; }}
-  #hp-bar-container {{ position: absolute; top: 12px; left: 18px; width: 140px; background: rgba(14, 17, 23, 0.85); border: 2px solid #30363d; border-radius: 10px; padding: 4px 8px; display: flex; flex-direction: column; gap: 2px; z-index: 20; }}
-  .hp-gauge-bg {{ width: 100%; height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }}
-  .hp-gauge-fill {{ width: 100%; height: 100%; background: #4ade80; transition: width 0.1s linear; }}
-  #skill-gauges-wrapper {{ position: absolute; bottom: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 20; }}
-  .skill-bar-box {{ background: rgba(14, 17, 23, 0.85); border: 2px solid #30363d; border-radius: 12px; padding: 5px 10px; display: none; flex-direction: column; align-items: center; gap: 2px; }}
-  .gauge-bg {{ width: 95px; height: 6px; background: #21262d; border-radius: 4px; overflow: hidden; }}
-  .gauge-fill {{ width: 0%; height: 100%; transition: width 0.1s linear; }}
-  .mission-card {{ background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }}
+  * { box-sizing: border-box; touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+  html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; background-color: #0e1117; color: white; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  #app-wrapper { position: relative; width: 100%; max-width: 480px; height: 100vh; max-height: 840px; background-color: #0e1117; border-left: 2px solid #30363d; border-right: 2px solid #30363d; box-shadow: 0 0 25px rgba(0, 255, 255, 0.15); overflow: hidden; }
+  #menu-screen { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE1_PLACEHOLDER'); background-size: cover; background-position: center; padding: 14px; text-align: center; }
+  #play-screen { width: 100%; height: 100%; display: none; position: relative; background-color: #161b22; }
+  canvas { width: 100%; height: 100%; display: block; background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE1_PLACEHOLDER'); background-size: cover; background-position: center; touch-action: none; }
+  .nav-tabs { display: flex; gap: 3px; width: 100%; background: rgba(22, 27, 34, 0.9); padding: 5px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 8px; }
+  .nav-tab { flex: 1; padding: 6px 0; font-size: 10px; font-weight: bold; color: #8b949e; background: transparent; border: none; border-radius: 8px; cursor: pointer; }
+  .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
+  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
+  .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+  .song-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px; }
+  .song-card { background: #161b22; border: 2px solid #30363d; border-radius: 10px; padding: 6px; cursor: pointer; text-align: left; position: relative; }
+  .song-card.selected { border-color: #00f2fe; background: #1f2630; }
+  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
+  .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
+  .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
+  .diff-card { flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px; padding: 6px 4px; cursor: pointer; text-align: center; }
+  .diff-card.selected { border-color: #00f2fe; background: #1f2630; }
+  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
+  .diff-name { font-size: 11px; font-weight: 900; }
+  .selected-diff-record-box { width: 100%; background: rgba(22, 27, 34, 0.85); border: 1px solid #30363d; border-radius: 10px; padding: 7px 12px; margin-bottom: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+  #prep-screen { width: 100%; height: 100%; background: rgba(14, 17, 23, 0.98); padding: 16px; display: none; flex-direction: column; text-align: left; }
+  .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
+  .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
+  .unit-slots { display: flex; gap: 8px; margin-bottom: 8px; }
+  .unit-slot { flex: 1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px; height: 105px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 6px; text-align: center; }
+  .unit-slot.filled { border-style: solid; }
+  .unit-slot.filled.star-5 { border-color: #facc15; }
+  .unit-slot.filled.star-4 { border-color: #c084fc; }
+  .plus-icon { font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; }
+  .slot-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; }
+  #char-select-modal, #gacha-result-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14, 17, 23, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; padding: 20px; }
+  .char-select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 14px; max-height: 360px; overflow-y: auto; }
+  .char-option-card { background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-align: center; }
+  .prep-skill-card { background: rgba(255, 121, 198, 0.1); border: 1px solid #ff79c6; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 11px; }
+  .prep-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+  .action-btn { padding: 9px 22px; font-size: 14px; font-weight: bold; color: #0e1117; background: #00f2fe; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); }
+  .stats-box { background: rgba(255, 255, 255, 0.08); border: 1px solid #30363d; border-radius: 10px; padding: 8px 14px; margin: 2px 0 8px 0; width: 100%; text-align: left; font-size: 11px; line-height: 1.4; }
+  .controls-hint { margin-top: 6px; font-size: 10px; color: #8b949e; }
+  .gacha-box { background: #161b22; border: 2px solid #30363d; border-radius: 14px; padding: 16px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .gacha-btn-group { display: flex; gap: 10px; width: 100%; }
+  .gacha-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; }
+  .gacha-btn.single { background: #21262d; color: #00f2fe; border: 1px solid #00f2fe; }
+  .gacha-btn.multi { background: #00f2fe; color: #0e1117; }
+  .skill-popup { position: absolute; right: 55px; display: flex; align-items: center; gap: 8px; background: rgba(0, 242, 254, 0.25); border: 2px solid #00f2fe; border-radius: 30px; padding: 4px 12px 4px 4px; z-index: 20; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events: none; }
+  .skill-popup.show { opacity: 1; transform: translateY(0); }
+  .skill-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+  #giveup-btn { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: rgba(255, 75, 75, 0.2); border: 2px solid #ff4b4b; border-radius: 50%; color: #ff4b4b; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 25; }
+  #hp-bar-container { position: absolute; top: 12px; left: 18px; width: 140px; background: rgba(14, 17, 23, 0.85); border: 2px solid #30363d; border-radius: 10px; padding: 4px 8px; display: flex; flex-direction: column; gap: 2px; z-index: 20; }
+  .hp-gauge-bg { width: 100%; height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
+  .hp-gauge-fill { width: 100%; height: 100%; background: #4ade80; transition: width 0.1s linear; }
+  #skill-gauges-wrapper { position: absolute; bottom: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 20; }
+  .skill-bar-box { background: rgba(14, 17, 23, 0.85); border: 2px solid #30363d; border-radius: 12px; padding: 5px 10px; display: none; flex-direction: column; align-items: center; gap: 2px; }
+  .gauge-bg { width: 95px; height: 6px; background: #21262d; border-radius: 4px; overflow: hidden; }
+  .gauge-fill { width: 0%; height: 100%; transition: width 0.1s linear; }
+  .mission-card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
-<audio id="bgm1" preload="auto"><source src="data:audio/mp4;base64,{b64['s1_m']}" type="audio/mp4"></audio>
-<audio id="bgm2" preload="auto"><source src="data:audio/mp4;base64,{b64['s2_m']}" type="audio/mp4"></audio>
-<audio id="bgm3" preload="auto"><source src="data:audio/mp4;base64,{b64['s3_m']}" type="audio/mp4"></audio>
-<audio id="yuni-voice" preload="auto"><source src="data:audio/mp4;base64,{b64['yuni_v']}" type="audio/mp4"></audio>
-<audio id="huya-voice" preload="auto"><source src="data:audio/mp4;base64,{b64['huya_v']}" type="audio/mp4"></audio>
-<audio id="mashiro-voice" preload="auto"><source src="data:audio/mp4;base64,{b64['mashiro_v']}" type="audio/mp4"></audio>
+<audio id="bgm1" preload="auto"><source src="data:audio/mp4;base64,AUDIO1_PLACEHOLDER" type="audio/mp4"></audio>
+<audio id="bgm2" preload="auto"><source src="data:audio/mp4;base64,AUDIO2_PLACEHOLDER" type="audio/mp4"></audio>
+<audio id="bgm3" preload="auto"><source src="data:audio/mp4;base64,AUDIO3_PLACEHOLDER" type="audio/mp4"></audio>
+<audio id="yuni-voice" preload="auto"><source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4"></audio>
+<audio id="huya-voice" preload="auto"><source src="data:audio/mp4;base64,HUYA_VOICE_PLACEHOLDER" type="audio/mp4"></audio>
+<audio id="mashiro-voice" preload="auto"><source src="data:audio/mp4;base64,MASHIRO_VOICE_PLACEHOLDER" type="audio/mp4"></audio>
 
 <div id="app-wrapper">
   <div id="menu-screen">
@@ -236,9 +236,9 @@ rhythm_game_html = f"""
       <div style="display: flex; justify-content: space-between; font-size: 9px; font-weight: bold; color: #4ade80;"><span>❤️ HP</span><span id="hp-text">100 / 100</span></div>
       <div class="hp-gauge-bg"><div id="hp-fill" class="hp-gauge-fill"></div></div>
     </div>
-    <div id="yuni-popup" class="skill-popup"><img src="data:image/jpeg;base64,{b64['yuni_i']}"><span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span></div>
-    <div id="huya-popup" class="skill-popup"><img src="data:image/jpeg;base64,{b64['huya_i']}"><span style="font-size: 11px; font-weight: bold; color: #c084fc;">[에휴에요 에휴] 발동!</span></div>
-    <div id="mashiro-popup" class="skill-popup"><img src="data:image/jpeg;base64,{b64['mashiro_i']}"><span style="font-size: 11px; font-weight: bold; color: #facc15;">[반갑쟈나~] 발동!</span></div>
+    <div id="yuni-popup" class="skill-popup"><img src="data:image/jpeg;base64,YUNI_IMG"><span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span></div>
+    <div id="huya-popup" class="skill-popup"><img src="data:image/jpeg;base64,HUYA_IMG"><span style="font-size: 11px; font-weight: bold; color: #c084fc;">[에휴에요 에휴] 발동!</span></div>
+    <div id="mashiro-popup" class="skill-popup"><img src="data:image/jpeg;base64,MASHIRO_IMG"><span style="font-size: 11px; font-weight: bold; color: #facc15;">[반갑쟈나~] 발동!</span></div>
     <div id="fever-popup" class="skill-popup"><span style="font-size: 11px; font-weight: bold; color: #ff79c6;">🐾 [냥냥 피버] 충전 25% UP!</span></div>
     <div id="skill-gauges-wrapper">
       <div id="yuni-skill-bar" class="skill-bar-box"><div style="font-size: 9px; font-weight: bold; color: #00f2fe;">✨ [뭘뽀노?]</div><div class="gauge-bg"><div id="yuni-gauge-fill" class="gauge-fill" style="background: #00f2fe;"></div></div><div id="yuni-skill-status" style="font-size: 9px; color: #8b949e; font-weight: bold;">충전 중...</div></div>
@@ -263,35 +263,33 @@ rhythm_game_html = f"""
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
 const songs = [
-  {{ id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,{b64["s1_i"]}', audio: document.getElementById('bgm1'), duration: 225, type: 'starter', levels: {{ easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' }} }},
-  {{ id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,{b64["s2_i"]}', audio: document.getElementById('bgm2'), duration: 144, type: 'starter', levels: {{ easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' }} }},
-  {{ id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,{b64["s3_i"]}', audio: document.getElementById('bgm3'), duration: 255, type: 'advanced', levels: {{ normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' }} }}
+  { id: 'startrail', title: 'Star Trail', thumb: 'THUMB1', audio: document.getElementById('bgm1'), duration: 225, type: 'starter', levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } },
+  { id: 'bbijilge', title: '삐질게', thumb: 'THUMB2', audio: document.getElementById('bgm2'), duration: 144, type: 'starter', levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } },
+  { id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'THUMB3', audio: document.getElementById('bgm3'), duration: 255, type: 'advanced', levels: { normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' } }
 ];
 
-const charMeta = {{
-  yuni: {{ name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{b64["yuni_i"]}' }},
-  huya: {{ name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{b64["huya_i"]}' }},
-  mashiro: {{ name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{b64["mashiro_i"]}' }},
-  arunyang: {{ name: '아르냥 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{b64["arunyang_i"]}' }},
-  baku: {{ name: '바쿠 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{b64["baku_i"]}' }},
-  maro: {{ name: '마로 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{b64["maro_i"]}' }}
-}};
+const charMeta = {
+  yuni: { name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: 'YUNI_IMG' },
+  huya: { name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: 'HUYA_IMG' },
+  mashiro: { name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: 'MASHIRO_IMG' },
+  arunyang: { name: '아르냥 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: 'ARUNYANG_IMG' },
+  baku: { name: '바쿠 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: 'BAKU_IMG' },
+  maro: { name: '마로 (팬)', star: '⭐⭐⭐⭐', color: '#c084fc', img: 'MARO_IMG' }
+};
 
 let currentSongId = 'startrail', currentDifficulty = 'normal', stella = 100;
-let ownedCharacters = {{ yuni: false, huya: false, mashiro: false, arunyang: false, baku: false, maro: false }};
+let ownedCharacters = { yuni: false, huya: false, mashiro: false, arunyang: false, baku: false, maro: false };
 let equippedUnit = [null, null], activeSlotIndex = null, isPlaying = false, startTime = 0, score = 0, combo = 0, maxCombo = 0, currentHp = 100, maxHp = 100;
-let stats = {{ perfect: 0, great: 0, good: 0, miss: 0 }}, judgementText = "", judgementColor = "#fff", judgementTimer = 0;
-let yuniGauge = 0, yuniActive = false, yuniTimer = 0, missShieldCount = 2, hornGlow = 0;
-let huyaGauge = 0, huyaActive = false, huyaTimer = 0, doubleTimer = 0;
-let mashiroGauge = 0, mashiroActive = false, mashiroTimer = 0, feverActive = false, feverTimer = 0, lastFeverMin = 0, pawTimer = 0;
+let stats = { perfect: 0, great: 0, good: 0, miss: 0 }, judgementText = "", judgementColor = "#fff", judgementTimer = 0;
 let keyPressed = [false, false, false, false], activeTouches = new Map(), notes = [];
-let bestRecords = {{
-  startrail: {{ easy: {{score:0, rank:'-', color:'#94a3b8'}}, normal: {{score:0, rank:'-', color:'#94a3b8'}}, hard: {{score:0, rank:'-', color:'#94a3b8'}} }},
-  bbijilge: {{ easy: {{score:0, rank:'-', color:'#94a3b8'}}, normal: {{score:0, rank:'-', color:'#94a3b8'}}, hard: {{score:0, rank:'-', color:'#94a3b8'}} }},
-  constellation: {{ normal: {{score:0, rank:'-', color:'#94a3b8'}}, hard: {{score:0, rank:'-', color:'#94a3b8'}}, expert: {{score:0, rank:'-', color:'#94a3b8'}} }}
-}};
-let missionData = {{ attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: new Date().toDateString() }};
+let bestRecords = {
+  startrail: { easy: {score:0, rank:'-', color:'#94a3b8'}, normal: {score:0, rank:'-', color:'#94a3b8'}, hard: {score:0, rank:'-', color:'#94a3b8'} },
+  bbijilge: { easy: {score:0, rank:'-', color:'#94a3b8'}, normal: {score:0, rank:'-', color:'#94a3b8'}, hard: {score:0, rank:'-', color:'#94a3b8'} },
+  constellation: { normal: {score:0, rank:'-', color:'#94a3b8'}, hard: {score:0, rank:'-', color:'#94a3b8'}, expert: {score:0, rank:'-', color:'#94a3b8'} }
+};
+let missionData = { attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: new Date().toDateString() };
 
 function loadData() {
   if (localStorage.getItem('rhythm_stella')) stella = parseInt(localStorage.getItem('rhythm_stella'));
@@ -342,7 +340,6 @@ function updateUI() {
     }
   }
 
-  // 시너지 판별
   let [c1, c2] = equippedUnit;
   let scCard = document.getElementById('synergy-card');
   if ((c1 === 'yuni' && c2 === 'arunyang') || (c1 === 'arunyang' && c2 === 'yuni')) {
@@ -362,7 +359,6 @@ function updateUI() {
     scCard.innerHTML = `<div style="font-weight:bold; color:#8b949e;">✨ 활성화된 시너지 없음</div>`;
   }
 
-  // 도감 렌더링
   let dexHTML = "";
   for (let key in charMeta) {
     let m = charMeta[key];
@@ -470,9 +466,9 @@ function openCharSelector(slotIndex) {
     {id: 'yuni', name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐'},
     {id: 'huya', name: '사키하네 후야', star: '⭐⭐⭐⭐⭐'},
     {id: 'mashiro', name: '네네코 마시로', star: '⭐⭐⭐⭐⭐'},
-    {id: 'arunyang', name: '아르냥', star: '⭐⭐⭐⭐'},
-    {id: 'baku', name: '바쿠', star: '⭐⭐⭐⭐'},
-    {id: 'maro', name: '마로', star: '⭐⭐⭐⭐'}
+    {id: 'arunyang', name: '아르냥 (팬)', star: '⭐⭐⭐⭐'},
+    {id: 'baku', name: '바쿠 (팬)', star: '⭐⭐⭐⭐'},
+    {id: 'maro', name: '마로 (팬)', star: '⭐⭐⭐⭐'}
   ];
   chars.forEach(c => {
     let owned = ownedCharacters[c.id];
@@ -498,7 +494,6 @@ function executeGacha(count) {
   for (let i = 0; i < count; i++) {
     let r = Math.random() * 100;
     let cid = "";
-    // 5성 합산 3% (각 1%: 유니, 후야, 마시로) / 4성 합산 97% (각 ~32.3%: 아르냥, 바쿠, 마로)
     if (r < 1.0) { cid = 'yuni'; ownedCharacters.yuni = true; }
     else if (r < 2.0) { cid = 'huya'; ownedCharacters.huya = true; }
     else if (r < 3.0) { cid = 'mashiro'; ownedCharacters.mashiro = true; }
@@ -543,10 +538,6 @@ function generateBeatmap(songId, difficulty) {
 
 function startGame() {
   score = 0; combo = 0; maxCombo = 0; currentHp = 100; judgementTimer = 0;
-  yuniGauge = 0; yuniActive = false; huyaGauge = 0; huyaActive = false; mashiroGauge = 0; mashiroActive = false; feverActive = false;
-  document.getElementById('yuni-skill-bar').style.display = equippedUnit.includes('yuni') ? 'flex' : 'none';
-  document.getElementById('huya-skill-bar').style.display = equippedUnit.includes('huya') ? 'flex' : 'none';
-  document.getElementById('mashiro-skill-bar').style.display = equippedUnit.includes('mashiro') ? 'flex' : 'none';
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   generateBeatmap(currentSongId, currentDifficulty);
   let bgm = songs.find(s => s.id === currentSongId).audio;
@@ -566,6 +557,12 @@ function requestGiveUp() {
     isPlaying = true; requestAnimationFrame(updateAndDraw);
   }
 }
+
+const LANES = 4;
+const LANE_WIDTH = 480 / LANES;
+const HIT_Y = 570;
+const KEYS = ['d', 'f', 'j', 'k'];
+const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
 function updateAndDraw() {
   if (!isPlaying) return;
@@ -620,17 +617,21 @@ renderSongList(); renderDiffButtons(); updateUI(); updateRecord();
 </html>
 """
 
-rhythm_game_html = rhythm_game_html.replace("{b64['s1_m']}", b64['s1_m'])
-rhythm_game_html = rhythm_game_html.replace("{b64['s1_i']}", b64['s1_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['s2_m']}", b64['s2_m'])
-rhythm_game_html = rhythm_game_html.replace("{b64['s2_i']}", b64['s2_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['s3_m']}", b64['s3_m'])
-rhythm_game_html = rhythm_game_html.replace("{b64['s3_i']}", b64['s3_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['yuni_i']}", b64['yuni_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['huya_i']}", b64['huya_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['mashiro_i']}", b64['mashiro_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['arunyang_i']}", b64['arunyang_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['baku_i']}", b64['baku_i'])
-rhythm_game_html = rhythm_game_html.replace("{b64['maro_i']}", b64['maro_i'])
+# 플레이스홀더 치환
+rhythm_game_html = rhythm_game_html.replace("AUDIO1_PLACEHOLDER", b64['s1_m'])
+rhythm_game_html = rhythm_game_html.replace("AUDIO2_PLACEHOLDER", b64['s2_m'])
+rhythm_game_html = rhythm_game_html.replace("AUDIO3_PLACEHOLDER", b64['s3_m'])
+rhythm_game_html = rhythm_game_html.replace("THUMB1", f"data:image/jpeg;base64,{b64['s1_i']}")
+rhythm_game_html = rhythm_game_html.replace("THUMB2", f"data:image/jpeg;base64,{b64['s2_i']}")
+rhythm_game_html = rhythm_game_html.replace("THUMB3", f"data:image/jpeg;base64,{b64['s3_i']}")
+rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", b64['yuni_v'])
+rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", b64['huya_v'])
+rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", b64['mashiro_v'])
+rhythm_game_html = rhythm_game_html.replace("YUNI_IMG", b64['yuni_i'])
+rhythm_game_html = rhythm_game_html.replace("HUYA_IMG", b64['huya_i'])
+rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG", b64['mashiro_i'])
+rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG", b64['arunyang_i'])
+rhythm_game_html = rhythm_game_html.replace("BAKU_IMG", b64['baku_i'])
+rhythm_game_html = rhythm_game_html.replace("MARO_IMG", b64['maro_i'])
 
 components.html(rhythm_game_html, height=820)
