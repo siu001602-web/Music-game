@@ -22,7 +22,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 파일 경로 정의
 SONG_FILES = [
     ("music/Screen_Recording_20261117_180140_YouTube_17112026.m4a", "Image/SmartSelect_20261117_234657_YouTube.jpg"),
     ("music/Screen_Recording_20261118_013745_YouTube_18112026.m4a", "Image/SmartSelect_20261118_014123_YouTube.jpg"),
@@ -288,7 +287,7 @@ let stella = 100, ownedCharacters = {{ mashiro: false, huya: false, yuni: false,
 let bestRecords = {{ startrail: {{}}, bbijilge: {{}}, constellation: {{}} }};
 let missionData = {{ attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: new Date().toDateString() }};
 
-function loadGameData() {
+function loadGameData() {{
   if (localStorage.getItem('rhythm_stella')) stella = parseInt(localStorage.getItem('rhythm_stella'));
   if (localStorage.getItem('rhythm_chars')) ownedCharacters = JSON.parse(localStorage.getItem('rhythm_chars'));
   if (localStorage.getItem('rhythm_records')) bestRecords = JSON.parse(localStorage.getItem('rhythm_records'));
@@ -297,13 +296,13 @@ function loadGameData() {
     let parsed = JSON.parse(m);
     if (parsed.date === new Date().toDateString()) missionData = parsed;
   }}
-}
-function saveGameData() {
+}}
+function saveGameData() {{
   localStorage.setItem('rhythm_stella', stella);
   localStorage.setItem('rhythm_chars', JSON.stringify(ownedCharacters));
   localStorage.setItem('rhythm_records', JSON.stringify(bestRecords));
   localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
-}
+}}
 loadGameData();
 
 let isPlaying = false, startTime = 0, score = 0, combo = 0, maxCombo = 0, currentHp = 100, maxHp = 100;
@@ -313,7 +312,6 @@ let keyPressed = [false, false, false, false], activeTouches = new Map(), notes 
 
 function getActiveBgm() {{ return songs.find(s => s.id === currentSongId).audio; }}
 
-// 탭 전환
 document.querySelectorAll('.nav-tab').forEach(tab => {{
   tab.addEventListener('click', () => {{
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -325,66 +323,64 @@ document.querySelectorAll('.nav-tab').forEach(tab => {{
   }});
 }});
 
-function updateInventoryUI() {
+function updateInventoryUI() {{
   document.getElementById('stella-count').innerText = stella;
-  for (let i = 0; i < 2; i++) {
-    const slot = document.getElementById(`slot-${i+1}`), cid = equippedUnit[i];
-    if (cid && CHAR_DATA[cid]) {
+  for (let i = 0; i < 2; i++) {{
+    const slot = document.getElementById(`slot-${{i+1}}`), cid = equippedUnit[i];
+    if (cid && CHAR_DATA[cid]) {{
       let c = CHAR_DATA[cid];
-      slot.className = `unit-slot filled ${c.star.length === 5 ? 'star-5' : 'star-4'}`;
-      slot.innerHTML = `<img src="data:image/jpeg;base64,${c.img}" class="slot-img" style="color:${c.color};"><div style="font-size:10px; font-weight:bold; color:${c.color};">${c.star}</div><div style="font-size:10px; font-weight:bold;">${c.name}</div>`;
-    } else {
+      slot.className = `unit-slot filled ${{c.star.length === 5 ? 'star-5' : 'star-4'}}`;
+      slot.innerHTML = `<img src="data:image/jpeg;base64,${{c.img}}" class="slot-img" style="color:${{c.color}};"><div style="font-size:10px; font-weight:bold; color:${{c.color}};">${{c.star}}</div><div style="font-size:10px; font-weight:bold;">${{c.name}}</div>`;
+    }} else {{
       slot.className = "unit-slot";
-      slot.innerHTML = `<div class="plus-icon">+</div><div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>`;
-    }
-  }
+      slot.innerHTML = `<div class="plus-icon">+</div><div style="font-size: 10px; color: #8b949e;">슬롯 ${{i+1}}</div>`;
+    }}
+  }}
 
-  // 도감 리스트 렌더링
   let grid = document.getElementById('char-grid');
   grid.innerHTML = '';
-  Object.entries(CHAR_DATA).forEach(([id, c]) => {
+  Object.entries(CHAR_DATA).forEach(([id, c]) => {{
     let owned = ownedCharacters[id];
-    grid.innerHTML += `<div id="char-card-${id}" class="unit-slot filled" style="height: auto; padding: 10px; border-color: ${owned ? c.color : '#30363d'}; opacity: ${owned ? 1 : 0.5};">
-      <div style="font-size: 24px; margin-bottom: 2px;"><img src="data:image/jpeg;base64,${c.img}" class="slot-img" style="color:${c.color};"></div>
-      <div style="font-size: 9px; font-weight: bold; color: ${c.color};">${c.star} (${owned ? '보유' : '미획득'})</div>
-      <div style="font-size: 11px; font-weight: bold; margin-top: 2px;">${c.name}</div>
+    grid.innerHTML += `<div id="char-card-${{id}}" class="unit-slot filled" style="height: auto; padding: 10px; border-color: ${{owned ? c.color : '#30363d'}}; opacity: ${{owned ? 1 : 0.5}};">
+      <div style="font-size: 24px; margin-bottom: 2px;"><img src="data:image/jpeg;base64,${{c.img}}" class="slot-img" style="color:${{c.color}};"></div>
+      <div style="font-size: 9px; font-weight: bold; color: ${{c.color}};">${{c.star}} (${{owned ? '보유' : '미획득'}})</div>
+      <div style="font-size: 11px; font-weight: bold; margin-top: 2px;">${{c.name}}</div>
     </div>`;
-  });
+  }});
 
   const synergy = document.getElementById('synergy-card');
-  if (equippedUnit.includes('mashiro') && equippedUnit.includes('maro')) {
+  if (equippedUnit.includes('mashiro') && equippedUnit.includes('maro')) {{
     synergy.style.opacity = "1"; synergy.style.borderColor = "#facc15";
     synergy.innerHTML = `<div style="font-weight: bold; color: #facc15; margin-bottom: 2px;">🐾 활성화된 시너지: [냥냥 집사의 특급 후원]</div><div style="font-size: 10px; color: #fff;">• 200콤보 & HP 100% 시 노트 점수 상시 15% 증가!</div>`;
-  } else {
+  }} else {{
     synergy.style.opacity = "0.5"; synergy.style.borderColor = "#30363d";
     synergy.innerHTML = `<div style="font-weight: bold; color: #8b949e; margin-bottom: 2px;">✨ 활성화된 시너지 없음</div><div style="font-size: 10px; color: #8b949e;">• 마시로 + 마로 편성 시 시너지 발동!</div>`;
-  }
-}
+  }}
+}}
 
-function openCharSelector(idx) {
+function openCharSelector(idx) {{
   activeSlotIndex = idx;
   let list = document.getElementById('char-select-list');
   list.innerHTML = '';
-  Object.entries(CHAR_DATA).forEach(([id, c]) => {
+  Object.entries(CHAR_DATA).forEach(([id, c]) => {{
     let owned = ownedCharacters[id], equipped = equippedUnit.includes(id);
-    list.innerHTML += `<div class="char-option-card" style="opacity: ${owned && !equipped ? 1 : 0.45}; border-color: ${c.color};" ${owned && !equipped ? `onclick="selectChar('${id}')"` : ''}>
-      <img src="data:image/jpeg;base64,${c.img}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; margin-bottom:4px; border:2px solid ${c.color};">
-      <div style="font-size:9px; color:${c.color};">${c.star}</div>
-      <div style="font-size:11px; font-weight:bold; margin-top:2px;">${c.name}</div>
-      <div style="font-size:9px; color:${owned ? (equipped ? '#facc15' : '#00f2fe') : '#8b949e'}; margin-top:2px;">${!owned ? '미획득' : (equipped ? '편성 중' : '선택 가능')}</div>
+    list.innerHTML += `<div class="char-option-card" style="opacity: ${{owned && !equipped ? 1 : 0.45}}; border-color: ${{c.color}};" ${{owned && !equipped ? `onclick="selectChar('${{id}}')"` : ''}}>
+      <img src="data:image/jpeg;base64,${{c.img}}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; margin-bottom:4px; border:2px solid ${{c.color}};">
+      <div style="font-size:9px; color:${{c.color}};">${{c.star}}</div>
+      <div style="font-size:11px; font-weight:bold; margin-top:2px;">${{c.name}}</div>
+      <div style="font-size:9px; color:${{owned ? (equipped ? '#facc15' : '#00f2fe') : '#8b949e'}}; margin-top:2px;">${{!owned ? '미획득' : (equipped ? '편성 중' : '선택 가능')}}</div>
     </div>`;
-  });
+  }});
   document.getElementById('char-select-modal').style.display = 'flex';
-}
-function selectChar(id) {
+}}
+function selectChar(id) {{
   equippedUnit[activeSlotIndex] = id;
   document.getElementById('char-select-modal').style.display = 'none';
   updateInventoryUI();
-}
-document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('char-select-modal').style.display = 'none'; });
+}}
+document.getElementById('modal-close-btn').addEventListener('click', () => {{ document.getElementById('char-select-modal').style.display = 'none'; }});
 
-// 뽑기 시스템 (마시로/후야/유니 각 1% = 총 3% / 마로/아르냥/바쿠 각 ~32~33% = 총 97%)
-function executeGacha(count) {
+function executeGacha(count) {{
   let cost = count * 10;
   if (stella < cost) {{ alert("스텔라 재화가 부족합니다!"); return; }}
   stella -= cost;
@@ -392,7 +388,7 @@ function executeGacha(count) {
   updateMissionUI(); saveGameData();
 
   let results = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i++) {{
     let r = Math.random() * 100, cid;
     if (r < 1.0) {{ cid = 'mashiro'; ownedCharacters.mashiro = true; }}
     else if (r < 2.0) {{ cid = 'huya'; ownedCharacters.huya = true; }}
@@ -401,71 +397,69 @@ function executeGacha(count) {
     else if (r < 67.66) {{ cid = 'arunyang'; ownedCharacters.arunyang = true; }}
     else {{ cid = 'baku'; ownedCharacters.baku = true; }}
     results.push(CHAR_DATA[cid]);
-  }
+  }}
   updateInventoryUI(); saveGameData();
 
   let rList = document.getElementById('gacha-result-list');
   rList.innerHTML = '';
-  results.forEach(res => {
-    rList.innerHTML += `<div style="background:#21262d; border:1px solid ${res.color}; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; width:88px;">
-      <img src="data:image/jpeg;base64,${res.img}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;">
-      <div style="font-size:9px; color:${res.color};">${res.star}</div>
-      <div style="font-size:10px; font-weight:bold; margin-top:2px;">${res.name.split(' ')[0]}</div>
+  results.forEach(res => {{
+    rList.innerHTML += `<div style="background:#21262d; border:1px solid ${{res.color}}; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; width:88px;">
+      <img src="data:image/jpeg;base64,${{res.img}}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; margin-bottom:2px;">
+      <div style="font-size:9px; color:${{res.color}};">${{res.star}}</div>
+      <div style="font-size:10px; font-weight:bold; margin-top:2px;">${{res.name.split(' ')[0]}}</div>
     </div>`;
-  });
+  }});
   document.getElementById('gacha-result-modal').style.display = 'flex';
-}
+}}
 document.getElementById('gacha-1-btn').addEventListener('click', () => executeGacha(1));
 document.getElementById('gacha-10-btn').addEventListener('click', () => executeGacha(10));
-document.getElementById('gacha-close-btn').addEventListener('click', () => { document.getElementById('gacha-result-modal').style.display = 'none'; });
+document.getElementById('gacha-close-btn').addEventListener('click', () => {{ document.getElementById('gacha-result-modal').style.display = 'none'; }});
 
-// 곡 및 난이도 렌더링
-function renderSongList() {
+function renderSongList() {{
   let sl = document.getElementById('song-list');
   sl.innerHTML = '';
-  songs.forEach(s => {
-    sl.innerHTML += `<div class="song-card ${s.id === currentSongId ? 'selected' : ''}" onclick="selectSong('${s.id}')">
-      <img src="${s.thumb}" class="song-thumb"><div class="song-name">🎵 ${s.title}</div>
+  songs.forEach(s => {{
+    sl.innerHTML += `<div class="song-card ${{s.id === currentSongId ? 'selected' : ''}}" onclick="selectSong('${{s.id}}')">
+      <img src="${{s.thumb}}" class="song-thumb"><div class="song-name">🎵 ${{s.title}}</div>
     </div>`;
-  });
-}
-function selectSong(id) {
+  }});
+}}
+function selectSong(id) {{
   currentSongId = id;
   renderSongList(); renderDifficultyButtons(); updateSelectedRecordDisplay();
-}
-function renderDifficultyButtons() {
+}}
+function renderDifficultyButtons() {{
   let s = songs.find(x => x.id === currentSongId), dc = document.getElementById('difficulty-container');
   dc.innerHTML = '';
   let diffs = s.type === 'starter' ? ['easy','normal','hard'] : ['normal','hard','expert'];
   if (!diffs.includes(currentDifficulty)) currentDifficulty = diffs[0];
-  diffs.forEach(d => {
+  diffs.forEach(d => {{
     let nameMap = {{ easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' }};
-    dc.innerHTML += `<div class="diff-card ${d === currentDifficulty ? 'selected' : ''}" onclick="selectDiff('${d}')">
-      <div class="diff-lv">${s.levels[d]}</div><div class="diff-name" style="color: ${d==='easy'?'#4ade80':d==='normal'?'#00f2fe':d==='hard'?'#ff4b4b':'#c084fc'}">${nameMap[d]}</div>
+    dc.innerHTML += `<div class="diff-card ${{d === currentDifficulty ? 'selected' : ''}}" onclick="selectDiff('${{d}}')">
+      <div class="diff-lv">${{s.levels[d]}}</div><div class="diff-name" style="color: ${{d==='easy'?'#4ade80':d==='normal'?'#00f2fe':d==='hard'?'#ff4b4b':'#c084fc'}}">${{nameMap[d]}}</div>
     </div>`;
-  });
-}
-function selectDiff(d) { currentDifficulty = d; renderDifficultyButtons(); updateSelectedRecordDisplay(); }
-function updateSelectedRecordDisplay() {
+  }});
+}}
+function selectDiff(d) {{ currentDifficulty = d; renderDifficultyButtons(); updateSelectedRecordDisplay(); }}
+function updateSelectedRecordDisplay() {{
   let rec = bestRecords[currentSongId][currentDifficulty];
   let nameMap = {{ easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' }};
-  document.getElementById('menu-diff-label').innerText = `🏆 [${nameMap[currentDifficulty]}] 최고 기록`;
-  document.getElementById('menu-diff-record').innerHTML = rec && rec.score > 0 ? `<b>${rec.score.toLocaleString()}점</b> (RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>)` : `기록 없음 (RANK: -)`;
-}
+  document.getElementById('menu-diff-label').innerText = `🏆 [${{nameMap[currentDifficulty]}}] 최고 기록`;
+  document.getElementById('menu-diff-record').innerHTML = rec && rec.score > 0 ? `<b>${{rec.score.toLocaleString()}}점</b> (RANK: <span style="color:${{rec.color}}; font-weight:bold;">${{rec.rank}}</span>)` : `기록 없음 (RANK: -)`;
+}}
 renderSongList(); renderDifficultyButtons(); updateSelectedRecordDisplay();
 
 document.getElementById('next-prep-btn').addEventListener('click', () => {{
   let s = songs.find(x => x.id === currentSongId);
-  document.getElementById('prep-song-title').innerHTML = `🎵 ${s.title} [${currentDifficulty}]`;
+  document.getElementById('prep-song-title').innerHTML = `🎵 ${{s.title}} [${{currentDifficulty}}]`;
   let rec = bestRecords[currentSongId][currentDifficulty];
-  document.getElementById('prep-record-content').innerHTML = rec && rec.score > 0 ? `최고 점수: <b>${rec.score.toLocaleString()}점</b>` : `기록 없음`;
+  document.getElementById('prep-record-content').innerHTML = rec && rec.score > 0 ? `최고 점수: <b>${{rec.score.toLocaleString()}}점</b>` : `기록 없음`;
   document.getElementById('prep-screen').style.display = 'flex';
-});
+}});
 document.getElementById('prep-back-btn').addEventListener('click', () => {{ document.getElementById('prep-screen').style.display = 'none'; }});
 document.getElementById('prep-start-btn').addEventListener('click', startGame);
 
-// 게임 로직 및 비트맵 생성
-function generateBeatmap(songId, diff) {
+function generateBeatmap(songId, diff) {{
   notes = [];
   let seed = songId === 'bbijilge' ? 2000 : songId === 'constellation' ? 3000 : 1000;
   seed += diff === 'easy' ? 50 : diff === 'normal' ? 100 : diff === 'hard' ? 200 : 300;
@@ -474,16 +468,16 @@ function generateBeatmap(songId, diff) {
   window.NOTE_SPEED = diff === 'expert' ? 520 : diff === 'hard' ? 490 : diff === 'normal' ? 450 : 420;
   
   let i = 0;
-  while (t < dur - 5.0) {
+  while (t < dur - 5.0) {{
     let lane = Math.floor(rnd() * 4), r = rnd();
     if (i % 4 === 0 && r < 0.45) notes.push({{ time: t, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false }});
     else notes.push({{ time: t, lane: lane, type: 'normal', hit: false, missed: false }});
     t += interval * (diff === 'easy' ? 1.8 : diff === 'normal' ? 1.2 : diff === 'hard' ? 0.85 : 0.52);
     i++;
-  }
-}
+  }}
+}}
 
-function startGame() {
+function startGame() {{
   score = 0; combo = 0; maxCombo = 0; currentHp = 100; mashiroSkillGauge = 0; mashiroSkillActivated = false; feverActive = false;
   document.getElementById('prep-screen').style.display = 'none';
   document.getElementById('play-screen').style.display = 'block';
@@ -492,18 +486,18 @@ function startGame() {
   let bgm = getActiveBgm(); bgm.pause(); bgm.currentTime = 0; bgm.play().catch(e => {{}});
   isPlaying = true; startTime = performance.now();
   requestAnimationFrame(updateAndDraw);
-}
+}}
 
-function requestGiveUp() {
+function requestGiveUp() {{
   if (!isPlaying) return;
   isPlaying = false; getActiveBgm().pause();
   if (confirm("정말 나가겠습니까?")) {{
     document.getElementById('play-screen').style.display = 'none';
     document.getElementById('mashiro-popup').classList.remove('show');
   }} else {{ isPlaying = true; requestAnimationFrame(updateAndDraw); }}
-}
+}}
 
-function updateAndDraw() {
+function updateAndDraw() {{
   if (!isPlaying) return;
   let t = (performance.now() - startTime) / 1000, bgm = getActiveBgm();
   
@@ -515,44 +509,44 @@ function updateAndDraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (pawPrintAnimTimer > 0) {{ ctx.fillStyle = 'rgba(250, 204, 21, 0.35)'; ctx.font = '24px sans-serif'; ctx.fillText('🐾', 20, 250); ctx.fillText('🐾', 430, 250); pawPrintAnimTimer--; }}
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++) {{
     ctx.fillStyle = keyPressed[i] ? ['#ff4b4b','#00f2fe','#00f2fe','#ff4b4b'][i] : '#1f2630';
     ctx.fillRect(i * 120 + 4, 578, 112, 134);
-  }
+  }}
   ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 570); ctx.lineTo(480, 570); ctx.stroke();
 
   let rem = 0;
-  notes.forEach(n => {
+  notes.forEach(n => {{
     if (n.missed || n.hit) return;
     rem++;
     let diff = n.time - t, y = 570 - (diff * window.NOTE_SPEED);
     if (diff < -0.35) {{ n.missed = true; combo = 0; currentHp = Math.max(0, currentHp - 10); document.getElementById('hp-fill').style.width = currentHp + '%'; return; }}
-    if (y >= -50 && y <= 590) {
+    if (y >= -50 && y <= 590) {{
       ctx.fillStyle = n.type === 'swipe' ? '#4ade80' : ['#ff4b4b','#00f2fe','#00f2fe','#ff4b4b'][n.lane];
       ctx.beginPath(); ctx.roundRect(n.lane * 120 + 10, y - 12, 100, 24, 6); ctx.fill();
-    }
-  });
+    }}
+  }});
 
-  ctx.fillStyle = '#ffffff'; ctx.font = 'bold 22px sans-serif'; ctx.fillText(`SCORE: ${score}`, 18, 56);
-  if (combo > 1) {{ ctx.fillStyle = '#00f2fe'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${combo} COMBO`, 240, 160); }}
+  ctx.fillStyle = '#ffffff'; ctx.font = 'bold 22px sans-serif'; ctx.fillText(`SCORE: ${{score}}`, 18, 56);
+  if (combo > 1) {{ ctx.fillStyle = '#00f2fe'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${{combo}} COMBO`, 240, 160); }}
 
   if (bgm.ended || (rem === 0 && t > songs.find(s=>s.id===currentSongId).duration - 2.0)) {{ endGame(); return; }}
   requestAnimationFrame(updateAndDraw);
-}
+}}
 
-function endGame() {
+function endGame() {{
   isPlaying = false; getActiveBgm().pause();
   document.getElementById('play-screen').style.display = 'none';
   stella += 25; missionData.playCount++; saveGameData(); updateInventoryUI(); updateMissionUI();
-  alert(`클리어! 점수: ${score.toLocaleString()}점 (스텔라 +25 획득)`);
-}
+  alert(`클리어! 점수: ${{score.toLocaleString()}}점 (스텔라 +25 획득)`);
+}}
 
-window.addEventListener('keydown', e => {
+window.addEventListener('keydown', e => {{
   let k = e.key.toLowerCase(), idx = ['d','f','j','k'].indexOf(k);
   if (idx !== -1) {{
     keyPressed[idx] = true;
     let t = (performance.now() - startTime) / 1000;
-    notes.forEach(n => {
+    notes.forEach(n => {{
       if (!n.hit && !n.missed && n.lane === idx && Math.abs(n.time - t) <= 0.32) {{
         n.hit = true; combo++; score += 100 + combo * 2;
         if (equippedUnit.includes('mashiro') && !mashiroSkillActivated) {{
@@ -567,15 +561,15 @@ window.addEventListener('keydown', e => {
       }}
     });
   }}
-});
-window.addEventListener('keyup', e => {
+}});
+window.addEventListener('keyup', e => {{
   let idx = ['d','f','j','k'].indexOf(e.key.toLowerCase());
   if (idx !== -1) keyPressed[idx] = false;
-});
+}});
 
-function updateMissionUI() {
-  document.getElementById('mission-play-count').innerText = `진행도: ${missionData.playCount} / 3`;
-}
+function updateMissionUI() {{
+  document.getElementById('mission-play-count').innerText = `진행도: ${{missionData.playCount}} / 3`;
+}}
 updateInventoryUI();
 </script>
 </body>
