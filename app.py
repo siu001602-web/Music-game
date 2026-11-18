@@ -288,13 +288,13 @@ let bestRecords = {{ startrail: {{}}, bbijilge: {{}}, constellation: {{}} }};
 let missionData = {{ attendanceClaimed: false, playCount: 0, gachaCount: 0, playClaimed: false, gachaClaimed: false, date: new Date().toDateString() }};
 
 function loadGameData() {{
-  if (localStorage.getItem('rhythm_stella')) stella = parseInt(localStorage.getItem('rhythm_stella'));
-  if (localStorage.getItem('rhythm_chars')) ownedCharacters = JSON.parse(localStorage.getItem('rhythm_chars'));
-  if (localStorage.getItem('rhythm_records')) bestRecords = JSON.parse(localStorage.getItem('rhythm_records'));
+  if (localStorage.getItem('rhythm_stella')) {{ stella = parseInt(localStorage.getItem('rhythm_stella')); }}
+  if (localStorage.getItem('rhythm_chars')) {{ ownedCharacters = JSON.parse(localStorage.getItem('rhythm_chars')); }}
+  if (localStorage.getItem('rhythm_records')) {{ bestRecords = JSON.parse(localStorage.getItem('rhythm_records')); }}
   const m = localStorage.getItem('rhythm_missions');
   if (m) {{
     let parsed = JSON.parse(m);
-    if (parsed.date === new Date().toDateString()) missionData = parsed;
+    if (parsed.date === new Date().toDateString()) {{ missionData = parsed; }}
   }}
 }}
 function saveGameData() {{
@@ -314,7 +314,7 @@ function getActiveBgm() {{ return songs.find(s => s.id === currentSongId).audio;
 
 document.querySelectorAll('.nav-tab').forEach(tab => {{
   tab.addEventListener('click', () => {{
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => {{ t.classList.remove('active'); }});
     tab.classList.add('active');
     const target = tab.getAttribute('data-tab');
     Object.entries({{ songs: 'flex', gacha: 'flex', characters: 'flex', missions: 'flex', settings: 'flex' }}).forEach(([k, disp]) => {{
@@ -411,8 +411,8 @@ function executeGacha(count) {{
   }});
   document.getElementById('gacha-result-modal').style.display = 'flex';
 }}
-document.getElementById('gacha-1-btn').addEventListener('click', () => executeGacha(1));
-document.getElementById('gacha-10-btn').addEventListener('click', () => executeGacha(10));
+document.getElementById('gacha-1-btn').addEventListener('click', () => {{ executeGacha(1); }});
+document.getElementById('gacha-10-btn').addEventListener('click', () => {{ executeGacha(10); }});
 document.getElementById('gacha-close-btn').addEventListener('click', () => {{ document.getElementById('gacha-result-modal').style.display = 'none'; }});
 
 function renderSongList() {{
@@ -432,7 +432,7 @@ function renderDifficultyButtons() {{
   let s = songs.find(x => x.id === currentSongId), dc = document.getElementById('difficulty-container');
   dc.innerHTML = '';
   let diffs = s.type === 'starter' ? ['easy','normal','hard'] : ['normal','hard','expert'];
-  if (!diffs.includes(currentDifficulty)) currentDifficulty = diffs[0];
+  if (!diffs.includes(currentDifficulty)) {{ currentDifficulty = diffs[0]; }}
   diffs.forEach(d => {{
     let nameMap = {{ easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' }};
     dc.innerHTML += `<div class="diff-card ${{d === currentDifficulty ? 'selected' : ''}}" onclick="selectDiff('${{d}}')">
@@ -470,8 +470,8 @@ function generateBeatmap(songId, diff) {{
   let i = 0;
   while (t < dur - 5.0) {{
     let lane = Math.floor(rnd() * 4), r = rnd();
-    if (i % 4 === 0 && r < 0.45) notes.push({{ time: t, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false }});
-    else notes.push({{ time: t, lane: lane, type: 'normal', hit: false, missed: false }});
+    if (i % 4 === 0 && r < 0.45) {{ notes.push({{ time: t, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false }}); }}
+    else {{ notes.push({{ time: t, lane: lane, type: 'normal', hit: false, missed: false }}); }}
     t += interval * (diff === 'easy' ? 1.8 : diff === 'normal' ? 1.2 : diff === 'hard' ? 0.85 : 0.52);
     i++;
   }}
@@ -489,7 +489,7 @@ function startGame() {{
 }}
 
 function requestGiveUp() {{
-  if (!isPlaying) return;
+  if (!isPlaying) {{ return; }}
   isPlaying = false; getActiveBgm().pause();
   if (confirm("정말 나가겠습니까?")) {{
     document.getElementById('play-screen').style.display = 'none';
@@ -498,16 +498,29 @@ function requestGiveUp() {{
 }}
 
 function updateAndDraw() {{
-  if (!isPlaying) return;
+  if (!isPlaying) {{ return; }}
   let t = (performance.now() - startTime) / 1000, bgm = getActiveBgm();
   
   let curMin = Math.floor(t / 60);
-  if (curMin > lastFeverMinute) {{ lastFeverMinute = curMin; feverActive = true; feverTimer = 3 * 60; document.getElementById('fever-popup').classList.add('show'); setTimeout(() => document.getElementById('fever-popup').classList.remove('show'), 3000); }}
-  if (feverActive && --feverTimer <= 0) feverActive = false;
-  if (mashiroSkillActivated && --mashiroSkillTimer <= 0) {{ mashiroSkillActivated = false; document.getElementById('mashiro-popup').classList.remove('show'); }}
+  if (curMin > lastFeverMinute) {{
+    lastFeverMinute = curMin; feverActive = true; feverTimer = 3 * 60;
+    document.getElementById('fever-popup').classList.add('show');
+    setTimeout(() => {{ document.getElementById('fever-popup').classList.remove('show'); }}, 3000);
+  }}
+  if (feverActive && --feverTimer <= 0) {{ feverActive = false; }}
+  if (mashiroSkillActivated && --mashiroSkillTimer <= 0) {{
+    mashiroSkillActivated = false;
+    document.getElementById('mashiro-popup').classList.remove('show');
+  }}
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (pawPrintAnimTimer > 0) {{ ctx.fillStyle = 'rgba(250, 204, 21, 0.35)'; ctx.font = '24px sans-serif'; ctx.fillText('🐾', 20, 250); ctx.fillText('🐾', 430, 250); pawPrintAnimTimer--; }}
+  if (pawPrintAnimTimer > 0) {{
+    ctx.fillStyle = 'rgba(250, 204, 21, 0.35)';
+    ctx.font = '24px sans-serif';
+    ctx.fillText('🐾', 20, 250);
+    ctx.fillText('🐾', 430, 250);
+    pawPrintAnimTimer--;
+  }}
 
   for (let i = 0; i < 4; i++) {{
     ctx.fillStyle = keyPressed[i] ? ['#ff4b4b','#00f2fe','#00f2fe','#ff4b4b'][i] : '#1f2630';
@@ -517,10 +530,14 @@ function updateAndDraw() {{
 
   let rem = 0;
   notes.forEach(n => {{
-    if (n.missed || n.hit) return;
+    if (n.missed || n.hit) {{ return; }}
     rem++;
     let diff = n.time - t, y = 570 - (diff * window.NOTE_SPEED);
-    if (diff < -0.35) {{ n.missed = true; combo = 0; currentHp = Math.max(0, currentHp - 10); document.getElementById('hp-fill').style.width = currentHp + '%'; return; }}
+    if (diff < -0.35) {{
+      n.missed = true; combo = 0; currentHp = Math.max(0, currentHp - 10);
+      document.getElementById('hp-fill').style.width = currentHp + '%';
+      return;
+    }}
     if (y >= -50 && y <= 590) {{
       ctx.fillStyle = n.type === 'swipe' ? '#4ade80' : ['#ff4b4b','#00f2fe','#00f2fe','#ff4b4b'][n.lane];
       ctx.beginPath(); ctx.roundRect(n.lane * 120 + 10, y - 12, 100, 24, 6); ctx.fill();
@@ -528,9 +545,15 @@ function updateAndDraw() {{
   }});
 
   ctx.fillStyle = '#ffffff'; ctx.font = 'bold 22px sans-serif'; ctx.fillText(`SCORE: ${{score}}`, 18, 56);
-  if (combo > 1) {{ ctx.fillStyle = '#00f2fe'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${{combo}} COMBO`, 240, 160); }}
+  if (combo > 1) {{
+    ctx.fillStyle = '#00f2fe'; ctx.font = 'bold 34px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`${{combo}} COMBO`, 240, 160);
+  }}
 
-  if (bgm.ended || (rem === 0 && t > songs.find(s=>s.id===currentSongId).duration - 2.0)) {{ endGame(); return; }}
+  if (bgm.ended || (rem === 0 && t > songs.find(s=>s.id===currentSongId).duration - 2.0)) {{
+    endGame();
+    return;
+  }}
   requestAnimationFrame(updateAndDraw);
 }}
 
@@ -564,7 +587,7 @@ window.addEventListener('keydown', e => {{
 }});
 window.addEventListener('keyup', e => {{
   let idx = ['d','f','j','k'].indexOf(e.key.toLowerCase());
-  if (idx !== -1) keyPressed[idx] = false;
+  if (idx !== -1) {{ keyPressed[idx] = false; }}
 }});
 
 function updateMissionUI() {{
