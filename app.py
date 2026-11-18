@@ -24,7 +24,6 @@ st.markdown("""
         body {
             background-color: #0e1117;
             overflow: hidden;
-            touch-action: none;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -63,7 +62,7 @@ rhythm_game_html = """
 <style>
   * {
     box-sizing: border-box;
-    touch-action: none;
+    touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -293,7 +292,7 @@ rhythm_game_html = """
 
     <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_1](start_span)[span_1](end_span)[span_2](start_span)[span_2](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -328,7 +327,7 @@ rhythm_game_html = """
         <div class="section-title">Select Song (악보 선택)</div>
         <div id="song-list" class="song-grid"></div>
 
-        <div class="section-title">Difficulty (난이도 선택)[span_3](start_span)[span_3](end_span)</div>
+        <div class="section-title">Difficulty (난이도 선택)</div>
         <div class="difficulty-select-container">
           <div class="diff-card" data-diff="easy"><div class="diff-lv" id="lv-easy">Lv. 5</div><div class="diff-name">EASY</div></div>
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">NORMAL</div></div>
@@ -484,6 +483,7 @@ let yuniSkillTimer = 0;
 let missShieldCount = 2;
 let hornGlowTimer = 0;
 
+let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
 let notes = [];
 
@@ -591,14 +591,14 @@ function updateInventoryUI() {
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 활성화된 시너지: [유니냥]</div>
-      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b>[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)</div>
+      <div style="font-size: 10px; color: #fff;">• <b>100콤보 이상 유지 시</b>, 기본/롱노트 점수 <b>15% 추가 증가!</b></div>
     `;
   } else {
     synergyCard.style.opacity = "0.4";
     synergyCard.style.borderColor = "#ff79c6";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%</div>
     `;
   }
 
@@ -753,7 +753,7 @@ function applyHitScore(note, minDiff) {
   }
 
   if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long')) {
-    mult *= 1.15;[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
+    mult *= 1.15;
   }
 
   if (hasYuni && !yuniSkillActivated) {
@@ -817,7 +817,8 @@ function handleTapDown(lane) {
     }
   }
 
-  if (targetNote && minDiff <= 0.3) {
+  // 🌟 판정 범위를 0.28초로 넉넉하게 넓혀서 꾹 누름/동시치기 씹힘 원천 방지
+  if (targetNote && minDiff <= 0.28) {
     targetNote.hit = true;
     if (targetNote.type === 'long') targetNote.holding = true;
     applyHitScore(targetNote, minDiff);
@@ -840,7 +841,7 @@ function handleSwipe(lane, dir) {
     }
   }
 
-  if (targetNote && minDiff <= 0.32 && targetNote.swipeDir === dir) {
+  if (targetNote && minDiff <= 0.3 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
     let addScore = 120 + combo * 2;
     const hasYuni = equippedUnit.includes('yuni');
@@ -854,6 +855,37 @@ function handleSwipe(lane, dir) {
     }
     if (combo > maxCombo) maxCombo = combo;
     showJudgement("SLIDE!", "#4ade80");
+  }
+}
+
+function handleTapUp(lane) {
+  const currentTime = (performance.now() - startTime) / 1000;
+  for (let note of notes) {
+    if (note.type === 'long' && note.holding && !note.tailHit && note.lane === lane) {
+      const endTime = note.time + note.duration;
+      const diff = Math.abs(endTime - currentTime);
+      note.holding = false;
+      note.tailHit = true;
+
+      // 🌟 롱노트 종료 판정도 0.3초로 관대하게 보정하여 끊김 방지
+      if (diff <= 0.3) {
+        let addScore = 50;
+        const hasYuni = equippedUnit.includes('yuni');
+        const hasArunyang = equippedUnit.includes('arunyang');
+        if (hasYuni && yuniSkillActivated) addScore *= 1.05;
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;
+        score += Math.round(addScore);
+        combo++;
+        stats.perfect++;
+        if (hasYuni && !yuniSkillActivated) {
+          skillGauge = Math.min(100, skillGauge + 0.8);
+          updateSkillUI();
+        }
+        showJudgement("HOLD CLEAR", "#00f2fe");
+      } else {
+        handleMiss();
+      }
+    }
   }
 }
 
@@ -876,7 +908,7 @@ function showJudgement(text, color) {
   judgementTimer = 30;
 }
 
-function getLaneFromPointer(clientX) {
+function getLaneFromTouch(clientX) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const canvasX = (clientX - rect.left) * scaleX;
@@ -884,65 +916,61 @@ function getLaneFromPointer(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
-canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-canvas.addEventListener('selectstart', (e) => e.preventDefault());
-
-// 🌟 멀티터치 레인 독립 관리 및 씹힘 방지 포인터 리스너
-canvas.addEventListener('pointerdown', (e) => {
+canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
-  const lane = getLaneFromPointer(e.clientX);
-  activeTouches.set(e.pointerId, { lane: lane, startX: e.clientX, swiped: false });
-  handleTapDown(lane);
-}, { passive: false });
-
-canvas.addEventListener('pointermove', (e) => {
-  e.preventDefault();
-  if (!isPlaying) return;
-  const data = activeTouches.get(e.pointerId);
-  if (data && !data.swiped) {
-    const deltaX = e.clientX - data.startX;
-    if (Math.abs(deltaX) > 25) {
-      data.swiped = true;
-      handleSwipe(data.lane, deltaX > 0 ? 'right' : 'left');
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    const lane = getLaneFromTouch(touch.clientX);
+    activeTouches.set(touch.identifier, { lane: lane, startX: touch.clientX, swiped: false });
+    if (!keyPressed[lane]) {
+      keyPressed[lane] = true;
+      handleTapDown(lane);
     }
   }
 }, { passive: false });
 
-function handlePointerUp(e) {
+canvas.addEventListener('touchmove', (e) => {
   e.preventDefault();
-  const data = activeTouches.get(e.pointerId);
-  activeTouches.delete(e.pointerId);
-  if (data !== undefined) {
-    // 손가락을 뗄 때 해당 레인에 대기 중이거나 홀드 중인 롱노트가 있다면 완료 처리
-    const currentTime = (performance.now() - startTime) / 1000;
-    for (let note of notes) {
-      if (note.type === 'long' && note.holding && !note.tailHit && note.lane === data.lane) {
-        if (currentTime >= note.time) {
-          note.holding = false;
-          note.tailHit = true;
-          let addScore = 50;
-          const hasYuni = equippedUnit.includes('yuni');
-          const hasArunyang = equippedUnit.includes('arunyang');
-          if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-          if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_10](start_span)[span_10](end_span)[span_11](start_span)[span_11](end_span)
-          score += Math.round(addScore);
-          combo++;
-          stats.perfect++;
-          if (hasYuni && !yuniSkillActivated) {
-            skillGauge = Math.min(100, skillGauge + 0.8);
-            updateSkillUI();
-          }
-          showJudgement("HOLD CLEAR", "#00f2fe");
+  if (!isPlaying) return;
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    const data = activeTouches.get(touch.identifier);
+    if (data && !data.swiped) {
+      const deltaX = touch.clientX - data.startX;
+      if (Math.abs(deltaX) > 25) {
+        data.swiped = true;
+        handleSwipe(data.lane, deltaX > 0 ? 'right' : 'left');
+      }
+    }
+  }
+}, { passive: false });
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    const data = activeTouches.get(touch.identifier);
+    activeTouches.delete(touch.identifier);
+    if (data !== undefined) {
+      let stillPressed = false;
+      for (let activeData of activeTouches.values()) {
+        if (activeData.lane === data.lane) stillPressed = true;
+      }
+      if (!stillPressed) {
+        // 🌟 롱노트 유지 중 다른 손가락이 떨어질 때 오작동으로 홀드가 풀리는 현상 방지
+        let hasActiveLongInLane = notes.some(n => n.type === 'long' && n.holding && n.lane === data.lane);
+        if (!hasActiveLongInLane) {
+          keyPressed[data.lane] = false;
+          handleTapUp(data.lane);
         }
       }
     }
   }
 }
 
-canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
-canvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
-canvas.addEventListener('pointerout', handlePointerUp, { passive: false });
+canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   const key = e.key.toLowerCase();
@@ -957,8 +985,17 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   const idx = KEYS.indexOf(key);
-  if (idx !== -1) {
+  if (idx !== -1 && !keyPressed[idx]) {
+    keyPressed[idx] = true;
     handleTapDown(idx);
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  const idx = KEYS.indexOf(e.key.toLowerCase());
+  if (idx !== -1) {
+    keyPressed[idx] = false;
+    handleTapUp(idx);
   }
 });
 
@@ -1002,21 +1039,10 @@ function updateAndDraw() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 현재 활성화된 터치 레인 확인
-  let pressedLanes = [false, false, false, false];
-  for (let touch of activeTouches.values()) {
-    pressedLanes[touch.lane] = true;
-  }
-  for (let note of notes) {
-    if (note.type === 'long' && note.holding) {
-      pressedLanes[note.lane] = true;
-    }
-  }
-
   for (let i = 0; i < LANES; i++) {
     const x = i * LANE_WIDTH;
     
-    if (pressedLanes[i]) {
+    if (keyPressed[i]) {
       const grad = ctx.createLinearGradient(0, HIT_Y - 200, 0, HIT_Y);
       grad.addColorStop(0, 'rgba(0, 242, 254, 0)');
       grad.addColorStop(1, 'rgba(0, 242, 254, 0.35)');
@@ -1024,7 +1050,7 @@ function updateAndDraw() {
       ctx.fillRect(x, HIT_Y - 200, LANE_WIDTH, 200);
     }
 
-    ctx.fillStyle = pressedLanes[i] ? LANE_COLORS[i] : '#1f2630';
+    ctx.fillStyle = keyPressed[i] ? LANE_COLORS[i] : '#1f2630';
     ctx.fillRect(x + 4, HIT_Y + 8, LANE_WIDTH - 8, canvas.height - HIT_Y - 14);
 
     ctx.strokeStyle = '#30363d';
@@ -1034,7 +1060,7 @@ function updateAndDraw() {
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
 
-    ctx.fillStyle = pressedLanes[i] ? '#0e1117' : '#8b949e';
+    ctx.fillStyle = keyPressed[i] ? '#0e1117' : '#8b949e';
     ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('TAP', x + LANE_WIDTH / 2, HIT_Y + 72);
@@ -1088,7 +1114,7 @@ function updateAndDraw() {
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
         if (hasYuni && yuniSkillActivated) addScore *= 1.05;
-        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
+        if (hasYuni && hasArunyang && combo >= 100) addScore *= 1.15;
         score += Math.round(addScore);
         combo++;
         stats.perfect++;
@@ -1175,7 +1201,7 @@ function updateAndDraw() {
   if (hasYuni && hasArunyang && combo >= 100) {
     ctx.fillStyle = '#c084fc';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)
+    ctx.fillText('🐱 [유니냥] 시너지 상시 점수 +15%', 18, 76);
   }
 
   if (combo > 1) {
@@ -1224,6 +1250,7 @@ function startGame() {
 
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
   activeTouches.clear();
+  keyPressed = [false, false, false, false];
   
   generateBeatmap(currentDifficulty);
   
