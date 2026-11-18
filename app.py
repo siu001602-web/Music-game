@@ -28,6 +28,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 곡 및 이미지 경로 설정
 song1_music = "music/Screen_Recording_20261117_180140_YouTube_17112026.m4a"
 song1_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
@@ -37,13 +38,17 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
+# 새로운 곡 '봄꿈' (3분 5초 = 185초) 및 전용 이미지 적용
+song_bom_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
+song_bom_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
+
 # 캐릭터 및 보이스 경로 설정
-mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     # 시로 (네네코 마시로)
-maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"       # 마로
-huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"       # 후야
-yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"       # 유니
-arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"   # 아르냥
-baku_img_path = "Character/SmartSelect_20261118_174346_NAVER.jpg"       # 바쿠
+mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     
+maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"       
+huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"       
+yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"       
+arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"   
+baku_img_path = "Character/SmartSelect_20261118_174346_NAVER.jpg"       
 
 mashiro_voice_path = "voice/Screen_Recording_20261118_202921_YouTube_18112026.m4a"
 yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
@@ -63,6 +68,9 @@ image2_base64 = get_base64(song2_img)
 
 audio3_base64 = get_base64(song3_music)
 image3_base64 = get_base64(song3_img)
+
+audio_bom_base64 = get_base64(song_bom_music)
+image_bom_base64 = get_base64(song_bom_img)
 
 mashiro_base64 = get_base64(mashiro_img_path)
 maro_base64 = get_base64(maro_img_path)
@@ -122,7 +130,7 @@ rhythm_game_html = """
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE_BOM_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     padding: 14px;
@@ -141,7 +149,7 @@ rhythm_game_html = """
     width: 100%;
     height: 100%;
     display: block;
-    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
+    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE_BOM_BASE64_PLACEHOLDER');
     background-size: cover;
     background-position: center;
     touch-action: none;
@@ -163,7 +171,7 @@ rhythm_game_html = """
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
   .song-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
     width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
   }
   .song-card {
@@ -181,17 +189,15 @@ rhythm_game_html = """
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
-  .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+  .diff-card[data-diff="extreme"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
   .diff-name { font-size: 11px; font-weight: 900; }
-  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
-  .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
+  .diff-card[data-diff="extreme"] .diff-name { color: #c084fc; }
 
   .selected-diff-record-box {
     width: 100%;
@@ -323,6 +329,9 @@ rhythm_game_html = """
 </audio>
 <audio id="bgm3" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO3_BASE64_PLACEHOLDER" type="audio/mp4">
+</audio>
+<audio id="bgm-bom" preload="auto">
+  <source src="data:audio/mp4;base64,AUDIO_BOM_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
 <audio id="mashiro-voice" preload="auto">
   <source src="data:audio/mp4;base64,MASHIRO_VOICE_PLACEHOLDER" type="audio/mp4">
@@ -471,7 +480,7 @@ rhythm_game_html = """
   </div>
 
   <div id="prep-screen">
-    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
+    <div class="prep-header" id="prep-song-title">🎵 봄꿈</div>
     <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터 2명을 편성하세요.</div>
 
     <div class="unit-slots">
@@ -570,6 +579,7 @@ const hpText = document.getElementById('hp-text');
 const bgm1 = document.getElementById('bgm1');
 const bgm2 = document.getElementById('bgm2');
 const bgm3 = document.getElementById('bgm3');
+const bgmBom = document.getElementById('bgm-bom');
 
 const mashiroVoice = document.getElementById('mashiro-voice');
 const mashiroPopup = document.getElementById('mashiro-popup');
@@ -623,19 +633,24 @@ navTabs.forEach(tab => {
 
 const songs = [
   { 
+    id: 'bom', title: '봄꿈 ✨NEW', thumb: 'data:image/jpeg;base64,IMAGE_BOM_BASE64_PLACEHOLDER', audio: bgmBom, duration: 185,
+    type: 'bom_custom',
+    levels: { normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 26' } 
+  },
+  { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
     type: 'starter',
-    levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } 
+    levels: { normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 25' } 
   },
   { 
     id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144,
     type: 'starter',
-    levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } 
+    levels: { normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 26' } 
   },
   { 
     id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255,
     type: 'advanced',
-    levels: { normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' } 
+    levels: { normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 28' } 
   }
 ];
 
@@ -645,7 +660,7 @@ const HIT_Y = 570;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
-let currentSongId = 'startrail';
+let currentSongId = 'bom';
 let currentDifficulty = 'normal';
 
 let stella = 100;
@@ -654,9 +669,10 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
-  bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
-  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
+  bom: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
 let missionData = {
@@ -781,16 +797,16 @@ let notes = [];
 
 function getActiveBgm() {
   const s = songs.find(item => item.id === currentSongId);
-  return s ? s.audio : bgm1;
+  return s ? s.audio : bgmBom;
 }
 
 function updateSelectedRecordDisplay() {
-  if (!bestRecords[currentSongId][currentDifficulty]) {
+  if (!bestRecords[currentSongId] || !bestRecords[currentSongId][currentDifficulty]) {
     currentDifficulty = 'normal';
   }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
-  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
+  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
@@ -806,20 +822,11 @@ function renderDifficultyButtons() {
   const song = songs.find(s => s.id === currentSongId);
   difficultyContainer.innerHTML = '';
   
-  let diffs = [];
-  if (song.type === 'starter') {
-    diffs = [
-      { key: 'easy', label: '쉬움', lv: song.levels.easy },
-      { key: 'normal', label: '보통', lv: song.levels.normal },
-      { key: 'hard', label: '하드', lv: song.levels.hard }
-    ];
-  } else {
-    diffs = [
-      { key: 'normal', label: '보통', lv: song.levels.normal },
-      { key: 'hard', label: '하드', lv: song.levels.hard },
-      { key: 'expert', label: '익스퍼트', lv: song.levels.expert }
-    ];
-  }
+  const diffs = [
+    { key: 'normal', label: '보통', lv: song.levels.normal },
+    { key: 'hard', label: '하드', lv: song.levels.hard },
+    { key: 'extreme', label: '익스트림', lv: song.levels.extreme }
+  ];
 
   if (!diffs.some(d => d.key === currentDifficulty)) {
     currentDifficulty = diffs[0].key;
@@ -852,7 +859,7 @@ function renderSongList() {
     card.innerHTML = `
       <div style="position:relative;">
         <img src="${song.thumb}" class="song-thumb">
-        <span class="new-badge">NEW</span>
+        ${song.id === 'bom' ? '<span class="new-badge">NEW</span>' : ''}
       </div>
       <div class="song-name">🎵 ${song.title}</div>
     `;
@@ -965,15 +972,15 @@ updateMissionUI();
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
   const diffNameMap = { 
-    easy: `쉬움 (${song.levels.easy})`, 
     normal: `보통 (${song.levels.normal})`, 
     hard: `하드 (${song.levels.hard})`, 
-    expert: `익스퍼트 (${song.levels.expert})` 
+    extreme: `익스트림 (${song.levels.extreme})` 
   };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
+  if (!bestRecords[currentSongId]) bestRecords[currentSongId] = {};
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffNameUI = { normal: '보통', hard: '하드', extreme: '익스트림' };
   prepRecordTitle.innerHTML = `🏆 [${diffNameUI[currentDifficulty]}] 최고 기록`;
   if (rec && rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
@@ -1113,7 +1120,6 @@ function executeGacha(count) {
   for (let i = 0; i < count; i++) {
     const rand = Math.random() * 100;
     if (rand < 3.0) {
-      // 5성 그룹 (시로, 후야, 유니) - 합산 3%
       const r5 = Math.random();
       if (r5 < 0.33) {
         ownedCharacters.mashiro = true;
@@ -1126,7 +1132,6 @@ function executeGacha(count) {
         results.push({ name: "아야츠노 유니 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "YUNI_IMG_PLACEHOLDER" });
       }
     } else {
-      // 4성 그룹 (마로, 아르냥, 바쿠) - 합산 97%
       const r4 = Math.random();
       if (r4 < 0.33) {
         ownedCharacters.maro = true;
@@ -1165,14 +1170,14 @@ gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none
 function generateBeatmap(songId, difficulty) {
   notes = [];
   
-  let seed = 1000;
-  if (songId === 'bbijilge') seed = 2000;
-  else if (songId === 'constellation') seed = 3000;
+  let seed = 1234;
+  if (songId === 'startrail') seed = 2000;
+  else if (songId === 'bbijilge') seed = 3000;
+  else if (songId === 'constellation') seed = 4000;
 
-  if (difficulty === 'easy') seed += 50;
-  else if (difficulty === 'normal') seed += 100;
+  if (difficulty === 'normal') seed += 100;
   else if (difficulty === 'hard') seed += 200;
-  else if (difficulty === 'expert') seed += 300;
+  else if (difficulty === 'extreme') seed += 300;
 
   function seededRandom() {
     seed = (seed * 9301 + 49297) % 233280;
@@ -1183,31 +1188,29 @@ function generateBeatmap(songId, difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = songObj ? songObj.duration : 225.0;
+  const totalDuration = songObj ? songObj.duration : 185.0;
 
-  let speed = 420;
-  if (difficulty === 'normal') speed = 450;
-  if (difficulty === 'hard') speed = 490;
-  if (difficulty === 'expert') speed = 520;
+  let speed = 440;
+  if (difficulty === 'hard') speed = 480;
+  if (difficulty === 'extreme') speed = 530;
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
 
   let index = 0;
-  while (currentTime < totalDuration - 5.0) {
+  while (currentTime < totalDuration - 4.0) {
     const lane = Math.floor(seededRandom() * LANES);
     const rand = seededRandom();
 
     if (currentTime < activeLongEndTimes[lane]) {
-      if (difficulty === 'easy') currentTime += beatInterval * 1.8;
-      else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
+      if (difficulty === 'normal') currentTime += beatInterval * 1.2;
       else if (difficulty === 'hard') currentTime += beatInterval * 0.85;
-      else currentTime += beatInterval * 0.55;
+      else currentTime += beatInterval * 0.50;
       index++;
       continue;
     }
 
-    if (index % 5 === 0 && rand < 0.35) {
+    if (difficulty === 'extreme' && index % 4 === 0 && rand < 0.4) {
       const pairLane = (lane + 2) % LANES;
       if (currentTime >= activeLongEndTimes[lane] && currentTime >= activeLongEndTimes[pairLane]) {
         const bridgeId = `bridge_${index}`;
@@ -1215,13 +1218,13 @@ function generateBeatmap(songId, difficulty) {
         notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
       }
     }
-    else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.6 : 0.45))) {
+    else if (index % 5 === 0 && (rand < (difficulty === 'extreme' ? 0.6 : 0.35))) {
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 6 === 0 && rand < 0.45) {
+    else if (difficulty !== 'normal' && index % 6 === 0 && rand < 0.45) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 7 === 0 && rand < 0.45) {
+    else if (difficulty === 'extreme' && index % 8 === 0 && rand < 0.45) {
       const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
       if (currentTime >= activeLongEndTimes[targetLane]) {
@@ -1233,12 +1236,12 @@ function generateBeatmap(songId, difficulty) {
         activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
       }
     }
-    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
+    else if (difficulty !== 'normal' && index % 4 === 0 && rand < 0.4) {
       const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + releaseDur + 0.3;
     }
-    else if (difficulty !== 'easy' && index % 3 === 1 && rand < 0.45) {
+    else if (index % 4 === 1 && rand < 0.45) {
       const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
@@ -1247,14 +1250,12 @@ function generateBeatmap(songId, difficulty) {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    if (difficulty === 'easy') {
-      currentTime += beatInterval * 1.8;
-    } else if (difficulty === 'normal') {
+    if (difficulty === 'normal') {
       currentTime += beatInterval * 1.2;
     } else if (difficulty === 'hard') {
-      currentTime += beatInterval * 0.85;
+      currentTime += beatInterval * 0.82;
     } else {
-      currentTime += beatInterval * 0.52;
+      currentTime += beatInterval * 0.48;
     }
     index++;
   }
@@ -1270,23 +1271,19 @@ function applyHitScore(note, minDiff) {
   const hasMashiro = equippedUnit.includes('mashiro');
   const hasMaro = equippedUnit.includes('maro');
 
-  // 네네코 마시로 스킬 효과: 플릭(swipe) 또는 연타 성향 노트 점수 +40%
   if (hasMashiro && mashiroSkillActivated && (note.type === 'swipe' || note.type === 'zigzag' || note.type === 'bridge')) {
     mult *= 1.40;
   }
 
-  // 냥냥 집사의 특급 후원 시너지 (200콤보 이상 & 풀피 시 상시 15% 증가)
   if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) {
     mult *= 1.15;
   }
 
-  // 마시로 스킬 효과: 콤보 보너스 배율 한 단계 앞당김 (예: 50콤보에도 100콤보 배율 적용)
   let effectiveCombo = combo;
   if (hasMashiro && mashiroSkillActivated) {
     effectiveCombo += 50;
   }
 
-  // 게이지 충전 (페버 시 25% 가속)
   let chargeRate = 0.8;
   if (feverActive) chargeRate *= 1.25;
 
@@ -1353,7 +1350,7 @@ function triggerMashiroSkill() {
   mashiroSkillGauge = 0;
   mashiroGaugeFill.style.width = '0%';
   mashiroSkillActivated = true;
-  mashiroSkillTimer = 12 * 60; // 12초 지속
+  mashiroSkillTimer = 12 * 60;
   
   mashiroSkillStatus.innerText = "🐾 발동 중!";
   mashiroSkillStatus.style.color = "#facc15";
@@ -1361,7 +1358,7 @@ function triggerMashiroSkill() {
   mashiroVoice.currentTime = 0;
   mashiroVoice.play().catch(e => {});
   mashiroPopup.classList.add('show');
-  pawPrintAnimTimer = 40; // 화면 양옆 발바닥 도장 이펙트 타이머
+  pawPrintAnimTimer = 40;
 }
 
 function requestGiveUp() {
@@ -1598,16 +1595,9 @@ window.addEventListener('keyup', (e) => {
 function calculateRank(songId, difficulty, finalScore) {
   let multiplier = 1.0;
   if (songId === 'constellation') multiplier = 1.35;
-  else if (songId === 'bbijilge') multiplier = 0.85;
+  else if (songId === 'bbijilge') multiplier = 0.90;
 
-  if (difficulty === 'easy') {
-    if (finalScore >= 90000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
-    if (finalScore >= 75000 * multiplier) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 60000 * multiplier) return { rank: 'A', color: '#00f2fe' };
-    if (finalScore >= 45000 * multiplier) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 30000 * multiplier) return { rank: 'C', color: '#fb923c' };
-    return { rank: 'D', color: '#94a3b8' };
-  } else if (difficulty === 'normal') {
+  if (difficulty === 'normal') {
     if (finalScore >= 180000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 145000 * multiplier) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 115000 * multiplier) return { rank: 'A', color: '#00f2fe' };
@@ -1637,12 +1627,11 @@ function updateAndDraw() {
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 패시브 스킬: 고양이의 변덕 (곡 진행 중 1분마다 3초간 [냥냥 피버])
   const currentMinute = Math.floor(currentTime / 60);
   if (currentMinute > lastFeverMinute && currentMinute % 1 === 0) {
     lastFeverMinute = currentMinute;
     feverActive = true;
-    feverTimer = 3 * 60; // 3초간 지속
+    feverTimer = 3 * 60;
     feverPopup.classList.add('show');
     setTimeout(() => { feverPopup.classList.remove('show'); }, 3000);
   }
@@ -1664,7 +1653,6 @@ function updateAndDraw() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 고양이 발바닥 도장 이펙트 연출
   if (pawPrintAnimTimer > 0) {
     ctx.fillStyle = 'rgba(250, 204, 21, 0.35)';
     ctx.font = '24px sans-serif';
@@ -1904,7 +1892,7 @@ function updateAndDraw() {
   }
 
   const songObj = songs.find(s => s.id === currentSongId);
-  const durationLimit = songObj ? songObj.duration : 225.0;
+  const durationLimit = songObj ? songObj.duration : 185.0;
 
   if (currentBgm.ended || (remainingNotes === 0 && currentTime > durationLimit - 2.0)) {
     endGame();
@@ -2014,6 +2002,7 @@ function endGame() {
 
   const rankInfo = calculateRank(currentSongId, currentDifficulty, score);
 
+  if (!bestRecords[currentSongId]) bestRecords[currentSongId] = {};
   if (!bestRecords[currentSongId][currentDifficulty] || score > bestRecords[currentSongId][currentDifficulty].score) {
     bestRecords[currentSongId][currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
     clearTitle = "🎉 NEW RECORD! " + clearTitle;
@@ -2026,7 +2015,7 @@ function endGame() {
   updateSelectedRecordDisplay();
   saveGameData();
 
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffNameUI = { normal: '보통', hard: '하드', extreme: '익스트림' };
   mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
   mainTitle.style.color = titleColor;
   mainTitle.style.fontSize = "16px";
@@ -2073,6 +2062,9 @@ rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_
 
 rhythm_game_html = rhythm_game_html.replace("AUDIO3_BASE64_PLACEHOLDER", audio3_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE3_BASE64_PLACEHOLDER", image3_base64)
+
+rhythm_game_html = rhythm_game_html.replace("AUDIO_BOM_BASE64_PLACEHOLDER", audio_bom_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE_BOM_BASE64_PLACEHOLDER", image_bom_base64)
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_base64)
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
