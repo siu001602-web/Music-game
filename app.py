@@ -80,37 +80,53 @@ rhythm_game_html = """
     justify-content: center;
     overflow: hidden;
   }
-  #game-container {
+
+  /* 전체 앱 컨테이너 */
+  #app-wrapper {
     position: relative;
     width: 100%;
     max-width: 480px;
     height: 100vh;
     max-height: 840px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: #0e1117;
-  }
-  canvas {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: linear-gradient(rgba(14, 17, 23, 0.7), rgba(14, 17, 23, 0.7)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
-    background-size: cover;
-    background-position: center;
-    background-color: #161b22;
     border-left: 2px solid #30363d;
     border-right: 2px solid #30363d;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
-    touch-action: none;
+    overflow: hidden;
   }
-  #ui-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
+
+  /* 1. 악보 및 메인 메뉴 화면 (완전 분리된 뷰) */
+  #menu-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
-    background-size: cover; background-position: center;
-    padding: 14px; text-align: center; z-index: 10;
+    background-size: cover;
+    background-position: center;
+    padding: 14px;
+    text-align: center;
+  }
+
+  /* 2. 실제 게임 플레이 화면 (완전 분리된 뷰) */
+  #play-screen {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: relative;
+    background-color: #161b22;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER');
+    background-size: cover;
+    background-position: center;
+    touch-action: none;
   }
 
   .nav-tabs {
@@ -124,13 +140,13 @@ rhythm_game_html = """
   }
   .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
 
-  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
 
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
   .song-grid {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-    width: 100%; max-height: 140px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
+    width: 100%; max-height: 135px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
   }
   .song-card {
     background: #161b22; border: 2px solid #30363d; border-radius: 10px;
@@ -157,9 +173,24 @@ rhythm_game_html = """
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
 
+  /* 현재 선택된 난이도의 최고 기록 표시 카드 */
+  .selected-diff-record-box {
+    width: 100%;
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* 3. 편성 화면 (완전 분리된 뷰) */
   #prep-screen {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(14, 17, 23, 0.97); padding: 16px; display: none; flex-direction: column; z-index: 15; text-align: left;
+    width: 100%; height: 100%;
+    background: rgba(14, 17, 23, 0.98); padding: 16px; display: none; flex-direction: column; text-align: left;
   }
   .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
   .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
@@ -201,9 +232,9 @@ rhythm_game_html = """
 
   .stats-box {
     background: rgba(255, 255, 255, 0.08); border: 1px solid #30363d; border-radius: 10px;
-    padding: 8px 14px; margin: 2px 0 6px 0; width: 85%; text-align: left; font-size: 11px; line-height: 1.4;
+    padding: 8px 14px; margin: 2px 0 8px 0; width: 100%; text-align: left; font-size: 11px; line-height: 1.4;
   }
-  .controls-hint { margin-top: 4px; font-size: 10px; color: #8b949e; }
+  .controls-hint { margin-top: 6px; font-size: 10px; color: #8b949e; }
 
   .gacha-box {
     background: #161b22; border: 2px solid #30363d; border-radius: 14px; padding: 16px;
@@ -249,64 +280,10 @@ rhythm_game_html = """
   <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
 </audio>
 
-<div id="game-container">
-  <canvas id="gameCanvas" width="480" height="720"></canvas>
-  
-  <div id="yuni-popup">
-    <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
-    <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
-  </div>
+<div id="app-wrapper">
 
-  <div id="skill-bar-container">
-    <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
-    <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
-    <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
-  </div>
-
-  <div id="char-select-modal">
-    <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-bottom: 10px;">👤 편성할 캐릭터 선택</div>
-    <div class="char-select-grid" id="char-select-list"></div>
-    <button id="modal-close-btn" style="padding: 6px 20px; font-size: 12px; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">닫기</button>
-  </div>
-
-  <div id="gacha-result-modal">
-    <div style="font-size: 16px; font-weight: bold; color: #facc15; margin-bottom: 10px;">🎁 뽑기 결과</div>
-    <div id="gacha-result-list" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;"></div>
-    <button id="gacha-close-btn" class="action-btn">확인</button>
-  </div>
-
-  <div id="prep-screen">
-    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터를 편성하세요.</div>
-
-    <div class="unit-slots">
-      <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
-        <div class="plus-icon">+</div>
-        <div style="font-size: 10px; color: #8b949e;">슬롯 1</div>
-      </div>
-      <div id="slot-2" class="unit-slot" onclick="openCharSelector(1)">
-        <div class="plus-icon">+</div>
-        <div style="font-size: 10px; color: #8b949e;">슬롯 2</div>
-      </div>
-    </div>
-
-    <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
-      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
-      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%</div>
-    </div>
-
-    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
-      <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [Normal] 최고 기록</div>
-      <div id="prep-record-content" style="color: #fff;">점수: 0점 (RANK: -)</div>
-    </div>
-
-    <div class="prep-footer">
-      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
-      <button id="prep-start-btn" class="action-btn" style="padding: 8px 22px; font-size: 14px;">결정 (라이브 시작)</button>
-    </div>
-  </div>
-
-  <div id="ui-overlay">
+  <!-- 1. 악보 및 메인 메뉴 화면 (게임 플레이 화면과 완전 분리) -->
+  <div id="menu-screen">
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
       <h1 id="main-title" style="margin: 0; color: #00f2fe; font-size: 18px;">RHYTHM STAR</h1>
       <div style="background: #161b22; border: 1px solid #facc15; border-radius: 12px; padding: 3px 10px; font-size: 12px; font-weight: bold; color: #facc15;">
@@ -321,6 +298,7 @@ rhythm_game_html = """
     </div>
 
     <div id="tab-songs" class="tab-content">
+      <!-- 직전 플레이 상세 결과창 (난이도 변경 시 자동 숨김 처리하여 혼동 방지) -->
       <div id="stats-container" class="stats-box" style="display: none;"></div>
 
       <div id="menu-group" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
@@ -333,9 +311,15 @@ rhythm_game_html = """
           <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">NORMAL</div></div>
           <div class="diff-card" data-diff="hard"><div class="diff-lv" id="lv-hard">Lv. 18</div><div class="diff-name">HARD</div></div>
         </div>
+
+        <!-- 현재 선택한 곡 & 난이도의 고유 최고 기록만 정확하게 표시 -->
+        <div class="selected-diff-record-box">
+          <span id="menu-diff-label" style="font-weight: bold; color: #00f2fe;">🏆 [NORMAL] 최고 기록</span>
+          <span id="menu-diff-record" style="color: #fff;">기록 없음 (RANK: -)</span>
+        </div>
       </div>
 
-      <button id="next-prep-btn" class="action-btn" style="margin-top: 6px; padding: 9px 22px; font-size: 14px;">유니트 편성 및 라이브</button>
+      <button id="next-prep-btn" class="action-btn" style="margin-top: 4px; padding: 9px 22px; font-size: 14px;">유니트 편성 및 라이브</button>
 
       <div id="controls-hint" class="controls-hint">
         🎹 노트: <b>[D] [F] [J] [K]</b> | 슬라이드: <b>[←][→]</b> 또는 <b>[A][L]</b>
@@ -372,21 +356,87 @@ rhythm_game_html = """
         </div>
       </div>
     </div>
-
   </div>
+
+  <!-- 2. 유니트 편성 화면 (완전 분리된 뷰) -->
+  <div id="prep-screen">
+    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
+    <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터를 편성하세요.</div>
+
+    <div class="unit-slots">
+      <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
+        <div class="plus-icon">+</div>
+        <div style="font-size: 10px; color: #8b949e;">슬롯 1</div>
+      </div>
+      <div id="slot-2" class="unit-slot" onclick="openCharSelector(1)">
+        <div class="plus-icon">+</div>
+        <div style="font-size: 10px; color: #8b949e;">슬롯 2</div>
+      </div>
+    </div>
+
+    <div id="synergy-card" class="prep-skill-card" style="opacity: 0.4;">
+      <div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">🐱 시너지: [유니냥] (비활성)</div>
+      <div style="font-size: 10px; color: #8b949e;" id="synergy-desc">• 유니와 아르냥을 모두 편성 시 100콤보 이상 점수 +15%</div>
+    </div>
+
+    <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
+      <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [Normal] 최고 기록</div>
+      <div id="prep-record-content" style="color: #fff;">점수: 0점 (RANK: -)</div>
+    </div>
+
+    <div class="prep-footer">
+      <button id="prep-back-btn" style="padding: 8px 16px; font-size: 12px; font-weight: bold; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">취소</button>
+      <button id="prep-start-btn" class="action-btn" style="padding: 8px 22px; font-size: 14px;">결정 (라이브 시작)</button>
+    </div>
+  </div>
+
+  <!-- 3. 실제 게임 플레이 화면 (메뉴와 분리된 독립 뷰) -->
+  <div id="play-screen">
+    <canvas id="gameCanvas" width="480" height="720"></canvas>
+    
+    <div id="yuni-popup">
+      <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
+      <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 발동!</span>
+    </div>
+
+    <div id="skill-bar-container">
+      <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">✨ [뭘뽀노?] 게이지</div>
+      <div class="gauge-bg"><div id="gauge-fill" class="gauge-fill"></div></div>
+      <div id="skill-status" style="font-size: 10px; color: #8b949e; font-weight: bold;">자동 충전 중...</div>
+    </div>
+  </div>
+
+  <!-- 모달 창들 -->
+  <div id="char-select-modal">
+    <div style="font-size: 15px; font-weight: bold; color: #00f2fe; margin-bottom: 10px;">👤 편성할 캐릭터 선택</div>
+    <div class="char-select-grid" id="char-select-list"></div>
+    <button id="modal-close-btn" style="padding: 6px 20px; font-size: 12px; background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 20px; cursor: pointer;">닫기</button>
+  </div>
+
+  <div id="gacha-result-modal">
+    <div style="font-size: 16px; font-weight: bold; color: #facc15; margin-bottom: 10px;">🎁 뽑기 결과</div>
+    <div id="gacha-result-list" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;"></div>
+    <button id="gacha-close-btn" class="action-btn">확인</button>
+  </div>
+
 </div>
 
 <script>
+const menuScreen = document.getElementById('menu-screen');
+const prepScreen = document.getElementById('prep-screen');
+const playScreen = document.getElementById('play-screen');
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const overlay = document.getElementById('ui-overlay');
 const startBtn = document.getElementById('prep-start-btn');
-const prepScreen = document.getElementById('prep-screen');
 const nextPrepBtn = document.getElementById('next-prep-btn');
 const prepBackBtn = document.getElementById('prep-back-btn');
 const prepSongTitle = document.getElementById('prep-song-title');
 const prepRecordTitle = document.getElementById('prep-record-title');
 const prepRecordContent = document.getElementById('prep-record-content');
+
+const menuDiffLabel = document.getElementById('menu-diff-label');
+const menuDiffRecord = document.getElementById('menu-diff-record');
 
 const bgm1 = document.getElementById('bgm1');
 const bgm2 = document.getElementById('bgm2');
@@ -423,6 +473,13 @@ const tabContents = {
   characters: document.getElementById('tab-characters')
 };
 
+// 화면 전환 헬퍼 함수 (메뉴 / 편성 / 플레이 화면을 명확히 분리)
+function switchView(viewName) {
+  menuScreen.style.display = (viewName === 'menu') ? 'flex' : 'none';
+  prepScreen.style.display = (viewName === 'prep') ? 'flex' : 'none';
+  playScreen.style.display = (viewName === 'play') ? 'block' : 'none';
+}
+
 navTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     navTabs.forEach(t => t.classList.remove('active'));
@@ -453,6 +510,7 @@ let ownedCharacters = { yuni: false, arunyang: false };
 let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
+// 곡별, 난이도별 독립 기록 저장소
 let bestRecords = {
   startrail: {
     easy: { score: 0, rank: '-', color: '#94a3b8' },
@@ -492,6 +550,20 @@ function getActiveBgm() {
   return s ? s.audio : bgm1;
 }
 
+// 선택한 곡과 난이도에 맞는 최고 기록만 정확히 표시하는 함수
+function updateSelectedRecordDisplay() {
+  const rec = bestRecords[currentSongId][currentDifficulty];
+  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b' };
+  menuDiffLabel.innerText = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
+  menuDiffLabel.style.color = diffColorMap[currentDifficulty];
+  
+  if (rec.score > 0) {
+    menuDiffRecord.innerHTML = `<b>${rec.score.toLocaleString()}점</b> (RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>)`;
+  } else {
+    menuDiffRecord.innerHTML = `기록 없음 (RANK: -)`;
+  }
+}
+
 function renderSongList() {
   songListContainer.innerHTML = '';
   songs.forEach(song => {
@@ -506,8 +578,18 @@ function renderSongList() {
     `;
     card.addEventListener('click', () => {
       currentSongId = song.id;
+      // 곡 변경 시 직전 결과 박스를 숨겨서 다른 곡/난이도 기록과 섞여 보이지 않게 함
+      statsContainer.style.display = 'none';
+      mainTitle.innerHTML = 'RHYTHM STAR';
+      mainTitle.style.color = '#00f2fe';
+      
+      // 캔버스 배경 이미지도 선택한 곡으로 동기화
+      canvas.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('${song.thumb}')`;
+      menuScreen.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('${song.thumb}')`;
+      
       renderSongList();
       updateDifficultyLevels();
+      updateSelectedRecordDisplay();
     });
     songListContainer.appendChild(card);
   });
@@ -524,12 +606,20 @@ function updateDifficultyLevels() {
 
 renderSongList();
 updateDifficultyLevels();
+updateSelectedRecordDisplay();
 
 diffCards.forEach(card => {
   card.addEventListener('click', () => {
     diffCards.forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     currentDifficulty = card.getAttribute('data-diff');
+    
+    // 난이도를 변경할 때 직전 플레이 결과창을 숨겨서 다른 난이도 기록이 섞여 보이지 않게 수정
+    statsContainer.style.display = 'none';
+    mainTitle.innerHTML = 'RHYTHM STAR';
+    mainTitle.style.color = '#00f2fe';
+    
+    updateSelectedRecordDisplay();
   });
 });
 
@@ -543,14 +633,14 @@ nextPrepBtn.addEventListener('click', () => {
   if (rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
   } else {
-    prepRecordContent.innerHTML = `기록 없음 (첫 클라이언트에 도전하세요!)`;
+    prepRecordContent.innerHTML = `기록 없음 (첫 클리어에 도전하세요!)`;
   }
 
-  prepScreen.style.display = 'flex';
+  switchView('prep');
 });
 
 prepBackBtn.addEventListener('click', () => {
-  prepScreen.style.display = 'none';
+  switchView('menu');
 });
 
 function updateInventoryUI() {
@@ -747,7 +837,6 @@ function generateBeatmap(songId, difficulty) {
     else if (difficulty !== 'easy' && index % 6 === 0 && rand < 0.5) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    // 🌟 3번: 지그재그 롱 노트 (Normal / Hard 난이도에서 등장)
     else if (difficulty !== 'easy' && index % 7 === 0 && rand < 0.4) {
       const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
@@ -760,7 +849,6 @@ function generateBeatmap(songId, difficulty) {
         activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
       }
     }
-    // 🌟 4번: 타이밍 홀드 (Release) 노트 (Normal / Hard 난이도에서 등장)
     else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
       const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
@@ -911,7 +999,6 @@ function handleTapUp(lane) {
       note.holding = false;
       note.tailHit = true;
 
-      // 🌟 4번 타이밍 홀드(Release) 노트는 뗄 때 정확한 타이밍 요구 (오차 0.25초 내외)
       let releaseWindow = (note.type === 'release') ? 0.25 : 0.35;
 
       if (diff <= releaseWindow || currentTime >= endTime - 0.2) {
@@ -1169,7 +1256,6 @@ function updateAndDraw() {
     const timeDiff = note.time - currentTime;
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
-    // 롱 / 릴리즈 / 지그재그 누르고 있는 동안의 바디 렌더링
     if ((note.type === 'long' || note.type === 'release' || note.type === 'zigzag') && note.holding) {
       const endY = HIT_Y - ((note.time + note.duration - currentTime) * window.NOTE_SPEED);
       
@@ -1333,8 +1419,6 @@ function updateAndDraw() {
 }
 
 function startGame() {
-  prepScreen.style.display = 'none';
-
   score = 0;
   combo = 0;
   maxCombo = 0;
@@ -1367,7 +1451,8 @@ function startGame() {
   isPlaying = true;
   startTime = performance.now();
   
-  overlay.style.display = 'none';
+  // 메뉴/편성 화면을 완전히 숨기고 독립된 플레이 화면으로 전환
+  switchView('play');
   requestAnimationFrame(updateAndDraw);
 }
 
@@ -1400,15 +1485,16 @@ function endGame() {
 
   stella += 25;
   updateInventoryUI();
+  updateSelectedRecordDisplay();
 
-  mainTitle.innerHTML = clearTitle;
+  mainTitle.innerHTML = `[${currentDifficulty.toUpperCase()}] ${clearTitle}`;
   mainTitle.style.color = titleColor;
-  mainTitle.style.fontSize = "17px";
+  mainTitle.style.fontSize = "16px";
 
   statsContainer.innerHTML = `
     <div style="text-align: center; margin-bottom: 2px;">
-      <div style="font-size: 10px; color: #8b949e;">RANK</div>
-      <div class="rank-badge" style="color: ${rankInfo.color};">${rankInfo.rank}</div>
+      <div style="font-size: 10px; color: #8b949e;">[${currentDifficulty.toUpperCase()}] PLAY RESULT</div>
+      <div class="rank-badge" style="color: ${rankInfo.color}; font-size: 18px; font-weight: bold;">RANK ${rankInfo.rank}</div>
     </div>
     <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentSongId][currentDifficulty].score.toLocaleString()})</div>
     <div>💎 최대 콤보: ${maxCombo} | <span style="color: #facc15;">🌟 스텔라 +25 획득!</span></div>
@@ -1426,7 +1512,9 @@ function endGame() {
 
   statsContainer.style.display = 'block';
   nextPrepBtn.innerText = "유니트 편성 및 라이브 (Retry)";
-  overlay.style.display = 'flex';
+  
+  // 플레이 화면을 닫고 악보/결과 화면으로 깔끔하게 복귀
+  switchView('menu');
 }
 
 startBtn.addEventListener('click', startGame);
