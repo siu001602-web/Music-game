@@ -815,7 +815,6 @@ let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
 
-// 캐릭터별 액티브 스킬 상태 관리
 let mashiroSkillGauge = 0;
 let mashiroSkillActivated = false;
 let mashiroSkillTimer = 0;
@@ -823,16 +822,16 @@ let mashiroSkillTimer = 0;
 let yuniSkillGauge = 0;
 let yuniSkillActivated = false;
 let yuniSkillTimer = 0;
-let yuniMissShieldCount = 2; // 유니 패시브: 곡당 최대 2회 미스 콤보 보호
+let yuniMissShieldCount = 2;
 
 let huyaSkillGauge = 0;
 let huyaSkillActivated = false;
 let huyaSkillTimer = 0;
 
-let doubleSkillActive = false; // 유니&후야 더블 스킬 버프
+let doubleSkillActive = false;
 let doubleSkillTimer = 0;
 
-let iberisComboTracker = 0; // 후야&바쿠 시너지 콤보 트래커
+let iberisComboTracker = 0;
 let feverTimer = 0;
 let feverActive = false;
 let pawPrintAnimTimer = 0;
@@ -1390,7 +1389,6 @@ function applyHitScore(note, minDiff) {
   let effectiveCombo = combo;
   if (hasMashiro && mashiroSkillActivated) effectiveCombo += 50;
 
-  // 패시브: 후야의 나른한 낮잠 시간 (곡 시작 시 10초 동안 스킬 게이지 쿨타임 15% 빠르게)
   let timeElapsed = (performance.now() - startTime) / 1000;
   let huyaPassiveBoost = (equippedUnit.includes('huya') && timeElapsed <= 10.0) ? 1.15 : 1.0;
 
@@ -1842,7 +1840,6 @@ function updateAndDraw() {
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 1. 유니&아르냥 시너지: 체력 50% 미만 시 초당 체력 0.5% 자동 회복
   const hasYuni = equippedUnit.includes('yuni');
   const hasArunyang = equippedUnit.includes('arunyang');
   if (hasYuni && hasArunyang && currentHp < 50 && currentHp > 0) {
@@ -1850,13 +1847,11 @@ function updateAndDraw() {
     updateHpUI();
   }
 
-  // 2. 기본 자연 회복 (체력이 100 미만일 때 서서히 회복)
   if (currentHp < maxHp && currentHp > 0) {
     currentHp = Math.min(maxHp, currentHp + 0.015);
     updateHpUI();
   }
 
-  // 액티브 스킬 타이머 처리
   if (mashiroSkillActivated) {
     mashiroSkillTimer--;
     if (mashiroSkillTimer <= 0) {
@@ -1879,7 +1874,7 @@ function updateAndDraw() {
 
   if (huyaSkillActivated) {
     huyaSkillTimer--;
-    currentHp = Math.min(maxHp, currentHp + 0.12); // 후야 액티브: 지속 체력 회복
+    currentHp = Math.min(maxHp, currentHp + 0.12);
     updateHpUI();
 
     if (huyaSkillTimer <= 0) {
@@ -2377,7 +2372,7 @@ rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", mashiro_voice_base64)
-rhythm_game_html = rhythm_game_html.notes_match = True if False else rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
+rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", huya_voice_base64)
 
 components.html(rhythm_game_html, height=820)
