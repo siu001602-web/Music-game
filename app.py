@@ -695,11 +695,9 @@ gacha1Btn.addEventListener('click', () => executeGacha(1));
 gacha10Btn.addEventListener('click', () => executeGacha(10));
 gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none"; });
 
-// 🌟 의사 난수 생성기(Pseudo-Random)를 통한 곡별/난이도별 고정 채보 생성
 function generateBeatmap(songId, difficulty) {
   notes = [];
   
-  // 곡과 난이도에 따른 고유 시드 번호 부여
   let seed = songId === 'startrail' ? 1000 : 2000;
   if (difficulty === 'easy') seed += 100;
   else if (difficulty === 'normal') seed += 200;
@@ -713,7 +711,7 @@ function generateBeatmap(songId, difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = 225.0; // 음원 끝까지 넉넉하게 채보 생성
+  const totalDuration = 225.0;
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
@@ -729,7 +727,7 @@ function generateBeatmap(songId, difficulty) {
       const pairLane = (lane + 2) % LANES;
       const bridgeId = `bridge_${index}`;
       notes.push({ time: currentTime, lane: lane, type: 'bridge', pairLane: pairLane, bridgeId: bridgeId, hit: false, missed: false });
-      notes.push({ time: currentTime, lane: pairLane, type: 'bridge', pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
+      notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
     }
     else if (index % 4 === 0 && rand < 0.45) {
       const dir = lane === 0 ? 'right' : (lane === 3 ? 'left' : (seededRandom() < 0.5 ? 'left' : 'right'));
@@ -830,7 +828,6 @@ function handleTapDown(lane) {
     }
   }
 
-  // 🌟 판정 범위를 넉넉하게 0.32초로 확장하여 씹힘 원천 방지
   if (targetNote && minDiff <= 0.32) {
     targetNote.hit = true;
     if (targetNote.type === 'long') targetNote.holding = true;
@@ -871,7 +868,6 @@ function handleSwipe(lane, dir) {
   }
 }
 
-// 🌟 롱노트 해제 시 TAP 풀림 및 씹힘 현상 완벽 해결
 function handleTapUp(lane) {
   const currentTime = (performance.now() - startTime) / 1000;
   for (let note of notes) {
@@ -881,7 +877,6 @@ function handleTapUp(lane) {
       note.holding = false;
       note.tailHit = true;
 
-      // 롱노트 종료 판정도 0.35초로 관대하게 보정
       if (diff <= 0.35 || currentTime >= endTime - 0.2) {
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
@@ -1011,18 +1006,21 @@ window.addEventListener('keyup', (e) => {
 
 function calculateRank(difficulty, finalScore) {
   if (difficulty === 'easy') {
+    if (finalScore >= 90000) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 70000) return { rank: 'A', color: '#00f2fe' };
     if (finalScore >= 60000) return { rank: 'B', color: '#4ade80' };
     if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
     return { rank: 'D', color: '#94a3b8' };
   } else if (difficulty === 'normal') {
-    if (finalScore >= 130000) return { rank: 'S', color: '#facc15' };
-    if (finalScore >= 100000) return { rank: 'A', color: '#00f2fe' };
-    if (finalScore >= 80000) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 60000) return { rank: 'C', color: '#fb923c' };
+    if (finalScore >= 195000) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 150000) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 120000) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 95000) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 70000) return { rank: 'C', color: '#fb923c' };
     return { rank: 'D', color: '#94a3b8' };
   } else {
+    if (finalScore >= 280000) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
     if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
@@ -1137,7 +1135,6 @@ function updateAndDraw() {
       continue;
     }
 
-    // 🌟 미스 판정 마진을 넉넉히 주어 억울한 미스 방지
     if (!note.hit && timeDiff < -0.35) {
       note.missed = true;
       handleMiss();
@@ -1230,7 +1227,6 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  // 🌟 오디오 끝까지 자연스럽게 재생되도록 종료 조건 수정
   if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 2.0)) {
     endGame();
     return;
@@ -1264,7 +1260,6 @@ function startGame() {
   activeTouches.clear();
   keyPressed = [false, false, false, false];
   
-  // 🌟 곡별 고정 채보 생성 호출
   generateBeatmap(currentSongId, currentDifficulty);
   
   const currentBgm = getActiveBgm();
