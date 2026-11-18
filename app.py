@@ -633,7 +633,6 @@ let missionData = {
   gachaClaimed: false
 };
 
-// 로컬 스토리지에서 저장된 데이터 불러오기 (Load)
 function loadGameData() {
   const savedStella = localStorage.getItem('rhythm_stella');
   if (savedStella !== null) stella = parseInt(savedStella);
@@ -658,7 +657,6 @@ function loadGameData() {
   }
 }
 
-// 로컬 스토리지에 데이터 저장하기 (Save)
 function saveGameData() {
   localStorage.setItem('rhythm_stella', stella);
   localStorage.setItem('rhythm_chars', JSON.stringify(ownedCharacters));
@@ -951,9 +949,9 @@ function updateInventoryUI() {
     `;
   } else if (hasHuya && hasBaku) {
     synergyCard.style.opacity = "1";
-    synergyCard.style.borderColor = "#34d399";
+    synergyCard.style.borderColor = "#f97316";
     synergyCard.innerHTML = `
-      <div style="font-weight: bold; color: #34d399; margin-bottom: 2px;">💤 활성화된 시너지: [조용히, 깨우지 마세요]</div>
+      <div style="font-weight: bold; color: #f97316; margin-bottom: 2px;">💤 활성화된 시너지: [조용히, 깨우지 마세요]</div>
       <div style="font-size: 10px; color: #fff;">• <b>HP 100% 유지 시 상시 발동:</b> 스킬 지속시간 +2초 & 100콤보 단위 달성마다 즉시 보너스 점수!</div>
     `;
   } else if (hasHuya && hasYuni) {
@@ -1034,7 +1032,6 @@ function executeGacha(count) {
   }
   stella -= cost;
   
-  // 미션 진행도 반영 및 저장
   missionData.gachaCount += 1;
   updateMissionUI();
   updateInventoryUI();
@@ -1190,7 +1187,7 @@ function incrementComboAndCheckMilestone() {
   
   if (hasHuya && hasBaku && currentHp >= maxHp && combo > 0 && combo % 100 === 0) {
     score += 3000;
-    showJudgement(`💤 ${combo} COMBO BONUS +3000!`, "#34d399");
+    showJudgement(`💤 ${combo} COMBO BONUS +3000!`, "#f97316");
   }
 }
 
@@ -1698,7 +1695,7 @@ function updateAndDraw() {
       if (note.type === 'zigzag') {
         const x1 = note.lane * LANE_WIDTH + LANE_WIDTH / 2;
         const x2 = note.targetLane * LANE_WIDTH + LANE_WIDTH / 2;
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.75)';
+        ctx.strokeStyle = 'rgba(249, 115, 22, 0.75)';
         ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.moveTo(x1, HIT_Y);
@@ -1773,11 +1770,11 @@ function updateAndDraw() {
         ctx.fillText('▲UP', x + w / 2, y + 4);
       }
       else if (note.type === 'zigzag') {
-        ctx.fillStyle = '#34d399';
+        ctx.fillStyle = '#f97316';
         ctx.beginPath();
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
-        ctx.fillStyle = '#0e1117';
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('ZIG', x + w / 2, y + 4);
@@ -1853,7 +1850,7 @@ function updateAndDraw() {
   }
 
   if (hasHuya && hasBaku && currentHp >= maxHp) {
-    ctx.fillStyle = '#34d399';
+    ctx.fillStyle = '#f97316';
     ctx.font = 'bold 12px sans-serif';
     ctx.fillText('💤 [조용히, 깨우지 마세요] 풀피 시너지 ON', 18, statusY);
     statusY += 18;
@@ -2015,11 +2012,11 @@ function endGame() {
   }
 
   stella += 25;
-  missionData.playCount += 1; // 라이브 플레이 미션 카운트 증가
+  missionData.playCount += 1;
   updateInventoryUI();
   updateMissionUI();
   updateSelectedRecordDisplay();
-  saveGameData(); // 데이터 자동 저장
+  saveGameData();
 
   const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
