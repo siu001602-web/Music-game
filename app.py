@@ -34,6 +34,9 @@ song1_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 song2_music = "music/Screen_Recording_20261118_013745_YouTube_18112026.m4a"
 song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 
+song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
+song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
+
 yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"
 arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"
 yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
@@ -53,6 +56,9 @@ image1_base64 = get_base64(song1_img)
 
 audio2_base64 = get_base64(song2_music)
 image2_base64 = get_base64(song2_img)
+
+audio3_base64 = get_base64(song3_music)
+image3_base64 = get_base64(song3_img)
 
 yuni_img_base64 = get_base64(yuni_img_path)
 arunyang_img_base64 = get_base64(arunyang_img_path)
@@ -159,7 +165,7 @@ rhythm_game_html = """
   }
   .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
   .song-thumb { width: 100%; height: 55px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
-  .song-name { font-size: 12px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .song-name { font-size: 11px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
 
   .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
@@ -168,15 +174,15 @@ rhythm_game_html = """
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
+  .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
-  .diff-name { font-size: 12px; font-weight: 900; }
-  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
+  .diff-name { font-size: 11px; font-weight: 900; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
+  .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
 
   .selected-diff-record-box {
     width: 100%;
@@ -293,6 +299,9 @@ rhythm_game_html = """
 <audio id="bgm2" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO2_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
+<audio id="bgm3" preload="auto">
+  <source src="data:audio/mp4;base64,AUDIO3_BASE64_PLACEHOLDER" type="audio/mp4">
+</audio>
 <audio id="yuni-voice" preload="auto">
   <source src="data:audio/mp4;base64,YUNI_VOICE_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -325,13 +334,13 @@ rhythm_game_html = """
 
         <div class="section-title">Difficulty (난이도 선택)</div>
         <div class="difficulty-select-container">
-          <div class="diff-card" data-diff="easy"><div class="diff-lv" id="lv-easy">Lv. 5</div><div class="diff-name">EASY</div></div>
-          <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">NORMAL</div></div>
-          <div class="diff-card" data-diff="hard"><div class="diff-lv" id="lv-hard">Lv. 18</div><div class="diff-name">HARD</div></div>
+          <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">보통</div></div>
+          <div class="diff-card" data-diff="hard"><div class="diff-lv" id="lv-hard">Lv. 18</div><div class="diff-name">하드</div></div>
+          <div class="diff-card" data-diff="expert"><div class="diff-lv" id="lv-expert">Lv. 25</div><div class="diff-name">익스퍼트</div></div>
         </div>
 
         <div class="selected-diff-record-box">
-          <span id="menu-diff-label" style="font-weight: bold; color: #00f2fe;">🏆 [NORMAL] 최고 기록</span>
+          <span id="menu-diff-label" style="font-weight: bold; color: #00f2fe;">🏆 [보통] 최고 기록</span>
           <span id="menu-diff-record" style="color: #fff;">기록 없음 (RANK: -)</span>
         </div>
       </div>
@@ -407,7 +416,7 @@ rhythm_game_html = """
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
-      <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [Normal] 최고 기록</div>
+      <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;" id="prep-record-title">🏆 [보통] 최고 기록</div>
       <div id="prep-record-content" style="color: #fff;">점수: 0점 (RANK: -)</div>
     </div>
 
@@ -489,6 +498,8 @@ const hpText = document.getElementById('hp-text');
 
 const bgm1 = document.getElementById('bgm1');
 const bgm2 = document.getElementById('bgm2');
+const bgm3 = document.getElementById('bgm3');
+
 const yuniVoice = document.getElementById('yuni-voice');
 const huyaVoice = document.getElementById('huya-voice');
 
@@ -520,9 +531,9 @@ const statsContainer = document.getElementById('stats-container');
 const diffCards = document.querySelectorAll('.diff-card');
 const songListContainer = document.getElementById('song-list');
 
-const lvEasy = document.getElementById('lv-easy');
 const lvNormal = document.getElementById('lv-normal');
 const lvHard = document.getElementById('lv-hard');
+const lvExpert = document.getElementById('lv-expert');
 
 const navTabs = document.querySelectorAll('.nav-tab');
 const tabContents = {
@@ -549,8 +560,18 @@ navTabs.forEach(tab => {
 });
 
 const songs = [
-  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } },
-  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } }
+  { 
+    id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
+    levels: { normal: 'Lv. 11', hard: 'Lv. 18', expert: 'Lv. 25' } 
+  },
+  { 
+    id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144,
+    levels: { normal: 'Lv. 12', hard: 'Lv. 19', expert: 'Lv. 26' } 
+  },
+  { 
+    id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255,
+    levels: { normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' } 
+  }
 ];
 
 const LANES = 4;
@@ -560,7 +581,7 @@ const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
 let currentSongId = 'startrail';
-let currentDifficulty = 'normal';
+let currentDifficulty = 'normal'; // normal, hard, expert
 
 let stella = 100;
 let ownedCharacters = { yuni: false, arunyang: false, huya: false, baku: false };
@@ -568,16 +589,9 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  startrail: {
-    easy: { score: 0, rank: '-', color: '#94a3b8' },
-    normal: { score: 0, rank: '-', color: '#94a3b8' },
-    hard: { score: 0, rank: '-', color: '#94a3b8' }
-  },
-  bbijilge: {
-    easy: { score: 0, rank: '-', color: '#94a3b8' },
-    normal: { score: 0, rank: '-', color: '#94a3b8' },
-    hard: { score: 0, rank: '-', color: '#94a3b8' }
-  }
+  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } },
+  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
 let isPlaying = false;
@@ -594,18 +608,16 @@ let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
 
-// 유니 스킬 상태
 let yuniSkillGauge = 0;
 let yuniSkillActivated = false;
 let yuniSkillTimer = 0;
 let missShieldCount = 2;
 let hornGlowTimer = 0;
 
-// 후야 스킬 & 더블 스킬 상태
 let huyaSkillGauge = 0;
 let huyaSkillActivated = false;
 let huyaSkillTimer = 0;
-let doubleSkillTimer = 0; // 미스틱 하모니 더블 스킬 10초(600프레임) 타이머
+let doubleSkillTimer = 0;
 
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
@@ -618,8 +630,10 @@ function getActiveBgm() {
 
 function updateSelectedRecordDisplay() {
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b' };
-  menuDiffLabel.innerText = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
+  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
+  const diffNameMap = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  
+  menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
   
   if (rec.score > 0) {
@@ -661,9 +675,9 @@ function renderSongList() {
 function updateDifficultyLevels() {
   const song = songs.find(s => s.id === currentSongId);
   if (song) {
-    lvEasy.innerText = song.levels.easy;
     lvNormal.innerText = song.levels.normal;
     lvHard.innerText = song.levels.hard;
+    lvExpert.innerText = song.levels.expert;
   }
 }
 
@@ -685,11 +699,12 @@ diffCards.forEach(card => {
 
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
-  const diffNameMap = { easy: `EASY (${song.levels.easy})`, normal: `NORMAL (${song.levels.normal})`, hard: `HARD (${song.levels.hard})` };
+  const diffNameMap = { normal: `보통 (${song.levels.normal})`, hard: `하드 (${song.levels.hard})`, expert: `익스퍼트 (${song.levels.expert})` };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
   const rec = bestRecords[currentSongId][currentDifficulty];
-  prepRecordTitle.innerHTML = `🏆 [${currentDifficulty.toUpperCase()}] 최고 기록`;
+  const diffNameUI = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  prepRecordTitle.innerHTML = `🏆 [${diffNameUI[currentDifficulty]}] 최고 기록`;
   if (rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
   } else {
@@ -835,7 +850,6 @@ function executeGacha(count) {
   let results = [];
   for (let i = 0; i < count; i++) {
     const rand = Math.random() * 100;
-    // 5성 (유니 / 후야) 합산 확률 3%
     if (rand < 3.0) {
       if (Math.random() < 0.5) {
         ownedCharacters.yuni = true;
@@ -845,7 +859,6 @@ function executeGacha(count) {
         results.push({ name: "사키하네 후야 (5성)", star: "⭐⭐⭐⭐⭐", color: "#facc15", img: "HUYA_IMG_PLACEHOLDER" });
       }
     } else {
-      // 4성 (아르냥 / 바쿠야) 합산 확률 97%
       if (Math.random() < 0.5) {
         ownedCharacters.arunyang = true;
         results.push({ name: "아르냥 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "USER_IMG_PLACEHOLDER" });
@@ -879,24 +892,28 @@ gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none
 function generateBeatmap(songId, difficulty) {
   notes = [];
   
-  let seed = songId === 'startrail' ? 1000 : 2000;
-  if (difficulty === 'easy') seed += 100;
-  else if (difficulty === 'normal') seed += 200;
-  else if (difficulty === 'hard') seed += 300;
+  let seed = 1000;
+  if (songId === 'bbijilge') seed = 2000;
+  else if (songId === 'constellation') seed = 3000;
+
+  if (difficulty === 'normal') seed += 100;
+  else if (difficulty === 'hard') seed += 200;
+  else if (difficulty === 'expert') seed += 300;
 
   function seededRandom() {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
   }
 
+  const songObj = songs.find(s => s.id === songId);
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = (songId === 'bbijilge') ? 144.0 : 225.0;
+  const totalDuration = songObj ? songObj.duration : 225.0;
 
-  let speed = 420;
-  if (difficulty === 'normal') speed = 450;
+  let speed = 450;
   if (difficulty === 'hard') speed = 490;
+  if (difficulty === 'expert') speed = 540; // 익스퍼트: 빠른 노트 속도
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
@@ -907,9 +924,9 @@ function generateBeatmap(songId, difficulty) {
     const rand = seededRandom();
 
     if (currentTime < activeLongEndTimes[lane]) {
-      if (difficulty === 'easy') currentTime += beatInterval * 1.8;
-      else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
-      else currentTime += beatInterval * 0.85;
+      if (difficulty === 'normal') currentTime += beatInterval * 1.2;
+      else if (difficulty === 'hard') currentTime += beatInterval * 0.85;
+      else currentTime += beatInterval * 0.5; // 익스퍼트: 촘촘한 간격
       index++;
       continue;
     }
@@ -922,13 +939,13 @@ function generateBeatmap(songId, difficulty) {
         notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
       }
     }
-    else if (index % 4 === 0 && rand < 0.45) {
+    else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.7 : 0.45))) {
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && index % 6 === 0 && rand < 0.5) {
+    else if (difficulty !== 'normal' && index % 6 === 0 && rand < 0.5) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && index % 7 === 0 && rand < 0.4) {
+    else if (difficulty !== 'normal' && index % 7 === 0 && rand < 0.5) {
       const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
       if (currentTime >= activeLongEndTimes[targetLane]) {
@@ -940,12 +957,12 @@ function generateBeatmap(songId, difficulty) {
         activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
       }
     }
-    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
+    else if (index % 3 === 0 && rand < 0.4) {
       const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + releaseDur + 0.3;
     }
-    else if (difficulty !== 'easy' && index % 3 === 1 && rand < 0.45) {
+    else if (index % 3 === 1 && rand < 0.45) {
       const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
@@ -954,18 +971,17 @@ function generateBeatmap(songId, difficulty) {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    if (difficulty === 'easy') {
-      currentTime += beatInterval * 1.8;
-    } else if (difficulty === 'normal') {
+    if (difficulty === 'normal') {
       currentTime += beatInterval * 1.2;
-    } else {
+    } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.85;
+    } else {
+      currentTime += beatInterval * 0.48; // 익스퍼트: 쉴 틈 없는 복잡한 코드 밀도
     }
     index++;
   }
 }
 
-// 콤보 증가 및 [조용히, 깨우지 마세요] 100콤보 단위 즉시 보너스 처리
 function incrementComboAndCheckMilestone() {
   combo++;
   if (combo > maxCombo) maxCombo = combo;
@@ -973,7 +989,6 @@ function incrementComboAndCheckMilestone() {
   const hasHuya = equippedUnit.includes('huya');
   const hasBaku = equippedUnit.includes('baku');
   
-  // 후야+바쿠 시너지: 체력 100%일 때 100콤보 단위 달성마다 즉시 보너스 점수 지급
   if (hasHuya && hasBaku && currentHp >= maxHp && combo > 0 && combo % 100 === 0) {
     score += 3000;
     showJudgement(`💤 ${combo} COMBO BONUS +3000!`, "#34d399");
@@ -986,29 +1001,24 @@ function applyHitScore(note, minDiff) {
   const hasArunyang = equippedUnit.includes('arunyang');
   const hasHuya = equippedUnit.includes('huya');
 
-  // 유니 스킬: 보너스 점수 +5%
   if (hasYuni && yuniSkillActivated) {
     mult *= 1.05;
   }
 
-  // 미스틱 하모니 더블 스킬 발동 중: 10초간 기본 노트 점수 25% 추가 상승
   if (doubleSkillTimer > 0 && note.type === 'normal') {
     mult *= 1.25;
   }
 
-  // 유니냥 시너지: 100콤보 이상 유지 시 기본/롱노트 +15%
   if (hasYuni && hasArunyang && combo >= 100 && (note.type === 'normal' || note.type === 'long' || note.type === 'release' || note.type === 'zigzag')) {
     mult *= 1.15;
   }
 
-  // 후야 스킬 [에휴에요 에휴]: 롱노트 및 슬라이드 노트에서 얻는 콤보 보너스 점수 20% 증가 + 체력 회복
   let comboBonusMult = 1.0;
   if (hasHuya && huyaSkillActivated && (note.type === 'long' || note.type === 'release' || note.type === 'zigzag' || note.type === 'swipe')) {
     comboBonusMult = 1.20;
     healHp(1.5);
   }
 
-  // 스킬 게이지 충전
   if (hasYuni && !yuniSkillActivated) {
     yuniSkillGauge = Math.min(100, yuniSkillGauge + 0.8);
     updateSkillUI();
@@ -1083,11 +1093,9 @@ function getSkillDurationBonusSeconds() {
   const hasBaku = equippedUnit.includes('baku');
   const hasYuni = equippedUnit.includes('yuni');
 
-  // 시너지 [조용히, 깨우지 마세요]: 체력 100%일 때 스킬 지속 시간 +2초
   if (hasHuya && hasBaku && currentHp >= maxHp) {
     bonusSec += 2;
   }
-  // 시너지 [미스틱 하모니]: 유니와 후야 동시 편성 시 각각 +2초 연장
   if (hasHuya && hasYuni) {
     bonusSec += 2;
   }
@@ -1101,7 +1109,7 @@ function triggerYuniSkill() {
   
   const baseSec = 10;
   const totalSec = baseSec + getSkillDurationBonusSeconds();
-  yuniSkillTimer = totalSec * 60; // 60fps 기준
+  yuniSkillTimer = totalSec * 60;
   
   yuniSkillStatus.innerText = "✨ 발동 중!";
   yuniSkillStatus.style.color = "#00f2fe";
@@ -1110,9 +1118,8 @@ function triggerYuniSkill() {
   yuniVoice.play().catch(e => {});
   yuniPopup.classList.add('show');
 
-  // 미스틱 하모니 더블 스킬 체크 (후야 스킬 발동 중에 유니 스킬 발동 시)
   if (equippedUnit.includes('huya') && huyaSkillActivated) {
-    doubleSkillTimer = 10 * 60; // 10초간 더블 스킬 발동
+    doubleSkillTimer = 10 * 60;
   }
 }
 
@@ -1121,7 +1128,6 @@ function triggerHuyaSkill() {
   huyaGaugeFill.style.width = '0%';
   huyaSkillActivated = true;
 
-  // 기본 15초 + 시너지 추가 시간
   const baseSec = 15;
   const totalSec = baseSec + getSkillDurationBonusSeconds();
   huyaSkillTimer = totalSec * 60;
@@ -1133,9 +1139,8 @@ function triggerHuyaSkill() {
   huyaVoice.play().catch(e => {});
   huyaPopup.classList.add('show');
 
-  // 미스틱 하모니 더블 스킬 체크 (유니 스킬 발동 중에 후야 스킬 발동 시)
   if (equippedUnit.includes('yuni') && yuniSkillActivated) {
-    doubleSkillTimer = 10 * 60; // 10초간 더블 스킬 발동
+    doubleSkillTimer = 10 * 60;
   }
 }
 
@@ -1193,7 +1198,6 @@ function handleSwipe(lane, dir) {
     incrementComboAndCheckMilestone();
     stats.perfect++;
     
-    // 후야 스킬 발동 중 슬라이드 시 체력 추가 회복
     healHp((hasHuya && huyaSkillActivated) ? 2.5 : 1.2);
 
     if (hasYuni && !yuniSkillActivated) {
@@ -1357,53 +1361,34 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
+// 곡 길이와 난이도별 4분 15초(255초) 스케일에 맞춘 랭크 컷 시스템
 function calculateRank(songId, difficulty, finalScore) {
-  if (songId === 'bbijilge') {
-    if (difficulty === 'easy') {
-      if (finalScore >= 70000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 60000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 50000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 40000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 30000) return { rank: 'C', color: '#fb923c' };
-      return { rank: 'D', color: '#94a3b8' };
-    } else if (difficulty === 'normal') {
-      if (finalScore >= 140000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 115000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 90000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 70000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
-      return { rank: 'D', color: '#94a3b8' };
-    } else {
-      if (finalScore >= 210000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 180000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 145000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 110000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 75000) return { rank: 'C', color: '#00f2fe' };
-      return { rank: 'D', color: '#94a3b8' };
-    }
+  let multiplier = 1.0;
+  if (songId === 'constellation') multiplier = 1.35; // 4분 15초 대곡 보정
+  else if (songId === 'bbijilge') multiplier = 0.85;
+
+  if (difficulty === 'normal') {
+    if (finalScore >= 180000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 145000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 115000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 90000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 65000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else if (difficulty === 'hard') {
+    if (finalScore >= 260000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 210000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 170000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 135000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 95000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
   } else {
-    if (difficulty === 'easy') {
-      if (finalScore >= 90000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 80000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 70000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 60000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 50000) return { rank: 'C', color: '#fb923c' };
-      return { rank: 'D', color: '#94a3b8' };
-    } else if (difficulty === 'normal') {
-      if (finalScore >= 195000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 150000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 120000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 95000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 70000) return { rank: 'C', color: '#fb923c' };
-      return { rank: 'D', color: '#94a3b8' };
-    } else {
-      if (finalScore >= 280000) return { rank: 'SS', color: '#ff79c6' };
-      if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
-      if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
-      if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
-      if (finalScore >= 100000) return { rank: 'C', color: '#00f2fe' };
-      return { rank: 'D', color: '#94a3b8' };
-    }
+    // 익스퍼트 (EXPERT) 난이도 랭크 컷
+    if (finalScore >= 350000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 290000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 230000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 180000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 120000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
   }
 }
 
@@ -1413,7 +1398,6 @@ function updateAndDraw() {
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  // 유니 스킬 타이머 업데이트
   if (yuniSkillActivated) {
     yuniSkillTimer--;
     if (yuniSkillTimer <= 0) {
@@ -1424,7 +1408,6 @@ function updateAndDraw() {
     }
   }
 
-  // 후야 스킬 타이머 업데이트
   if (huyaSkillActivated) {
     huyaSkillTimer--;
     if (huyaSkillTimer <= 0) {
@@ -1435,7 +1418,6 @@ function updateAndDraw() {
     }
   }
 
-  // 미스틱 하모니 더블 스킬 타이머 업데이트
   if (doubleSkillTimer > 0) {
     doubleSkillTimer--;
   }
@@ -1505,7 +1487,6 @@ function updateAndDraw() {
     if ((note.type === 'long' || note.type === 'release' || note.type === 'zigzag') && note.holding) {
       const endY = HIT_Y - ((note.time + note.duration - currentTime) * window.NOTE_SPEED);
       
-      // 후야 스킬 [에휴에요 에휴] 발동 중 롱노트를 누르고 있을 때 체력이 서서히 회복
       if (equippedUnit.includes('huya') && huyaSkillActivated) {
         healHp(0.06);
       }
@@ -1695,7 +1676,10 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 2.0)) {
+  const songObj = songs.find(s => s.id === currentSongId);
+  const durationLimit = songObj ? songObj.duration : 225.0;
+
+  if (currentBgm.ended || (remainingNotes === 0 && currentTime > durationLimit - 2.0)) {
     endGame();
     return;
   }
@@ -1829,13 +1813,14 @@ function endGame() {
   updateInventoryUI();
   updateSelectedRecordDisplay();
 
-  mainTitle.innerHTML = `[${currentDifficulty.toUpperCase()}] ${clearTitle}`;
+  const diffNameUI = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
   mainTitle.style.color = titleColor;
   mainTitle.style.fontSize = "16px";
 
   statsContainer.innerHTML = `
     <div style="text-align: center; margin-bottom: 2px;">
-      <div style="font-size: 10px; color: #8b949e;">[${currentDifficulty.toUpperCase()}] PLAY RESULT</div>
+      <div style="font-size: 10px; color: #8b949e;">[${diffNameUI[currentDifficulty]}] PLAY RESULT</div>
       <div class="rank-badge" style="color: ${rankInfo.color}; font-size: 18px; font-weight: bold;">RANK ${rankInfo.rank}</div>
     </div>
     <div>🏆 최종 점수: <b>${score.toLocaleString()}</b> (최고: ${bestRecords[currentSongId][currentDifficulty].score.toLocaleString()})</div>
@@ -1869,6 +1854,9 @@ rhythm_game_html = rhythm_game_html.replace("IMAGE1_BASE64_PLACEHOLDER", image1_
 
 rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_base64)
+
+rhythm_game_html = rhythm_game_html.replace("AUDIO3_BASE64_PLACEHOLDER", audio3_base64)
+rhythm_game_html = rhythm_game_html.replace("IMAGE3_BASE64_PLACEHOLDER", image3_base64)
 
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_img_base64)
 rhythm_game_html = rhythm_game_html.replace("USER_IMG_PLACEHOLDER", arunyang_img_base64)
