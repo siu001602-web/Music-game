@@ -277,7 +277,7 @@ rhythm_game_html = """
 
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터를 편성하세요[span_0](start_span)[span_0](end_span).</div>
+    <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터를 편성하세요.</div>
 
     <div class="unit-slots">
       <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
@@ -695,12 +695,25 @@ gacha1Btn.addEventListener('click', () => executeGacha(1));
 gacha10Btn.addEventListener('click', () => executeGacha(10));
 gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none"; });
 
-function generateBeatmap(difficulty) {
+// 🌟 의사 난수 생성기(Pseudo-Random)를 통한 곡별/난이도별 고정 채보 생성
+function generateBeatmap(songId, difficulty) {
   notes = [];
+  
+  // 곡과 난이도에 따른 고유 시드 번호 부여
+  let seed = songId === 'startrail' ? 1000 : 2000;
+  if (difficulty === 'easy') seed += 100;
+  else if (difficulty === 'normal') seed += 200;
+  else if (difficulty === 'hard') seed += 300;
+
+  function seededRandom() {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  }
+
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = 140.0;
+  const totalDuration = 225.0; // 음원 끝까지 넉넉하게 채보 생성
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
@@ -709,8 +722,8 @@ function generateBeatmap(difficulty) {
 
   let index = 0;
   while (currentTime < totalDuration - 5.0) {
-    const lane = Math.floor(Math.random() * LANES);
-    const rand = Math.random();
+    const lane = Math.floor(seededRandom() * LANES);
+    const rand = seededRandom();
 
     if (index % 5 === 0 && rand < 0.35) {
       const pairLane = (lane + 2) % LANES;
@@ -719,14 +732,14 @@ function generateBeatmap(difficulty) {
       notes.push({ time: currentTime, lane: pairLane, type: 'bridge', pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
     }
     else if (index % 4 === 0 && rand < 0.45) {
-      const dir = lane === 0 ? 'right' : (lane === 3 ? 'left' : (Math.random() < 0.5 ? 'left' : 'right'));
+      const dir = lane === 0 ? 'right' : (lane === 3 ? 'left' : (seededRandom() < 0.5 ? 'left' : 'right'));
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: dir, hit: false, missed: false });
     }
     else if (difficulty !== 'easy' && index % 6 === 0 && rand < 0.5) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
     else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.45) {
-      notes.push({ time: currentTime, lane: lane, type: 'long', duration: beatInterval * (Math.random() * 1.2 + 1.0), tailHit: false, holding: false, hit: false, missed: false });
+      notes.push({ time: currentTime, lane: lane, type: 'long', duration: beatInterval * (seededRandom() * 1.2 + 1.0), tailHit: false, holding: false, hit: false, missed: false });
     }
     else {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
@@ -761,12 +774,12 @@ function applyHitScore(note, minDiff) {
     updateSkillUI();
   }
 
-  if (minDiff <= 0.08) {
+  if (minDiff <= 0.12) {
     score += Math.round((100 + combo * 2) * mult);
     combo++;
     stats.perfect++;
     showJudgement(note.type === 'bonus' ? "BONUS PERFECT!" : "PERFECT!", note.type === 'bonus' ? "#c084fc" : "#00f2fe");
-  } else if (minDiff <= 0.16) {
+  } else if (minDiff <= 0.22) {
     score += Math.round((70 + combo) * mult);
     combo++;
     stats.great++;
@@ -817,8 +830,8 @@ function handleTapDown(lane) {
     }
   }
 
-  // 🌟 판정 범위를 0.28초로 넉넉하게 넓혀서 꾹 누름/동시치기 씹힘 원천 방지
-  if (targetNote && minDiff <= 0.28) {
+  // 🌟 판정 범위를 넉넉하게 0.32초로 확장하여 씹힘 원천 방지
+  if (targetNote && minDiff <= 0.32) {
     targetNote.hit = true;
     if (targetNote.type === 'long') targetNote.holding = true;
     applyHitScore(targetNote, minDiff);
@@ -841,7 +854,7 @@ function handleSwipe(lane, dir) {
     }
   }
 
-  if (targetNote && minDiff <= 0.3 && targetNote.swipeDir === dir) {
+  if (targetNote && minDiff <= 0.32 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
     let addScore = 120 + combo * 2;
     const hasYuni = equippedUnit.includes('yuni');
@@ -858,6 +871,7 @@ function handleSwipe(lane, dir) {
   }
 }
 
+// 🌟 롱노트 해제 시 TAP 풀림 및 씹힘 현상 완벽 해결
 function handleTapUp(lane) {
   const currentTime = (performance.now() - startTime) / 1000;
   for (let note of notes) {
@@ -867,8 +881,8 @@ function handleTapUp(lane) {
       note.holding = false;
       note.tailHit = true;
 
-      // 🌟 롱노트 종료 판정도 0.3초로 관대하게 보정하여 끊김 방지
-      if (diff <= 0.3) {
+      // 롱노트 종료 판정도 0.35초로 관대하게 보정
+      if (diff <= 0.35 || currentTime >= endTime - 0.2) {
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
@@ -958,12 +972,8 @@ function handleTouchEnd(e) {
         if (activeData.lane === data.lane) stillPressed = true;
       }
       if (!stillPressed) {
-        // 🌟 롱노트 유지 중 다른 손가락이 떨어질 때 오작동으로 홀드가 풀리는 현상 방지
-        let hasActiveLongInLane = notes.some(n => n.type === 'long' && n.holding && n.lane === data.lane);
-        if (!hasActiveLongInLane) {
-          keyPressed[data.lane] = false;
-          handleTapUp(data.lane);
-        }
+        keyPressed[data.lane] = false;
+        handleTapUp(data.lane);
       }
     }
   }
@@ -1127,7 +1137,8 @@ function updateAndDraw() {
       continue;
     }
 
-    if (!note.hit && timeDiff < -0.3) {
+    // 🌟 미스 판정 마진을 넉넉히 주어 억울한 미스 방지
+    if (!note.hit && timeDiff < -0.35) {
       note.missed = true;
       handleMiss();
       continue;
@@ -1219,7 +1230,8 @@ function updateAndDraw() {
     judgementTimer--;
   }
 
-  if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 1.0)) {
+  // 🌟 오디오 끝까지 자연스럽게 재생되도록 종료 조건 수정
+  if (currentBgm.ended || (remainingNotes === 0 && currentTime > notes[notes.length - 1].time + 2.0)) {
     endGame();
     return;
   }
@@ -1252,7 +1264,8 @@ function startGame() {
   activeTouches.clear();
   keyPressed = [false, false, false, false];
   
-  generateBeatmap(currentDifficulty);
+  // 🌟 곡별 고정 채보 생성 호출
+  generateBeatmap(currentSongId, currentDifficulty);
   
   const currentBgm = getActiveBgm();
   currentBgm.pause();
