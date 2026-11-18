@@ -38,7 +38,6 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# 새로운 곡 '봄꿈' 음원 및 이미지 경로
 song_bom_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
 song_bom_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
 
@@ -169,10 +168,11 @@ rhythm_game_html = """
   .nav-tab {
     flex: 1; padding: 6px 0; font-size: 10px; font-weight: bold;
     color: #8b949e; background: transparent; border: none; border-radius: 8px; cursor: pointer;
+    pointer-events: auto;
   }
   .nav-tab.active { color: #0e1117; background: #00f2fe; box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3); }
 
-  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; }
+  .tab-content { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; pointer-events: auto; }
 
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
@@ -224,6 +224,7 @@ rhythm_game_html = """
     width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.98); padding: 16px; display: none; flex-direction: column; text-align: left;
     position: absolute; top: 0; left: 0; z-index: 15;
+    pointer-events: auto;
   }
   .prep-header { font-size: 14px; font-weight: bold; color: #00f2fe; margin-bottom: 2px; }
   .prep-sub { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
@@ -245,6 +246,7 @@ rhythm_game_html = """
   #char-select-modal {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; padding: 20px;
+    pointer-events: auto;
   }
   .char-select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 14px; max-height: 360px; overflow-y: auto; }
   .char-option-card {
@@ -284,6 +286,7 @@ rhythm_game_html = """
   #gacha-result-modal {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(14, 17, 23, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 25; padding: 20px;
+    pointer-events: auto;
   }
 
   .skill-popup {
