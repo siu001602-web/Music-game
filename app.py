@@ -335,9 +335,7 @@ rhythm_game_html = """
         <div id="song-list" class="song-grid"></div>
 
         <div class="section-title">Difficulty (난이도 선택)</div>
-        <div id="difficulty-container" class="difficulty-select-container">
-          <!-- 동적으로 곡에 맞게 렌더링됨 -->
-        </div>
+        <div id="difficulty-container" class="difficulty-select-container"></div>
 
         <div class="selected-diff-record-box">
           <span id="menu-diff-label" style="font-weight: bold; color: #00f2fe;">🏆 [보통] 최고 기록</span>
@@ -358,7 +356,7 @@ rhythm_game_html = """
         <div style="font-size: 15px; font-weight: bold; color: #00f2fe;">스타 스카우트 (캐릭터 뽑기)</div>
         <div style="font-size: 11px; color: #8b949e; text-align: center; line-height: 1.4;">
           • ⭐⭐⭐⭐⭐ 5성 픽업 (합산 3%): 아야츠노 유니 / 사키하네 후야<br>
-          • ⭐⭐⭐⭐ 4성 픽업 (합산 97%): 아르냥 / 바쿠야
+          • ⭐⭐⭐⭐ 4성 픽업 (합산 97%): 아르냥 / 바쿠
         </div>
         <div style="font-size: 12px; color: #facc15; font-weight: bold; margin: 4px 0;">소모 재화: 1회당 스텔라 10개</div>
         <div class="gacha-btn-group">
@@ -389,7 +387,7 @@ rhythm_game_html = """
         <div id="char-card-baku" class="unit-slot filled" style="height: auto; padding: 10px; border-color: #30363d;">
           <div id="char-baku-img-box" style="font-size: 24px; margin-bottom: 2px;">👤</div>
           <div id="char-baku-badge" style="font-size: 9px; font-weight: bold; color: #8b949e;">미획득</div>
-          <div style="font-size: 11px; font-weight: bold; margin-top: 2px;">바쿠야 (팬)</div>
+          <div style="font-size: 11px; font-weight: bold; margin-top: 2px;">바쿠 (팬)</div>
         </div>
       </div>
     </div>
@@ -555,7 +553,6 @@ navTabs.forEach(tab => {
   });
 });
 
-// 곡별 난이도 구성 다변화 (스타트레일, 삐질게: 쉬움/보통/하드 | 별자리가 될 수 있다면: 보통/하드/익스퍼트)
 const songs = [
   { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
@@ -665,7 +662,6 @@ function renderDifficultyButtons() {
     ];
   }
 
-  // 현재 선택된 난이도가 새 곡에 없으면 기본값으로 보정
   if (!diffs.some(d => d.key === currentDifficulty)) {
     currentDifficulty = diffs[0].key;
   }
@@ -726,7 +722,7 @@ nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
   const diffNameMap = { 
     easy: `쉬움 (${song.levels.easy})`, 
-    normal: `보통 (${song.levels.normal || song.levels.normal})`, 
+    normal: `보통 (${song.levels.normal})`, 
     hard: `하드 (${song.levels.hard})`, 
     expert: `익스퍼트 (${song.levels.expert})` 
   };
@@ -755,7 +751,7 @@ function updateInventoryUI() {
     yuni: { name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'YUNI_IMG_PLACEHOLDER' },
     huya: { name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', cls: 'star-5', color: '#facc15', img: 'HUYA_IMG_PLACEHOLDER' },
     arunyang: { name: '아르냥 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'USER_IMG_PLACEHOLDER' },
-    baku: { name: '바쿠야 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'BAKU_IMG_PLACEHOLDER' }
+    baku: { name: '바쿠 (팬)', star: '⭐⭐⭐⭐', cls: 'star-4', color: '#c084fc', img: 'BAKU_IMG_PLACEHOLDER' }
   };
 
   for (let i = 0; i < 2; i++) {
@@ -834,7 +830,7 @@ function openCharSelector(slotIndex) {
     { id: 'yuni', name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.yuni, img: 'YUNI_IMG_PLACEHOLDER', color: '#facc15' },
     { id: 'huya', name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', owned: ownedCharacters.huya, img: 'HUYA_IMG_PLACEHOLDER', color: '#facc15' },
     { id: 'arunyang', name: '아르냥 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.arunyang, img: 'USER_IMG_PLACEHOLDER', color: '#c084fc' },
-    { id: 'baku', name: '바쿠야 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.baku, img: 'BAKU_IMG_PLACEHOLDER', color: '#c084fc' }
+    { id: 'baku', name: '바쿠 (팬)', star: '⭐⭐⭐⭐', owned: ownedCharacters.baku, img: 'BAKU_IMG_PLACEHOLDER', color: '#c084fc' }
   ];
 
   availableChars.forEach(char => {
@@ -894,7 +890,7 @@ function executeGacha(count) {
         results.push({ name: "아르냥 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "USER_IMG_PLACEHOLDER" });
       } else {
         ownedCharacters.baku = true;
-        results.push({ name: "바쿠야 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "BAKU_IMG_PLACEHOLDER" });
+        results.push({ name: "바쿠 (4성)", star: "⭐⭐⭐⭐", color: "#c084fc", img: "BAKU_IMG_PLACEHOLDER" });
       }
     }
   }
@@ -1011,7 +1007,7 @@ function generateBeatmap(songId, difficulty) {
     } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.85;
     } else {
-      currentTime += beatInterval * 0.48; // 익스퍼트: 복잡하고 촘촘한 밀도
+      currentTime += beatInterval * 0.48;
     }
     index++;
   }
