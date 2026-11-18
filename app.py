@@ -437,9 +437,10 @@ rhythm_game_html = """
           <button onclick="exportSaveData()" class="gacha-btn" style="background: #21262d; color: #4ade80; border: 1px solid #4ade80;">데이터 내보내기</button>
           <label class="gacha-btn" style="background: #00f2fe; color: #0e1117; display: flex; align-items: center; justify-content: center; cursor: pointer;">
             데이터 불러오기
-            <input type="file" id="import-file-input" style="display: none;" accept=".json" onchange="importSaveData(event)">
+            <input type="file" id="import-file-input" style="display: none;" accept=".json,.txt" onchange="importSaveData(event)">
           </label>
         </div>
+        <button onclick="resetGameData()" style="background: transparent; color: #ff4b4b; border: 1px solid #ff4b4b; border-radius: 10px; padding: 6px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 4px;">데이터 초기화 (문제 해결용)</button>
       </div>
     </div>
   </div>
@@ -683,6 +684,14 @@ function saveGameData() {
   localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
 }
 
+// 데이터 초기화 버튼 기능
+function resetGameData() {
+  if (confirm("⚠️ 모든 게임 데이터가 초기화됩니다. 정말 진행하시겠습니까?")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
 // 데이터 내보내기 (JSON 파일 다운로드)
 function exportSaveData() {
   const saveData = {
@@ -725,7 +734,7 @@ function importSaveData(event) {
       updateMissionUI();
       updateSelectedRecordDisplay();
       
-      // 파일 input 초기화 (같은 파일을 다시 불러올 수 있도록)
+      // 파일 input 초기화
       document.getElementById('import-file-input').value = '';
       alert("💾 데이터가 성공적으로 복원되었습니다!");
     } catch (err) {
