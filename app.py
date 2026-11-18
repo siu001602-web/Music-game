@@ -818,7 +818,7 @@ function handleTapDown(lane) {
     }
   }
 
-  if (targetNote && minDiff <= 0.25) {
+  if (targetNote && minDiff <= 0.3) {
     targetNote.hit = true;
     if (targetNote.type === 'long') targetNote.holding = true;
     applyHitScore(targetNote, minDiff);
@@ -841,7 +841,7 @@ function handleSwipe(lane, dir) {
     }
   }
 
-  if (targetNote && minDiff <= 0.28 && targetNote.swipeDir === dir) {
+  if (targetNote && minDiff <= 0.32 && targetNote.swipeDir === dir) {
     targetNote.hit = true;
     let addScore = 120 + combo * 2;
     const hasYuni = equippedUnit.includes('yuni');
@@ -863,11 +863,10 @@ function handleTapUp(lane) {
   for (let note of notes) {
     if (note.type === 'long' && note.holding && !note.tailHit && note.lane === lane) {
       const endTime = note.time + note.duration;
-      const diff = Math.abs(endTime - currentTime);
-      note.holding = false;
-      note.tailHit = true;
-
-      if (diff <= 0.28) {
+      // 🌟 핵심 수정: 롱노트 누름 유지(Hold) 중에는 손가락을 떼지 않는 한 중간에 임의로 끊기지 않도록 관대하게 판정
+      if (currentTime >= note.time) {
+        note.holding = false;
+        note.tailHit = true;
         let addScore = 50;
         const hasYuni = equippedUnit.includes('yuni');
         const hasArunyang = equippedUnit.includes('arunyang');
@@ -881,8 +880,6 @@ function handleTapUp(lane) {
           updateSkillUI();
         }
         showJudgement("HOLD CLEAR", "#00f2fe");
-      } else {
-        handleMiss();
       }
     }
   }
@@ -915,7 +912,6 @@ function getLaneFromPointer(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
-// 🌟 핵심 수정: 꾹 누를 때 발생하는 모바일 브라우저 기본 제스처/메뉴 팝업 간섭을 완전 차단
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 canvas.addEventListener('selectstart', (e) => e.preventDefault());
 
@@ -953,8 +949,12 @@ function handlePointerUp(e) {
       if (activeData.lane === data.lane) stillPressed = true;
     }
     if (!stillPressed) {
-      keyPressed[data.lane] = false;
-      handleTapUp(data.lane);
+      // 🌟 롱노트 도중 다른 손가락이 떨어질 때 오인식으로 홀드가 풀리는 현상 방지
+      let hasActiveLongInLane = notes.some(n => n.type === 'long' && n.holding && n.lane === data.lane);
+      if (!hasActiveLongInLane) {
+        keyPressed[data.lane] = false;
+        handleTapUp(data.lane);
+      }
     }
   }
 }
@@ -1007,7 +1007,7 @@ function calculateRank(difficulty, finalScore) {
     if (finalScore >= 250000) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 200000) return { rank: 'A', color: '#00f2fe' };
     if (finalScore >= 150000) return { rank: 'B', color: '#4ade80' };
-    if (finalScore >= 100000) return { rank: 'C', color: '#fb923c' };
+    if (finalScore >= 100000) return { rank: 'C', color: '#00f2fe' };
     return { rank: 'D', color: '#94a3b8' };
   }
 }
@@ -1118,7 +1118,7 @@ function updateAndDraw() {
       continue;
     }
 
-    if (!note.hit && timeDiff < -0.28) {
+    if (!note.hit && timeDiff < -0.3) {
       note.missed = true;
       handleMiss();
       continue;
@@ -1304,6 +1304,7 @@ function endGame() {
     </div>
   `;
   
+  `탭 컨텐츠 초기화`
   navTabs.forEach(t => t.classList.remove('active'));
   navTabs[0].classList.add('active');
   tabContents.songs.style.display = 'flex';
