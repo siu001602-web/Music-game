@@ -37,9 +37,6 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
-song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
-
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"
 maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"
 huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"
@@ -63,8 +60,6 @@ audio2_base64 = get_base64(song2_music)
 image2_base64 = get_base64(song2_img)
 audio3_base64 = get_base64(song3_music)
 image3_base64 = get_base64(song3_img)
-audio4_base64 = get_base64(song4_music)
-image4_base64 = get_base64(song4_img)
 
 mashiro_base64 = get_base64(mashiro_img_path)
 maro_base64 = get_base64(maro_img_path)
@@ -85,6 +80,7 @@ rhythm_game_html = """
 <style>
   * {
     box-sizing: border-box;
+    touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -164,33 +160,35 @@ rhythm_game_html = """
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
   .song-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-    width: 100%; max-height: 135px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    width: 100%; max-height: 130px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
   }
   .song-card {
     background: #161b22; border: 2px solid #30363d; border-radius: 10px;
     padding: 6px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative;
   }
   .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .song-thumb { width: 100%; height: 42px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
+  .song-thumb { width: 100%; height: 48px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
   .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
 
-  .difficulty-select-container { display: flex; gap: 6px; width: 100%; justify-content: center; margin-bottom: 8px; }
+  .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
   .diff-card {
     flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px;
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
+  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
-  .diff-card[data-diff="extreme"].selected { border-color: #fb923c; box-shadow: 0 0 10px rgba(251, 146, 60, 0.4); }
+  .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
   .diff-name { font-size: 11px; font-weight: 900; }
+  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
-  .diff-card[data-diff="extreme"] .diff-name { color: #fb923c; }
+  .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
 
   .selected-diff-record-box {
     width: 100%;
@@ -322,9 +320,6 @@ rhythm_game_html = """
 </audio>
 <audio id="bgm3" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO3_BASE64_PLACEHOLDER" type="audio/mp4">
-</audio>
-<audio id="bgm4" preload="auto">
-  <source src="data:audio/mp4;base64,AUDIO4_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
 <audio id="mashiro-voice" preload="auto">
   <source src="data:audio/mp4;base64,MASHIRO_VOICE_PLACEHOLDER" type="audio/mp4">
@@ -473,7 +468,7 @@ rhythm_game_html = """
   </div>
 
   <div id="prep-screen">
-    <div class="prep-header" id="prep-song-title">🎵 봄꿈</div>
+    <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
     <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터 2명을 편성하세요.</div>
 
     <div class="unit-slots">
@@ -572,7 +567,6 @@ const hpText = document.getElementById('hp-text');
 const bgm1 = document.getElementById('bgm1');
 const bgm2 = document.getElementById('bgm2');
 const bgm3 = document.getElementById('bgm3');
-const bgm4 = document.getElementById('bgm4');
 
 const mashiroVoice = document.getElementById('mashiro-voice');
 const mashiroPopup = document.getElementById('mashiro-popup');
@@ -626,11 +620,6 @@ navTabs.forEach(tab => {
 
 const songs = [
   { 
-    id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185,
-    type: 'custom',
-    levels: { normal: 'Lv. 10', hard: 'Lv. 17', extreme: 'Lv. 29' } 
-  },
-  { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
     type: 'starter',
     levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } 
@@ -653,7 +642,7 @@ const HIT_Y = 570;
 const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
-let currentSongId = 'springdream';
+let currentSongId = 'startrail';
 let currentDifficulty = 'normal';
 
 let stella = 100;
@@ -662,7 +651,6 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  springdream: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
   startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
   bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
   constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
@@ -790,7 +778,7 @@ let notes = [];
 
 function getActiveBgm() {
   const s = songs.find(item => item.id === currentSongId);
-  return s ? s.audio : bgm4;
+  return s ? s.audio : bgm1;
 }
 
 function updateSelectedRecordDisplay() {
@@ -798,8 +786,8 @@ function updateSelectedRecordDisplay() {
     currentDifficulty = 'normal';
   }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc', extreme: '#fb923c' };
-  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트', extreme: '익스트림' };
+  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
+  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
@@ -816,13 +804,7 @@ function renderDifficultyButtons() {
   difficultyContainer.innerHTML = '';
   
   let diffs = [];
-  if (song.type === 'custom') {
-    diffs = [
-      { key: 'normal', label: '보통', lv: song.levels.normal },
-      { key: 'hard', label: '하드', lv: song.levels.hard },
-      { key: 'extreme', label: '익스트림', lv: song.levels.extreme }
-    ];
-  } else if (song.type === 'starter') {
+  if (song.type === 'starter') {
     diffs = [
       { key: 'easy', label: '쉬움', lv: song.levels.easy },
       { key: 'normal', label: '보통', lv: song.levels.normal },
@@ -980,16 +962,15 @@ updateMissionUI();
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
   const diffNameMap = { 
-    easy: `쉬움 (${song.levels.easy || ''})`, 
-    normal: `보통 (${song.levels.normal || ''})`, 
-    hard: `하드 (${song.levels.hard || ''})`, 
-    expert: `익스퍼트 (${song.levels.expert || ''})`,
-    extreme: `익스트림 (${song.levels.extreme || ''})`
+    easy: `쉬움 (${song.levels.easy})`, 
+    normal: `보통 (${song.levels.normal})`, 
+    hard: `하드 (${song.levels.hard})`, 
+    expert: `익스퍼트 (${song.levels.expert})` 
   };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트', extreme: '익스트림' };
+  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   prepRecordTitle.innerHTML = `🏆 [${diffNameUI[currentDifficulty]}] 최고 기록`;
   if (rec && rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
@@ -1179,16 +1160,14 @@ gachaCloseBtn.addEventListener('click', () => { gachaModal.style.display = "none
 function generateBeatmap(songId, difficulty) {
   notes = [];
   
-  let seed = 4000;
-  if (songId === 'startrail') seed = 1000;
-  else if (songId === 'bbijilge') seed = 2000;
+  let seed = 1000;
+  if (songId === 'bbijilge') seed = 2000;
   else if (songId === 'constellation') seed = 3000;
 
   if (difficulty === 'easy') seed += 50;
   else if (difficulty === 'normal') seed += 100;
   else if (difficulty === 'hard') seed += 200;
   else if (difficulty === 'expert') seed += 300;
-  else if (difficulty === 'extreme') seed += 400;
 
   function seededRandom() {
     seed = (seed * 9301 + 49297) % 233280;
@@ -1196,33 +1175,34 @@ function generateBeatmap(songId, difficulty) {
   }
 
   const songObj = songs.find(s => s.id === songId);
-  const bpm = 120;
+  const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = songObj ? songObj.duration : 185.0;
+  const totalDuration = songObj ? songObj.duration : 225.0;
 
-  let speed = 450;
+  let speed = 420;
   if (difficulty === 'normal') speed = 450;
-  if (difficulty === 'hard') speed = 500;
-  if (difficulty === 'expert' || difficulty === 'extreme') speed = 560;
+  if (difficulty === 'hard') speed = 490;
+  if (difficulty === 'expert') speed = 520;
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
-  let index = 0;
 
-  while (currentTime < totalDuration - 4.0) {
+  let index = 0;
+  while (currentTime < totalDuration - 5.0) {
     const lane = Math.floor(seededRandom() * LANES);
     const rand = seededRandom();
 
     if (currentTime < activeLongEndTimes[lane]) {
-      if (difficulty === 'normal') currentTime += beatInterval * 1.2;
-      else if (difficulty === 'hard') currentTime += beatInterval * 0.8;
-      else currentTime += beatInterval * 0.4;
+      if (difficulty === 'easy') currentTime += beatInterval * 1.8;
+      else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
+      else if (difficulty === 'hard') currentTime += beatInterval * 0.85;
+      else currentTime += beatInterval * 0.55;
       index++;
       continue;
     }
 
-    if (difficulty === 'extreme' && index % 3 === 0 && rand < 0.5) {
+    if (index % 5 === 0 && rand < 0.35) {
       const pairLane = (lane + 2) % LANES;
       if (currentTime >= activeLongEndTimes[lane] && currentTime >= activeLongEndTimes[pairLane]) {
         const bridgeId = `bridge_${index}`;
@@ -1230,39 +1210,46 @@ function generateBeatmap(songId, difficulty) {
         notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
       }
     }
-    else if (index % 4 === 0 && (rand < (difficulty === 'extreme' ? 0.7 : 0.4))) {
+    else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.6 : 0.45))) {
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
-    else if ((difficulty === 'hard' || difficulty === 'expert' || difficulty === 'extreme') && index % 6 === 0 && rand < 0.45) {
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 6 === 0 && rand < 0.45) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty === 'extreme' && index % 7 === 0 && rand < 0.5) {
-      const zigzagDur = beatInterval * 1.2;
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 7 === 0 && rand < 0.45) {
+      const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
       if (currentTime >= activeLongEndTimes[targetLane]) {
         notes.push({ 
           time: currentTime, lane: lane, type: 'zigzag', duration: zigzagDur, 
           targetLane: targetLane, tailHit: false, holding: false, hit: false, missed: false 
         });
-        activeLongEndTimes[lane] = currentTime + zigzagDur + 0.2;
-        activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.2;
+        activeLongEndTimes[lane] = currentTime + zigzagDur + 0.3;
+        activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
       }
     }
-    else if ((difficulty === 'hard' || difficulty === 'expert' || difficulty === 'extreme') && index % 5 === 0 && rand < 0.4) {
-      const longDuration = beatInterval * (seededRandom() * 1.0 + 0.8);
+    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
+      const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
+      notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
+      activeLongEndTimes[lane] = currentTime + releaseDur + 0.3;
+    }
+    else if (difficulty !== 'easy' && index % 3 === 1 && rand < 0.45) {
+      const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
-      activeLongEndTimes[lane] = currentTime + longDuration + 0.2;
+      activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
     }
     else {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    if (difficulty === 'normal') {
+    if (difficulty === 'easy') {
+      currentTime += beatInterval * 1.8;
+    } else if (difficulty === 'normal') {
       currentTime += beatInterval * 1.2;
     } else if (difficulty === 'hard') {
-      currentTime += beatInterval * 0.8;
+      currentTime += beatInterval * 0.85;
     } else {
-      currentTime += beatInterval * 0.45;
+      currentTime += beatInterval * 0.52;
     }
     index++;
   }
@@ -1520,10 +1507,9 @@ function getLaneFromTouch(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
-// Canvas 전용 터치 이벤트 (게임 플레이 중에만 작동, 메뉴 버튼과 충돌 방지)
 canvas.addEventListener('touchstart', (e) => {
-  if (!isPlaying) return;
   e.preventDefault();
+  if (!isPlaying) return;
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
     const lane = getLaneFromTouch(touch.clientX);
@@ -1536,8 +1522,8 @@ canvas.addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 canvas.addEventListener('touchmove', (e) => {
-  if (!isPlaying) return;
   e.preventDefault();
+  if (!isPlaying) return;
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
     const data = activeTouches.get(touch.identifier);
@@ -1552,7 +1538,6 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 function handleTouchEnd(e) {
-  if (!isPlaying) return;
   e.preventDefault();
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
@@ -1575,7 +1560,6 @@ canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
 window.addEventListener('keydown', (e) => {
-  if (!isPlaying) return;
   const key = e.key.toLowerCase();
   if (e.key === 'ArrowLeft' || key === 'a') {
     handleSwipe(1, 'left');
@@ -1595,7 +1579,6 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-  if (!isPlaying) return;
   const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1) {
     keyPressed[idx] = false;
@@ -1605,24 +1588,38 @@ window.addEventListener('keyup', (e) => {
 
 function calculateRank(songId, difficulty, finalScore) {
   let multiplier = 1.0;
-  if (songId === 'springdream') multiplier = 1.2;
-  else if (songId === 'constellation') multiplier = 1.35;
+  if (songId === 'constellation') multiplier = 1.35;
   else if (songId === 'bbijilge') multiplier = 0.85;
 
-  let baseThreshold = 150000;
-  if (difficulty === 'easy') baseThreshold = 90000;
-  else if (difficulty === 'normal') baseThreshold = 150000;
-  else if (difficulty === 'hard') baseThreshold = 230000;
-  else if (difficulty === 'expert' || difficulty === 'extreme') baseThreshold = 320000;
-
-  const adjScore = finalScore / multiplier;
-
-  if (adjScore >= baseThreshold * 1.3) return { rank: 'SS', color: '#ff79c6' };
-  if (adjScore >= baseThreshold * 1.1) return { rank: 'S', color: '#facc15' };
-  if (adjScore >= baseThreshold * 0.9) return { rank: 'A', color: '#00f2fe' };
-  if (adjScore >= baseThreshold * 0.7) return { rank: 'B', color: '#4ade80' };
-  if (adjScore >= baseThreshold * 0.5) return { rank: 'C', color: '#fb923c' };
-  return { rank: 'D', color: '#94a3b8' };
+  if (difficulty === 'easy') {
+    if (finalScore >= 90000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 75000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 60000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 45000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 30000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else if (difficulty === 'normal') {
+    if (finalScore >= 180000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 145000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 115000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 90000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 65000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else if (difficulty === 'hard') {
+    if (finalScore >= 260000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 210000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 170000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 135000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 95000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else {
+    if (finalScore >= 350000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 290000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 230000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 180000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 120000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  }
 }
 
 function updateAndDraw() {
@@ -1896,7 +1893,7 @@ function updateAndDraw() {
   }
 
   const songObj = songs.find(s => s.id === currentSongId);
-  const durationLimit = songObj ? songObj.duration : 185.0;
+  const durationLimit = songObj ? songObj.duration : 225.0;
 
   if (currentBgm.ended || (remainingNotes === 0 && currentTime > durationLimit - 2.0)) {
     endGame();
@@ -2018,7 +2015,7 @@ function endGame() {
   updateSelectedRecordDisplay();
   saveGameData();
 
-  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트', extreme: '익스트림' };
+  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
   mainTitle.style.color = titleColor;
   mainTitle.style.fontSize = "16px";
@@ -2063,14 +2060,11 @@ rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_
 rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_base64)
 rhythm_game_html = rhythm_game_html.replace("AUDIO3_BASE64_PLACEHOLDER", audio3_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE3_BASE64_PLACEHOLDER", image3_base64)
-rhythm_game_html = rhythm_game_html.replace("AUDIO4_BASE64_PLACEHOLDER", audio4_base64)
-rhythm_game_html = rhythm_game_html.replace("IMAGE4_BASE64_PLACEHOLDER", image4_base64)
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_base64)
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_base64)
-rnumpy_arunyang = get_base64(arunyang_img_path)
 rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang_base64)
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
 
@@ -2078,4 +2072,4 @@ rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", mashiro
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", huya_voice_base64)
 
-components.html(rhythm_game_html, height=880)
+components.html(rhythm_game_html, height=820)
