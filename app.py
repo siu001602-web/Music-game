@@ -38,9 +38,11 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
+# 새로운 곡 '봄꿈' 음원 및 이미지 경로
 song_bom_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
 song_bom_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
 
+# 캐릭터 및 보이스 경로 설정
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     
 maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"       
 huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"       
@@ -237,8 +239,8 @@ rhythm_game_html = """
   .unit-slot.filled.star-5 { border-color: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.3); }
   .unit-slot.filled.star-4 { border-color: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
   
-  .plus-icon { font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; }
-  .slot-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; }
+  .plus-icon { font-size: 26px; color: #8b949e; font-weight: bold; margin-bottom: 2px; pointer-events: none; }
+  .slot-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 2px solid currentColor; pointer-events: none; }
 
   #char-select-modal {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -261,9 +263,7 @@ rhythm_game_html = """
   .action-btn {
     padding: 10px 22px; font-size: 14px; font-weight: bold; color: #0e1117; background: #00f2fe;
     border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
-    pointer-events: auto;
-    z-index: 20;
-    position: relative;
+    pointer-events: auto; z-index: 20; position: relative;
   }
 
   .stats-box {
@@ -2081,7 +2081,7 @@ rhythm_game_html = rhythm_game_html.replace("IMAGE_BOM_BASE64_PLACEHOLDER", imag
 
 rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_base64)
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
-rhythm_game_html = rhythe_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
+rhythm_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_base64)
 rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang_base64)
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
