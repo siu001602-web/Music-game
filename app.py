@@ -38,7 +38,7 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# '봄꿈' 곡 및 새로운 표지 이미지 경로 설정
+# '봄꿈' 곡 및 지정된 표지 이미지 경로 설정
 song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
 song4_img = "Image/SmartSelect_20261118_211358_YouTube.jpg"
 
@@ -636,6 +636,7 @@ const prepBackBtn = document.getElementById('prep-back-btn');
 const prepSongTitle = document.getElementById('prep-song-title');
 const prepRecordTitle = document.getElementById('prep-record-title');
 const prepRecordContent = document.getElementById('prep-record-content');
+const synergyCard = document.getElementById('synergy-card');
 
 const menuDiffLabel = document.getElementById('menu-diff-label');
 const menuDiffRecord = document.getElementById('menu-diff-record');
@@ -954,10 +955,32 @@ nextPrepBtn.addEventListener('click', () => {
   } else {
     prepRecordContent.innerHTML = `기록 없음`;
   }
+  updateSynergyDisplay();
   switchView('prep');
 });
 
 prepBackBtn.addEventListener('click', () => { switchView('menu'); });
+
+function updateSynergyDisplay() {
+  const [c1, c2] = equippedUnit;
+  if (!c1 || !c2) {
+    synergyCard.style.opacity = "0.5";
+    synergyCard.innerHTML = `<div style="font-weight: bold; color: #8b949e; margin-bottom: 2px;">✨ 활성화된 시너지 없음</div><div style="font-size: 10px; color: #8b949e;">캐릭터 2명을 모두 편성하면 시너지가 발동합니다.</div>`;
+    return;
+  }
+
+  // 시너지 판별 로직
+  if ((c1 === 'mashiro' && c2 === 'yuni') || (c1 === 'yuni' && c2 === 'mashiro')) {
+    synergyCard.style.opacity = "1";
+    synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [스텔라이브 1기] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 스킬 게이지 충전 속도 +20% & 판정 보너스</div>`;
+  } else if ((c1 === 'mashiro' && c2 === 'huya') || (c1 === 'huya' && c2 === 'mashiro') || (c1 === 'yuni' && c2 === 'huya') || (c1 === 'huya' && c2 === 'yuni')) {
+    synergyCard.style.opacity = "1";
+    synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [스텔라이브 멤버] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 최대 HP +20 & 획득 점수 +10%</div>`;
+  } else {
+    synergyCard.style.opacity = "1";
+    synergyCard.innerHTML = `<div style="font-weight: bold; color: #ff79c6; margin-bottom: 2px;">✨ [팬 & 아티스트] 시너지 발동!</div><div style="font-size: 10px; color: #fff;">효과: 스텔라 획득량 소폭 증가</div>`;
+  }
+}
 
 function updateInventoryUI() {
   stellaCountEl.innerText = stella;
@@ -1018,6 +1041,7 @@ function openCharSelector(slotIndex) {
         equippedUnit[activeSlotIndex] = char.id;
         charSelectModal.style.display = "none";
         updateInventoryUI();
+        updateSynergyDisplay();
       });
     }
     charSelectList.appendChild(card);
