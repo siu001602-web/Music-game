@@ -37,9 +37,9 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# 새로운 노래: 봄꿈
+# 신곡: 봄꿈
 song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
-song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg" # 대표 이미지 (필요시 교체 가능)
+song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
 # 캐릭터 및 보이스 경로 설정
 mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     # 시로 (네네코 마시로)
@@ -169,7 +169,6 @@ rhythm_game_html = """
 
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-  /* 3열 구조 유지 및 스크롤 안정화 */
   .song-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
     width: 100%; max-height: 135px; overflow-y: auto; margin-bottom: 6px; padding: 2px;
@@ -288,7 +287,9 @@ rhythm_game_html = """
   .skill-popup img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 
   #mashiro-popup { top: 12px; border-color: #facc15; background: rgba(250, 204, 21, 0.25); }
-  #fever-popup { top: 56px; border-color: #ff79c6; background: rgba(255, 121, 198, 0.25); }
+  #yuni-popup { top: 56px; border-color: #00f2fe; background: rgba(0, 242, 254, 0.25); }
+  #huya-popup { top: 100px; border-color: #ff79c6; background: rgba(255, 121, 198, 0.25); }
+  #fever-popup { top: 144px; border-color: #ff007f; background: rgba(255, 0, 127, 0.25); }
 
   #giveup-btn {
     position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
@@ -500,7 +501,7 @@ rhythm_game_html = """
 
     <div id="synergy-card" class="prep-skill-card" style="opacity: 0.5;">
       <div style="font-weight: bold; color: #8b949e; margin-bottom: 2px;">✨ 활성화된 시너지 없음</div>
-      <div style="font-size: 10px; color: #8b949e;">• [네네코 마시로 + 마로] 편성 시 [냥냥 집사의 특급 후원] 발동!</div>
+      <div style="font-size: 10px; color: #8b949e;">• [시로+마로] / [유니+아르냥] / [후야+바쿠] / [유니+후야(애버리스!)] 시너지 발동 가능!</div>
     </div>
 
     <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px;">
@@ -532,15 +533,35 @@ rhythm_game_html = """
       <span style="font-size: 11px; font-weight: bold; color: #facc15;">[반갑쟈나~] 발동!</span>
     </div>
 
+    <div id="yuni-popup" class="skill-popup">
+      <img src="data:image/jpeg;base64,YUNI_IMG_PLACEHOLDER">
+      <span style="font-size: 11px; font-weight: bold; color: #00f2fe;">[뭘뽀노?] 은하수 폭발!</span>
+    </div>
+
+    <div id="huya-popup" class="skill-popup">
+      <img src="data:image/jpeg;base64,HUYA_IMG_PLACEHOLDER">
+      <span style="font-size: 11px; font-weight: bold; color: #ff79c6;">[포근한 꿈결 속으로]</span>
+    </div>
+
     <div id="fever-popup" class="skill-popup">
-      <span style="font-size: 11px; font-weight: bold; color: #ff79c6;">🐾 [냥냥 피버] 충전 25% UP!</span>
+      <span style="font-size: 11px; font-weight: bold; color: #ff007f;">✨ [애버리스!] 더블 스킬 버프!</span>
     </div>
 
     <div id="skill-gauges-wrapper">
       <div id="mashiro-skill-bar" class="skill-bar-box">
-        <div style="font-size: 9px; font-weight: bold; color: #facc15;">🐾 [반갑쟈나~]</div>
+        <div style="font-size: 9px; font-weight: bold; color: #facc15;">🐾 [시로 액티브]</div>
         <div class="gauge-bg"><div id="mashiro-gauge-fill" class="gauge-fill" style="background: #facc15;"></div></div>
         <div id="mashiro-skill-status" style="font-size: 9px; color: #8b949e; font-weight: bold;">충전 중...</div>
+      </div>
+      <div id="yuni-skill-bar" class="skill-bar-box">
+        <div style="font-size: 9px; font-weight: bold; color: #00f2fe;">🎤 [유니: 뭘뽀노?]</div>
+        <div class="gauge-bg"><div id="yuni-gauge-fill" class="gauge-fill" style="background: #00f2fe;"></div></div>
+        <div id="yuni-skill-status" style="font-size: 9px; color: #8b949e; font-weight: bold;">충전 중...</div>
+      </div>
+      <div id="huya-skill-bar" class="skill-bar-box">
+        <div style="font-size: 9px; font-weight: bold; color: #ff79c6;">💤 [후야: 꿈결 속으로]</div>
+        <div class="gauge-bg"><div id="huya-gauge-fill" class="gauge-fill" style="background: #ff79c6;"></div></div>
+        <div id="huya-skill-status" style="font-size: 9px; color: #8b949e; font-weight: bold;">충전 중...</div>
       </div>
     </div>
   </div>
@@ -586,12 +607,25 @@ const bgm3 = document.getElementById('bgm3');
 const bgm4 = document.getElementById('bgm4');
 
 const mashiroVoice = document.getElementById('mashiro-voice');
+const yuniVoice = document.getElementById('yuni-voice');
+const huyaVoice = document.getElementById('huya-voice');
+
 const mashiroPopup = document.getElementById('mashiro-popup');
+const yuniPopup = document.getElementById('yuni-popup');
+const huyaPopup = document.getElementById('huya-popup');
 const feverPopup = document.getElementById('fever-popup');
 
 const mashiroSkillBar = document.getElementById('mashiro-skill-bar');
 const mashiroGaugeFill = document.getElementById('mashiro-gauge-fill');
 const mashiroSkillStatus = document.getElementById('mashiro-skill-status');
+
+const yuniSkillBar = document.getElementById('yuni-skill-bar');
+const yuniGaugeFill = document.getElementById('yuni-gauge-fill');
+const yuniSkillStatus = document.getElementById('yuni-skill-status');
+
+const huyaSkillBar = document.getElementById('huya-skill-bar');
+const huyaGaugeFill = document.getElementById('huya-gauge-fill');
+const huyaSkillStatus = document.getElementById('huya-skill-status');
 
 const stellaCountEl = document.getElementById('stella-count');
 
@@ -785,15 +819,29 @@ let judgementText = "";
 let judgementColor = "#fff";
 let judgementTimer = 0;
 
+// 캐릭터별 액티브 스킬 상태 관리
 let mashiroSkillGauge = 0;
 let mashiroSkillActivated = false;
 let mashiroSkillTimer = 0;
 
+let yuniSkillGauge = 0;
+let yuniSkillActivated = false;
+let yuniSkillTimer = 0;
+let yuniMissShieldCount = 2; // 유니 패시브: 곡당 최대 2회 미스 콤보 보호
+
+let huyaSkillGauge = 0;
+let huyaSkillActivated = false;
+let huyaSkillTimer = 0;
+
+let doubleSkillActive = false; // 유니&후야 더블 스킬 버프
+let doubleSkillTimer = 0;
+
+let iberisComboTracker = 0; // 후야&바쿠 시너지 콤보 트래커
 let feverTimer = 0;
 let feverActive = false;
 let lastFeverMinute = 0;
-
 let pawPrintAnimTimer = 0;
+let galaxyAnimTimer = 0;
 
 let keyPressed = [false, false, false, false];
 let activeTouches = new Map();
@@ -1051,20 +1099,30 @@ function updateInventoryUI() {
   const synergyCard = document.getElementById('synergy-card');
   const hasMashiro = equippedUnit.includes('mashiro');
   const hasMaro = equippedUnit.includes('maro');
+  const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
+  const hasHuya = equippedUnit.includes('huya');
+  const hasBaku = equippedUnit.includes('baku');
 
-  if (hasMashiro && hasMaro) {
+  let synergyTexts = [];
+  if (hasMashiro && hasMaro) synergyTexts.push("[냥냥 집사의 특급 후원]");
+  if (hasYuni && hasArunyang) synergyTexts.push("[유니&아르냥: 파스텔 방패 & 체력 회복]");
+  if (hasHuya && hasBaku) synergyTexts.push("[후야&바쿠: 조용히, 깨우지 마세요]");
+  if (hasYuni && hasHuya) synergyTexts.push("[유니&후야: 애버리스! (더블 스킬 버프)]");
+
+  if (synergyTexts.length > 0) {
     synergyCard.style.opacity = "1";
-    synergyCard.style.borderColor = "#facc15";
+    synergyCard.style.borderColor = "#00f2fe";
     synergyCard.innerHTML = `
-      <div style="font-weight: bold; color: #facc15; margin-bottom: 2px;">🐾 활성화된 시너지: [냥냥 집사의 특급 후원]</div>
-      <div style="font-size: 10px; color: #fff;">• <b>200콤보 이상 & HP 100% 유지 시:</b> 모든 노트 기본 점수 상시 15% 증가!</div>
+      <div style="font-weight: bold; color: #00f2fe; margin-bottom: 2px;">✨ 활성화된 시너지 (${synergyTexts.length}개)</div>
+      <div style="font-size: 10px; color: #fff;">• ${synergyTexts.join("<br>• ")}</div>
     `;
   } else {
     synergyCard.style.opacity = "0.5";
     synergyCard.style.borderColor = "#30363d";
     synergyCard.innerHTML = `
       <div style="font-weight: bold; color: #8b949e; margin-bottom: 2px;">✨ 활성화된 시너지 없음</div>
-      <div style="font-size: 10px; color: #8b949e;">• [네네코 마시로 + 마로] 편성 시 [냥냥 집사의 특급 후원] 발동!</div>
+      <div style="font-size: 10px; color: #8b949e;">• [시로+마로] / [유니+아르냥] / [후야+바쿠] / [유니+후야] 조합 시 특수 시너지 발동!</div>
     `;
   }
 
@@ -1232,7 +1290,7 @@ function generateBeatmap(songId, difficulty) {
       else if (difficulty === 'normal') currentTime += beatInterval * 1.0;
       else if (difficulty === 'hard') currentTime += beatInterval * 0.75;
       else if (difficulty === 'expert') currentTime += beatInterval * 0.5;
-      else currentTime += beatInterval * 0.35; // 익스트림은 촘촘한 간격
+      else currentTime += beatInterval * 0.35;
       index++;
       continue;
     }
@@ -1286,7 +1344,7 @@ function generateBeatmap(songId, difficulty) {
     } else if (difficulty === 'expert') {
       currentTime += beatInterval * 0.5;
     } else {
-      currentTime += beatInterval * 0.35; // 익스트림 폭타
+      currentTime += beatInterval * 0.35;
     }
     index++;
   }
@@ -1295,33 +1353,67 @@ function generateBeatmap(songId, difficulty) {
 function incrementComboAndCheckMilestone() {
   combo++;
   if (combo > maxCombo) maxCombo = combo;
+
+  // 후야&바쿠 시너지: 100콤보 단위 달성 시 추가 보너스 점수 지급 (풀피 유지 조건)
+  const hasHuya = equippedUnit.includes('huya');
+  const hasBaku = equippedUnit.includes('baku');
+  if (hasHuya && hasBaku && currentHp >= maxHp) {
+    iberisComboTracker++;
+    if (iberisComboTracker >= 100) {
+      iberisComboTracker = 0;
+      score += 2500;
+      showJudgement("🌟 100 COMBO BONUS!", "#ff79c6");
+    }
+  }
 }
 
 function applyHitScore(note, minDiff) {
   let mult = note.type === 'bonus' ? 3 : 1;
   const hasMashiro = equippedUnit.includes('mashiro');
   const hasMaro = equippedUnit.includes('maro');
+  const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
 
+  // 시로 액티브 스킬: 플릭/지그재그/브릿지 노트 +40%
   if (hasMashiro && mashiroSkillActivated && (note.type === 'swipe' || note.type === 'zigzag' || note.type === 'bridge')) {
     mult *= 1.40;
   }
 
+  // 유니 액티브 스킬 [뭘뽀노?]: 기본 점수 120% 증가 (2.2배) 및 롱노트 홀드 시 콤보 보너스 1.5배
+  if (hasYuni && yuniSkillActivated) {
+    mult *= 2.2;
+    if (note.type === 'long' || note.type === 'release') {
+      mult *= 1.5;
+    }
+  }
+
+  // 유니&후야 시너지 [애버리스!]: 더블 스킬 버프 발동 중이면 팀 전체 기본 노트 점수 25% 추가 상승
+  if (doubleSkillActive) {
+    mult *= 1.25;
+  }
+
+  // 시로&마로 시너지 [냥냥 집사의 특급 후원]
   if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) {
     mult *= 1.15;
   }
 
   let effectiveCombo = combo;
-  if (hasMashiro && mashiroSkillActivated) {
-    effectiveCombo += 50;
-  }
+  if (hasMashiro && mashiroSkillActivated) effectiveCombo += 50;
 
   let chargeRate = 0.8;
   if (feverActive) chargeRate *= 1.25;
 
+  // 게이지 충전
   if (hasMashiro && !mashiroSkillActivated) {
     mashiroSkillGauge = Math.min(100, mashiroSkillGauge + chargeRate);
-    updateSkillUI();
   }
+  if (hasYuni && !yuniSkillActivated) {
+    yuniSkillGauge = Math.min(100, yuniSkillGauge + chargeRate * 0.9);
+  }
+  if (hasHuya && !huyaSkillActivated) {
+    huyaSkillGauge = Math.min(100, huyaSkillGauge + chargeRate * 0.9);
+  }
+  updateSkillUI();
 
   if (minDiff <= 0.12) {
     score += Math.round((100 + (effectiveCombo * 2)) * mult);
@@ -1330,7 +1422,8 @@ function applyHitScore(note, minDiff) {
     healHp(1.2);
     showJudgement(note.type === 'bonus' ? "BONUS PERFECT!" : "PERFECT!", note.type === 'bonus' ? "#c084fc" : "#00f2fe");
   } else if (minDiff <= 0.22) {
-    score += Math.round((70 + effectiveCombo) * mult);
+    let greatMult = (hasYuni && hasArunyang) ? 1.1 : 1.0;
+    score += Math.round((70 + effectiveCombo) * mult * greatMult);
     incrementComboAndCheckMilestone();
     stats.great++;
     healHp(0.6);
@@ -1344,12 +1437,21 @@ function applyHitScore(note, minDiff) {
 }
 
 function healHp(amount) {
-  currentHp = Math.min(maxHp, currentHp + amount);
+  const hasHuya = equippedUnit.includes('huya');
+  const hasBaku = equippedUnit.includes('baku');
+  let healMultiplier = (hasHuya && hasBaku) ? 1.2 : 1.0;
+
+  // 후야 액티브 스킬 [포근한 꿈결 속으로]: 롱노트/슬라이드 누르는 동안 지속 회복 (체크는 틱당)
+  currentHp = Math.min(maxHp, currentHp + (amount * healMultiplier));
   updateHpUI();
 }
 
 function damageHp(amount) {
-  currentHp = Math.max(0, currentHp - amount);
+  const hasHuya = equippedUnit.includes('huya');
+  const hasBaku = equippedUnit.includes('baku');
+  let dmgMultiplier = (hasHuya && hasBaku) ? 0.8 : 1.0;
+
+  currentHp = Math.max(0, currentHp - (amount * dmgMultiplier));
   updateHpUI();
   if (currentHp <= 0) {
     triggerGameOver();
@@ -1375,6 +1477,16 @@ function updateSkillUI() {
   if (mashiroSkillGauge >= 100 && !mashiroSkillActivated && equippedUnit.includes('mashiro')) {
     triggerMashiroSkill();
   }
+
+  yuniGaugeFill.style.width = yuniSkillGauge + '%';
+  if (yuniSkillGauge >= 100 && !yuniSkillActivated && equippedUnit.includes('yuni')) {
+    triggerYuniSkill();
+  }
+
+  huyaGaugeFill.style.width = huyaSkillGauge + '%';
+  if (huyaSkillGauge >= 100 && !huyaSkillActivated && equippedUnit.includes('huya')) {
+    triggerHuyaSkill();
+  }
 }
 
 function triggerMashiroSkill() {
@@ -1392,6 +1504,62 @@ function triggerMashiroSkill() {
   pawPrintAnimTimer = 40;
 }
 
+function triggerYuniSkill() {
+  yuniSkillGauge = 0;
+  yuniGaugeFill.style.width = '0%';
+  yuniSkillActivated = true;
+  
+  // 유니&후야 시너지 [애버리스!]: 지속 시간 기본 10초 + 2초 연장 = 12초 (720프레임)
+  let duration = equippedUnit.includes('huya') ? 12 * 60 : 10 * 60;
+  yuniSkillTimer = duration;
+
+  yuniSkillStatus.innerText = "🎤 [뭘뽀노?] ON";
+  yuniSkillStatus.style.color = "#00f2fe";
+
+  yuniVoice.currentTime = 0;
+  yuniVoice.play().catch(e => {});
+  yuniPopup.classList.add('show');
+  galaxyAnimTimer = 50;
+
+  // 후야도 이미 발동 중이라면 더블 스킬 버프 발동!
+  if (huyaSkillActivated) {
+    triggerDoubleSkill();
+  }
+}
+
+function triggerHuyaSkill() {
+  huyaSkillGauge = 0;
+  huyaGaugeFill.style.width = '0%';
+  huyaSkillActivated = true;
+
+  // 후야&바쿠 시너지 [조용히, 깨우지 마세요]: 풀피 유지 시 지속 시간 +2초 추가
+  const hasBaku = equippedUnit.includes('baku');
+  let baseDuration = equippedUnit.includes('yuni') ? 17 * 60 : 15 * 60; // 기본 15초 + 유니 시너지 2초
+  if (hasBaku && currentHp >= maxHp) {
+    baseDuration += 2 * 60; // 추가 2초
+  }
+  huyaSkillTimer = baseDuration;
+
+  huyaSkillStatus.innerText = "💤 [꿈결 속으로] ON";
+  huyaSkillStatus.style.color = "#ff79c6";
+
+  huyaVoice.currentTime = 0;
+  huyaVoice.play().catch(e => {});
+  huyaPopup.classList.add('show');
+
+  // 유니도 이미 발동 중이라면 더블 스킬 버프 발동!
+  if (yuniSkillActivated) {
+    triggerDoubleSkill();
+  }
+}
+
+function triggerDoubleSkill() {
+  doubleSkillActive = true;
+  doubleSkillTimer = 10 * 60; // 10간 팀 전체 기본 노트 점수 25% 추가 상승
+  feverPopup.classList.add('show');
+  setTimeout(() => { feverPopup.classList.remove('show'); }, 3000);
+}
+
 function requestGiveUp() {
   if (!isPlaying) return;
   isPlaying = false;
@@ -1400,8 +1568,12 @@ function requestGiveUp() {
 
   if (confirm("정말 나가겠습니까? (진행 중인 게임은 저장되지 않습니다)")) {
     mashiroPopup.classList.remove('show');
+    yuniPopup.classList.remove('show');
+    huyaPopup.classList.remove('show');
     feverPopup.classList.remove('show');
     mashiroSkillBar.style.display = 'none';
+    yuniSkillBar.style.display = 'none';
+    huyaSkillBar.style.display = 'none';
 
     mainTitle.innerHTML = "RHYTHM STAR";
     mainTitle.style.color = "#00f2fe";
@@ -1462,6 +1634,7 @@ function handleSwipe(lane, dir) {
 
     let mult = 1.0;
     if (hasMashiro && mashiroSkillActivated) mult *= 1.40;
+    if (doubleSkillActive) mult *= 1.25;
     if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) mult *= 1.15;
 
     let effectiveCombo = combo;
@@ -1477,7 +1650,6 @@ function handleSwipe(lane, dir) {
 
     if (hasMashiro && !mashiroSkillActivated) {
       mashiroSkillGauge = Math.min(100, mashiroSkillGauge + chargeRate);
-      updateSkillUI();
     }
     showJudgement("SLIDE!", "#4ade80");
   }
@@ -1501,6 +1673,7 @@ function handleTapUp(lane) {
 
         let mult = 1.0;
         if (hasMashiro && mashiroSkillActivated) mult *= 1.40;
+        if (doubleSkillActive) mult *= 1.25;
         if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) mult *= 1.15;
 
         score += Math.round(addScore * mult);
@@ -1513,7 +1686,6 @@ function handleTapUp(lane) {
 
         if (hasMashiro && !mashiroSkillActivated) {
           mashiroSkillGauge = Math.min(100, mashiroSkillGauge + chargeRate);
-          updateSkillUI();
         }
         showJudgement(note.type === 'release' ? "RELEASE PERFECT!" : "HOLD CLEAR", note.type === 'release' ? "#ff79c6" : "#00f2fe");
       } else {
@@ -1525,8 +1697,30 @@ function handleTapUp(lane) {
 
 function handleMiss() {
   stats.miss++;
+  iberisComboTracker = 0; // 후야&바쿠 시너지: 미스 시 풀피 버프 및 콤보 보너스 초기화
+
+  const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
+
+  // 유니 패시브 [유니는 실수하지 않아!]: 곡당 최대 2회까지 콤보 보호
+  if (hasYuni && yuniMissShieldCount > 0) {
+    yuniMissShieldCount--;
+    showJudgement(`🛡️ 유니 방패 발동! (잔여 ${yuniMissShieldCount}회)`, "#00f2fe");
+    damageHp(6); // 보호막 발동 시 데미지만 절반 경감
+    return;
+  }
+
+  // 유니&아르냥 시너지 추가 사용 횟수 반영
+  if (hasYuni && hasArunyang && yuniMissShieldCount <= 0 && yuniMissShieldCount > -2) {
+    // 아르냥 시너지로 추가 1회 더 보호 (총 3회)
+    yuniMissShieldCount = -5; // 방패 소진 플래그
+    showJudgement(`🐾 아르냥 연계 방패 발동!`, "#c084fc");
+    damageHp(6);
+    return;
+  }
+
   combo = 0;
-  damageHp(12); // 익스트림 추가로 난이도 밸런스 조정
+  damageHp(12);
   showJudgement("MISS", "#ff4b4b");
 }
 
@@ -1657,7 +1851,7 @@ function calculateRank(songId, difficulty, finalScore) {
     if (finalScore >= 180000 * multiplier) return { rank: 'B', color: '#4ade80' };
     if (finalScore >= 120000 * multiplier) return { rank: 'C', color: '#fb923c' };
     return { rank: 'D', color: '#94a3b8' };
-  } else { // extreme
+  } else {
     if (finalScore >= 450000 * multiplier) return { rank: 'SS+', color: '#ff007f' };
     if (finalScore >= 380000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 310000 * multiplier) return { rank: 'S', color: '#facc15' };
@@ -1673,20 +1867,15 @@ function updateAndDraw() {
   const currentBgm = getActiveBgm();
   const currentTime = (performance.now() - startTime) / 1000;
 
-  const currentMinute = Math.floor(currentTime / 60);
-  if (currentMinute > lastFeverMinute && currentMinute % 1 === 0) {
-    lastFeverMinute = currentMinute;
-    feverActive = true;
-    feverTimer = 3 * 60;
-    feverPopup.classList.add('show');
-    setTimeout(() => { feverPopup.classList.remove('show'); }, 3000);
+  // 유니&아르냥 시너지: 체력 50% 미만 시 초당 체력 0.5% 자동 회복
+  const hasYuni = equippedUnit.includes('yuni');
+  const hasArunyang = equippedUnit.includes('arunyang');
+  if (hasYuni && hasArunyang && currentHp < 50 && currentHp > 0) {
+    currentHp = Math.min(maxHp, currentHp + 0.008); // 프레임당 미세 회복
+    updateHpUI();
   }
 
-  if (feverActive) {
-    feverTimer--;
-    if (feverTimer <= 0) feverActive = false;
-  }
-
+  // 액티브 스킬 타이머 처리
   if (mashiroSkillActivated) {
     mashiroSkillTimer--;
     if (mashiroSkillTimer <= 0) {
@@ -1694,6 +1883,37 @@ function updateAndDraw() {
       mashiroPopup.classList.remove('show');
       mashiroSkillStatus.innerText = "충전 중...";
       mashiroSkillStatus.style.color = "#8b949e";
+    }
+  }
+
+  if (yuniSkillActivated) {
+    yuniSkillTimer--;
+    if (yuniSkillTimer <= 0) {
+      yuniSkillActivated = false;
+      yuniPopup.classList.remove('show');
+      yuniSkillStatus.innerText = "충전 중...";
+      yuniSkillStatus.style.color = "#8b949e";
+    }
+  }
+
+  if (huyaSkillActivated) {
+    huyaSkillTimer--;
+    // 후야 액티브 효과: 홀드/슬라이드 누르는 동안 체력 지속 회복
+    currentHp = Math.min(maxHp, currentHp + 0.03);
+    updateHpUI();
+
+    if (huyaSkillTimer <= 0) {
+      huyaSkillActivated = false;
+      huyaPopup.classList.remove('show');
+      huyaSkillStatus.innerText = "충전 중...";
+      huyaSkillStatus.style.color = "#8b949e";
+    }
+  }
+
+  if (doubleSkillActive) {
+    doubleSkillTimer--;
+    if (doubleSkillTimer <= 0) {
+      doubleSkillActive = false;
     }
   }
 
@@ -1705,6 +1925,14 @@ function updateAndDraw() {
     ctx.fillText('🐾', 20, 250);
     ctx.fillText('🐾', 430, 250);
     pawPrintAnimTimer--;
+  }
+
+  if (galaxyAnimTimer > 0) {
+    ctx.fillStyle = 'rgba(0, 242, 254, 0.35)';
+    ctx.font = '24px sans-serif';
+    ctx.fillText('✨🌌', 40, 220);
+    ctx.fillText('🌌✨', 410, 220);
+    galaxyAnimTimer--;
   }
 
   for (let i = 0; i < LANES; i++) {
@@ -1794,6 +2022,8 @@ function updateAndDraw() {
 
         let mult = 1.0;
         if (hasMashiro && mashiroSkillActivated) mult *= 1.40;
+        if (yuniSkillActivated) mult *= 2.2;
+        if (doubleSkillActive) mult *= 1.25;
         if (hasMashiro && hasMaro && combo >= 200 && currentHp >= maxHp) mult *= 1.15;
 
         score += Math.round(addScore * mult);
@@ -1802,11 +2032,8 @@ function updateAndDraw() {
         healHp(1.0);
 
         let chargeRate = 0.8;
-        if (feverActive) chargeRate *= 1.25;
-
         if (hasMashiro && !mashiroSkillActivated) {
           mashiroSkillGauge = Math.min(100, mashiroSkillGauge + chargeRate);
-          updateSkillUI();
         }
         showJudgement(note.type === 'release' ? "RELEASE PERFECT!" : "HOLD CLEAR", note.type === 'release' ? "#ff79c6" : "#00f2fe");
       }
@@ -1885,7 +2112,7 @@ function updateAndDraw() {
         ctx.fillText('★3X★', x + w / 2, y + 5);
       }
       else {
-        ctx.fillStyle = LANE_COLORS[note.lane];
+        ctx.fillStyle = (yuniSkillActivated && (note.lane === 1 || note.lane === 2)) ? '#00f2fe' : LANE_COLORS[note.lane];
         ctx.beginPath();
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
@@ -1905,14 +2132,28 @@ function updateAndDraw() {
   if (hasMashiro && mashiroSkillActivated) {
     ctx.fillStyle = '#facc15';
     ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('🐾 [반갑쟈나~] 플릭/연타 +40% & 콤보 부스터', 18, statusY);
+    ctx.fillText('🐾 [시로] 플릭/연타 +40%', 18, statusY);
     statusY += 18;
   }
 
-  if (feverActive) {
+  if (yuniSkillActivated) {
+    ctx.fillStyle = '#00f2fe';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('🎤 [유니] 뭘뽀노? (점수 120% UP)', 18, statusY);
+    statusY += 18;
+  }
+
+  if (huyaSkillActivated) {
     ctx.fillStyle = '#ff79c6';
     ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('⚡ [고양이의 변덕] 냥냥 피버 ON (충전 속도 +25%)', 18, statusY);
+    ctx.fillText('💤 [후야] 포근한 꿈결 속으로 (체력 지속 회복)', 18, statusY);
+    statusY += 18;
+  }
+
+  if (doubleSkillActive) {
+    ctx.fillStyle = '#ff007f';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('✨ [애버리스!] 더블 스킬 버프 발동중!', 18, statusY);
     statusY += 18;
   }
 
@@ -1957,6 +2198,20 @@ function startGame() {
   mashiroSkillGauge = 0;
   mashiroSkillActivated = false;
   mashiroSkillTimer = 0;
+
+  yuniSkillGauge = 0;
+  yuniSkillActivated = false;
+  yuniSkillTimer = 0;
+  yuniMissShieldCount = 2;
+
+  huyaSkillGauge = 0;
+  huyaSkillActivated = false;
+  huyaSkillTimer = 0;
+
+  doubleSkillActive = false;
+  doubleSkillTimer = 0;
+  iberisComboTracker = 0;
+
   feverActive = false;
   lastFeverMinute = 0;
   
@@ -1971,6 +2226,26 @@ function startGame() {
     mashiroGaugeFill.style.width = '0%';
   } else {
     mashiroSkillBar.style.display = 'none';
+  }
+
+  const hasYuni = equippedUnit.includes('yuni');
+  if (hasYuni) {
+    yuniSkillBar.style.display = 'flex';
+    yuniSkillStatus.innerText = "충전 중...";
+    yuniSkillStatus.style.color = "#8b949e";
+    yuniGaugeFill.style.width = '0%';
+  } else {
+    yuniSkillBar.style.display = 'none';
+  }
+
+  const hasHuya = equippedUnit.includes('huya');
+  if (hasHuya) {
+    huyaSkillBar.style.display = 'flex';
+    huyaSkillStatus.innerText = "충전 중...";
+    huyaSkillStatus.style.color = "#8b949e";
+    huyaGaugeFill.style.width = '0%';
+  } else {
+    huyaSkillBar.style.display = 'none';
   }
 
   stats = { perfect: 0, great: 0, good: 0, miss: 0 };
@@ -1996,8 +2271,12 @@ function triggerGameOver() {
   const currentBgm = getActiveBgm();
   currentBgm.pause();
   mashiroPopup.classList.remove('show');
+  yuniPopup.classList.remove('show');
+  huyaPopup.classList.remove('show');
   feverPopup.classList.remove('show');
   mashiroSkillBar.style.display = 'none';
+  yuniSkillBar.style.display = 'none';
+  huyaSkillBar.style.display = 'none';
 
   mainTitle.innerHTML = "💔 GAME OVER (체력 소진)";
   mainTitle.style.color = "#ff4b4b";
@@ -2030,8 +2309,12 @@ function endGame() {
   const currentBgm = getActiveBgm();
   currentBgm.pause();
   mashiroPopup.classList.remove('show');
+  yuniPopup.classList.remove('show');
+  huyaPopup.classList.remove('show');
   feverPopup.classList.remove('show');
   mashiroSkillBar.style.display = 'none';
+  yuniSkillBar.style.display = 'none';
+  huyaSkillBar.style.display = 'none';
 
   let clearTitle = "CLEAR!";
   let titleColor = "#ffffff";
@@ -2118,7 +2401,7 @@ rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_base64)
 rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang_base64)
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
 
-rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOISS_PLACEHOLDER", mashiro_voice_base64)
+rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", mashiro_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", huya_voice_base64)
 
