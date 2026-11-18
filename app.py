@@ -240,7 +240,6 @@ rhythm_game_html = """
 </head>
 <body>
 
-<!-- HTML 표준 오디오 태그를 사용하여 스트리밍 방식 적용 (메모리 부하 제로) -->
 <audio id="bgm1" preload="auto">
   <source src="data:audio/mp4;base64,AUDIO1_BASE64_PLACEHOLDER" type="audio/mp4">
 </audio>
@@ -279,7 +278,7 @@ rhythm_game_html = """
 
   <div id="prep-screen">
     <div class="prep-header" id="prep-song-title">🎵 Star Trail</div>
-    <div class="prep-sub">`+` 버튼을 눌러 출전할 캐릭터를 편성하세요[span_0](start_span)[span_0](end_span).</div>
+    <div class="prep-sub">+ 버튼을 눌러 출전할 캐릭터를 편성하세요[span_0](start_span)[span_0](end_span).</div>
 
     <div class="unit-slots">
       <div id="slot-1" class="unit-slot" onclick="openCharSelector(0)">
@@ -916,6 +915,10 @@ function getLaneFromPointer(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
+// 🌟 핵심 수정: 꾹 누를 때 발생하는 모바일 브라우저 기본 제스처/메뉴 팝업 간섭을 완전 차단
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+canvas.addEventListener('selectstart', (e) => e.preventDefault());
+
 canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   if (!isPlaying) return;
@@ -958,6 +961,7 @@ function handlePointerUp(e) {
 
 canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
 canvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
+canvas.addEventListener('pointerout', handlePointerUp, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   const key = e.key.toLowerCase();
