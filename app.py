@@ -1763,7 +1763,7 @@ function updateAndDraw() {
       if (note.type === 'zigzag') {
         const x1 = note.lane * LANE_WIDTH + LANE_WIDTH / 2;
         const x2 = note.targetLane * LANE_WIDTH + LANE_WIDTH / 2;
-        ctx.strokeStyle = 'rgba(0, 242, 254, 0.85)'; // 🔹 지그재그 연결선 파란색으로 변경
+        ctx.strokeStyle = 'rgba(192, 132, 252, 0.85)'; // 🔹 지그재그 연결선 보라색(#c084fc)으로 변경
         ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.moveTo(x1, HIT_Y);
@@ -1838,11 +1838,11 @@ function updateAndDraw() {
         ctx.fillText('▲UP', x + w / 2, y + 4);
       }
       else if (note.type === 'zigzag') {
-        ctx.fillStyle = '#00f2fe'; // 🔹 지그재그 노트 헤드 파란색(#00f2fe)으로 변경
+        ctx.fillStyle = '#c084fc'; // 🔹 지그재그 노트 헤드 보라색(#c084fc)으로 변경
         ctx.beginPath();
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
-        ctx.fillStyle = '#0e1117';
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('ZIG', x + w / 2, y + 4);
