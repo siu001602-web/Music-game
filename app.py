@@ -700,14 +700,21 @@ function exportSaveData() {
   downloadAnchor.remove();
 }
 
-// 데이터 불러오기 (JSON 파일 업로드 복원)
+// 데이터 불러오기 (인코딩/일반 JSON 모두 완벽 호환 복원)
 function importSaveData(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const parsed = JSON.parse(e.target.result);
+      let fileContent = e.target.result.trim();
+      
+      // %7B 등으로 인코딩된 상태로 읽혔을 경우 디코딩 수행
+      if (fileContent.includes('%7B') || fileContent.includes('%22') || fileContent.startsWith('%')) {
+        fileContent = decodeURIComponent(fileContent);
+      }
+
+      const parsed = JSON.parse(fileContent);
       if (parsed.stella !== undefined) stella = parsed.stella;
       if (parsed.ownedCharacters) ownedCharacters = parsed.ownedCharacters;
       if (parsed.bestRecords) bestRecords = parsed.bestRecords;
@@ -717,9 +724,13 @@ function importSaveData(event) {
       updateInventoryUI();
       updateMissionUI();
       updateSelectedRecordDisplay();
+      
+      // 파일 input 초기화 (같은 파일을 다시 불러올 수 있도록)
+      document.getElementById('import-file-input').value = '';
       alert("💾 데이터가 성공적으로 복원되었습니다!");
     } catch (err) {
-      alert("❌ 잘못된 형식의 세이브 파일입니다.");
+      console.error(err);
+      alert("❌ 잘못된 형식의 세이브 파일입니다. 올바른 JSON 파일을 선택해 주세요.");
     }
   };
   reader.readAsText(file);
