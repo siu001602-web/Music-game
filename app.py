@@ -72,7 +72,6 @@ mashiro_voice_base64 = get_base64(mashiro_voice_path)
 yuni_voice_base64 = get_base64(yuni_voice_path)
 huya_voice_base64 = get_base64(huya_voice_path)
 
-# 사이드바 악보 및 난이도 선택 설정
 st.sidebar.title("🎵 악보 및 게임 설정")
 selected_song_title = st.sidebar.selectbox(
     "플레이할 악보 선택",
@@ -90,17 +89,9 @@ song_map = {
     "별자리가 될 수 있다면": {"id": "constellation", "audio": audio3_base64, "thumb": image3_base64, "duration": 255}
 }
 
-diff_map = {
-    "쉬움 (Easy)": "easy",
-    "보통 (Normal)": "normal",
-    "하드 (Hard)": "hard",
-    "익스퍼트 (Expert)": "expert"
-}
-
 current_song = song_map[selected_song_title]
-current_diff_key = diff_map[selected_diff_label]
 
-rhythm_game_html = f"""
+rhythm_game_html = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -147,7 +138,7 @@ rhythm_game_html = f"""
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,{current_song["thumb"]}');
+    background: linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('data:image/jpeg;base64,__THUMB__');
     background-size: cover;
     background-position: center;
     padding: 14px;
@@ -166,7 +157,7 @@ rhythm_game_html = f"""
     width: 100%;
     height: 100%;
     display: block;
-    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,{current_song["thumb"]}');
+    background: linear-gradient(rgba(14, 17, 23, 0.72), rgba(14, 17, 23, 0.72)), url('data:image/jpeg;base64,__THUMB__');
     background-size: cover;
     background-position: center;
     touch-action: none;
@@ -288,17 +279,17 @@ rhythm_game_html = f"""
 <body>
 
 <audio id="game-bgm" preload="auto">
-  <source src="data:audio/mp4;base64,{current_song['audio']}" type="audio/mp4">
+  <source src="data:audio/mp4;base64,__AUDIO__" type="audio/mp4">
 </audio>
 <audio id="mashiro-voice" preload="auto">
-  <source src="data:audio/mp4;base64,{mashiro_voice_base64}" type="audio/mp4">
+  <source src="data:audio/mp4;base64,__MASHIRO_VOICE__" type="audio/mp4">
 </audio>
 
 <div id="app-wrapper">
 
   <div id="menu-screen">
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
-      <h1 id="main-title" style="margin: 0; color: #00f2fe; font-size: 16px;">🎵 {selected_song_title}</h1>
+      <h1 id="main-title" style="margin: 0; color: #00f2fe; font-size: 16px;">🎵 __SONG_TITLE__</h1>
       <div style="background: #161b22; border: 1px solid #facc15; border-radius: 12px; padding: 3px 10px; font-size: 12px; font-weight: bold; color: #facc15;">
         ⭐ 스텔라: <span id="stella-count">100</span>개
       </div>
@@ -334,7 +325,7 @@ rhythm_game_html = f"""
         </div>
 
         <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; font-size: 11px; width: 100%; text-align: left;">
-          <div style="font-weight: bold; color: #00f2fe;">🏆 선택 곡: {selected_song_title} ({selected_diff_label})</div>
+          <div style="font-weight: bold; color: #00f2fe;">🏆 선택 곡: __SONG_TITLE__ (__DIFF_LABEL__)</div>
           <div style="color: #8b949e; font-size: 10px; margin-top: 2px;">사이드바에서 악보 및 난이도를 변경할 수 있습니다.</div>
         </div>
       </div>
@@ -430,7 +421,7 @@ rhythm_game_html = f"""
     </div>
 
     <div id="mashiro-popup" class="skill-popup">
-      <img src="data:image/jpeg;base64,{mashiro_base64}">
+      <img src="data:image/jpeg;base64,__MASHIRO_BASE64__">
       <span style="font-size: 11px; font-weight: bold; color: #facc15;">[반갑쟈나~] 발동!</span>
     </div>
 
@@ -570,12 +561,12 @@ const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 function updateInventoryUI() {
   stellaCountEl.innerText = stella;
   const charMeta = {
-    mashiro: { name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{mashiro_base64}' },
-    huya: { name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{huya_base64}' },
-    yuni: { name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '{yuni_base64}' },
-    maro: { name: '마로', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{maro_base64}' },
-    arunyang: { name: '아르냥', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{arunyang_base64}' },
-    baku: { name: '바쿠', star: '⭐⭐⭐⭐', color: '#c084fc', img: '{baku_base64}' }
+    mashiro: { name: '네네코 마시로', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '__MASHIRO_BASE64__' },
+    huya: { name: '사키하네 후야', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '__HUYA_BASE64__' },
+    yuni: { name: '아야츠노 유니', star: '⭐⭐⭐⭐⭐', color: '#facc15', img: '__YUNI_BASE64__' },
+    maro: { name: '마로', star: '⭐⭐⭐⭐', color: '#c084fc', img: '__MARO_BASE64__' },
+    arunyang: { name: '아르냥', star: '⭐⭐⭐⭐', color: '#c084fc', img: '__ARUNYANG_BASE64__' },
+    baku: { name: '바쿠', star: '⭐⭐⭐⭐', color: '#c084fc', img: '__BAKU_BASE64__' }
   };
 
   for (let i = 0; i < 2; i++) {
@@ -584,7 +575,7 @@ function updateInventoryUI() {
     if (charId && charMeta[charId]) {
       const m = charMeta[charId];
       slotEl.className = `unit-slot filled`;
-      slotEl.innerHTML = `<img src="data:image/jpeg;base64,{mashiro_base64}" class="slot-img"><div style="font-size:10px; font-weight:bold; color:${m.color};">${m.name}</div>`;
+      slotEl.innerHTML = `<img src="data:image/jpeg;base64,${m.img}" class="slot-img"><div style="font-size:10px; font-weight:bold; color:${m.color};">${m.name}</div>`;
     } else {
       slotEl.className = "unit-slot";
       slotEl.innerHTML = `<div class="plus-icon">+</div><div style="font-size: 10px; color: #8b949e;">슬롯 ${i+1}</div>`;
@@ -699,7 +690,7 @@ function claimAttendance() {
 function generateBeatmap() {
   notes = [];
   let currentTime = 2.0;
-  const totalDuration = {current_song['duration']};
+  const totalDuration = __DURATION__;
   let seed = 1234;
   
   while (currentTime < totalDuration - 5.0) {
@@ -830,5 +821,18 @@ updateInventoryUI();
 </body>
 </html>
 """
+
+rhythm_game_html = rhythm_game_html.replace("__THUMB__", current_song["thumb"])
+rhythm_game_html = rhythm_game_html.replace("__AUDIO__", current_song["audio"])
+rhythm_game_html = rhythm_game_html.replace("__SONG_TITLE__", selected_song_title)
+rhythm_game_html = rhythm_game_html.replace("__DIFF_LABEL__", selected_diff_label)
+rhythm_game_html = rhythm_game_html.replace("__MASHIRO_VOICE__", mashiro_voice_base64)
+rhythm_game_html = rhythm_game_html.replace("__MASHIRO_BASE64__", mashiro_base64)
+rhythm_game_html = rhythm_game_html.replace("__HUYA_BASE64__", huya_base64)
+rhythm_game_html = rhythm_game_html.replace("__YUNI_BASE64__", yuni_base64)
+rhythm_game_html = rhythm_game_html.replace("__MARO_BASE64__", maro_base64)
+rhythm_game_html = rhythm_game_html.replace("__ARUNYANG_BASE64__", arunyang_base64)
+rhythm_game_html = rhythm_game_html.replace("__BAKU_BASE64__", baku_base64)
+rhythm_game_html = rhythm_game_html.replace("__DURATION__", str(current_song["duration"]))
 
 components.html(rhythm_game_html, height=820)
