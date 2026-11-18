@@ -37,17 +37,15 @@ song2_img = "Image/SmartSelect_20261118_014123_YouTube.jpg"
 song3_music = "music/Screen_Recording_20261118_180535_YouTube_18112026.m4a"
 song3_img = "Image/SmartSelect_20261118_180837_YouTube.jpg"
 
-# 새로운 노래 '봄꿈' 경로 설정 (길이 3분 5초 = 185초)
 song4_music = "music/Screen_Recording_20261118_210521_YouTube_18112026.m4a"
-song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg" # 썸네일 예시 (필요시 교체 가능)
+song4_img = "Image/SmartSelect_20261117_234657_YouTube.jpg"
 
-# 캐릭터 및 보이스 경로 설정
-mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"     # 시로 (네네코 마시로)
-maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"       # 마로
-huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"       # 후야
-yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"       # 유니
-arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"   # 아르냥
-baku_img_path = "Character/SmartSelect_20261118_174346_NAVER.jpg"       # 바쿠
+mashiro_img_path = "Character/SmartSelect_20261118_202345_NAVER.jpg"
+maro_img_path = "Character/SmartSelect_20261118_202541_NAVER.jpg"
+huya_img_path = "Character/SmartSelect_20261118_174228_NAVER.jpg"
+yuni_img_path = "Character/SmartSelect_20261118_003411_NAVER.jpg"
+arunyang_img_path = "Character/SmartSelect_20261118_010700_NAVER.jpg"
+baku_img_path = "Character/SmartSelect_20261118_174346_NAVER.jpg"
 
 mashiro_voice_path = "voice/Screen_Recording_20261118_202921_YouTube_18112026.m4a"
 yuni_voice_path = "voice/Screen_Recording_20261118_004242_YouTube_18112026.m4a"
@@ -61,13 +59,10 @@ def get_base64(path):
 
 audio1_base64 = get_base64(song1_music)
 image1_base64 = get_base64(song1_img)
-
 audio2_base64 = get_base64(song2_music)
 image2_base64 = get_base64(song2_img)
-
 audio3_base64 = get_base64(song3_music)
 image3_base64 = get_base64(song3_img)
-
 audio4_base64 = get_base64(song4_music)
 image4_base64 = get_base64(song4_img)
 
@@ -90,7 +85,6 @@ rhythm_game_html = """
 <style>
   * {
     box-sizing: border-box;
-    touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -188,18 +182,14 @@ rhythm_game_html = """
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
-  .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
   .diff-card[data-diff="extreme"].selected { border-color: #fb923c; box-shadow: 0 0 10px rgba(251, 146, 60, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
   .diff-name { font-size: 11px; font-weight: 900; }
-  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
-  .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
   .diff-card[data-diff="extreme"] .diff-name { color: #fb923c; }
 
   .selected-diff-record-box {
@@ -1272,7 +1262,7 @@ function generateBeatmap(songId, difficulty) {
     } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.8;
     } else {
-      currentTime += beatInterval * 0.45; // 익스트림 모드: 촘촘하고 박자에 꼭 맞는 노트 배치
+      currentTime += beatInterval * 0.45;
     }
     index++;
   }
@@ -1530,9 +1520,10 @@ function getLaneFromTouch(clientX) {
   return Math.max(0, Math.min(LANES - 1, lane));
 }
 
+// Canvas 전용 터치 이벤트 (게임 플레이 중에만 작동, 메뉴 버튼과 충돌 방지)
 canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
   if (!isPlaying) return;
+  e.preventDefault();
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
     const lane = getLaneFromTouch(touch.clientX);
@@ -1545,8 +1536,8 @@ canvas.addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
   if (!isPlaying) return;
+  e.preventDefault();
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
     const data = activeTouches.get(touch.identifier);
@@ -1561,6 +1552,7 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 function handleTouchEnd(e) {
+  if (!isPlaying) return;
   e.preventDefault();
   for (let i = 0; i < e.changedTouches.length; i++) {
     const touch = e.changedTouches[i];
@@ -1583,6 +1575,7 @@ canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
 window.addEventListener('keydown', (e) => {
+  if (!isPlaying) return;
   const key = e.key.toLowerCase();
   if (e.key === 'ArrowLeft' || key === 'a') {
     handleSwipe(1, 'left');
@@ -1602,6 +1595,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
+  if (!isPlaying) return;
   const idx = KEYS.indexOf(e.key.toLowerCase());
   if (idx !== -1) {
     keyPressed[idx] = false;
@@ -2065,13 +2059,10 @@ updateMissionUI();
 
 rhythm_game_html = rhythm_game_html.replace("AUDIO1_BASE64_PLACEHOLDER", audio1_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE1_BASE64_PLACEHOLDER", image1_base64)
-
 rhythm_game_html = rhythm_game_html.replace("AUDIO2_BASE64_PLACEHOLDER", audio2_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE2_BASE64_PLACEHOLDER", image2_base64)
-
 rhythm_game_html = rhythm_game_html.replace("AUDIO3_BASE64_PLACEHOLDER", audio3_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE3_BASE64_PLACEHOLDER", image3_base64)
-
 rhythm_game_html = rhythm_game_html.replace("AUDIO4_BASE64_PLACEHOLDER", audio4_base64)
 rhythm_game_html = rhythm_game_html.replace("IMAGE4_BASE64_PLACEHOLDER", image4_base64)
 
@@ -2079,6 +2070,7 @@ rhythm_game_html = rhythm_game_html.replace("MASHIRO_IMG_PLACEHOLDER", mashiro_b
 rhythm_game_html = rhythm_game_html.replace("MARO_IMG_PLACEHOLDER", maro_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_IMG_PLACEHOLDER", huya_base64)
 rhythm_game_html = rhythm_game_html.replace("YUNI_IMG_PLACEHOLDER", yuni_base64)
+rnumpy_arunyang = get_base64(arunyang_img_path)
 rhythm_game_html = rhythm_game_html.replace("ARUNYANG_IMG_PLACEHOLDER", arunyang_base64)
 rhythm_game_html = rhythm_game_html.replace("BAKU_IMG_PLACEHOLDER", baku_base64)
 
@@ -2086,4 +2078,4 @@ rhythm_game_html = rhythm_game_html.replace("MASHIRO_VOICE_PLACEHOLDER", mashiro
 rhythm_game_html = rhythm_game_html.replace("YUNI_VOICE_PLACEHOLDER", yuni_voice_base64)
 rhythm_game_html = rhythm_game_html.replace("HUYA_VOICE_PLACEHOLDER", huya_voice_base64)
 
-components.html(rhythm_game_html, height=820)
+components.html(rhythm_game_html, height=880)
