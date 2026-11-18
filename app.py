@@ -681,7 +681,6 @@ function saveGameData() {
   localStorage.setItem('rhythm_missions', JSON.stringify(missionData));
 }
 
-// 데이터 초기화 버튼 기능
 function resetGameData() {
   if (confirm("⚠️ 모든 게임 데이터가 초기화됩니다. 정말 진행하시겠습니까?")) {
     localStorage.clear();
@@ -689,7 +688,6 @@ function resetGameData() {
   }
 }
 
-// 데이터 내보내기 (JSON 파일 다운로드)
 function exportSaveData() {
   const saveData = {
     stella: stella,
@@ -706,7 +704,6 @@ function exportSaveData() {
   downloadAnchor.remove();
 }
 
-// 데이터 불러오기 (프롬프트 창에 JSON 텍스트를 붙여넣어 복원하는 방식으로 개선)
 function importSaveDataPrompt() {
   const inputString = prompt("백업했던 세이브 파일의 JSON 텍스트(또는 %7B로 시작하는 인코딩 텍스트)를 여기에 붙여넣어 주세요:");
   if (!inputString) return;
@@ -1177,7 +1174,7 @@ function generateBeatmap(songId, difficulty) {
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
   if (difficulty === 'hard') speed = 490;
-  if (difficulty === 'expert') speed = 540;
+  if (difficulty === 'expert') speed = 520; // 🔹 익스퍼트 클리어 가능하도록 속도 소폭 완화
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
@@ -1191,7 +1188,7 @@ function generateBeatmap(songId, difficulty) {
       if (difficulty === 'easy') currentTime += beatInterval * 1.8;
       else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
       else if (difficulty === 'hard') currentTime += beatInterval * 0.85;
-      else currentTime += beatInterval * 0.5;
+      else currentTime += beatInterval * 0.55;
       index++;
       continue;
     }
@@ -1204,13 +1201,13 @@ function generateBeatmap(songId, difficulty) {
         notes.push({ time: currentTime, lane: pairLane, pairLane: lane, bridgeId: bridgeId, hit: false, missed: false });
       }
     }
-    else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.7 : 0.45))) {
+    else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.6 : 0.45))) {
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 6 === 0 && rand < 0.5) {
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 6 === 0 && rand < 0.45) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 7 === 0 && rand < 0.5) {
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 7 === 0 && rand < 0.45) {
       const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
       if (currentTime >= activeLongEndTimes[targetLane]) {
@@ -1243,7 +1240,7 @@ function generateBeatmap(songId, difficulty) {
     } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.85;
     } else {
-      currentTime += beatInterval * 0.48;
+      currentTime += beatInterval * 0.52; // 🔹 익스퍼트 노트 간격 소폭 완화하여 충분히 클리어 가능하도록 조정
     }
     index++;
   }
@@ -1766,7 +1763,7 @@ function updateAndDraw() {
       if (note.type === 'zigzag') {
         const x1 = note.lane * LANE_WIDTH + LANE_WIDTH / 2;
         const x2 = note.targetLane * LANE_WIDTH + LANE_WIDTH / 2;
-        ctx.strokeStyle = 'rgba(249, 115, 22, 0.75)';
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.85)'; // 🔹 지그재그 연결선 파란색으로 변경
         ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.moveTo(x1, HIT_Y);
@@ -1841,11 +1838,11 @@ function updateAndDraw() {
         ctx.fillText('▲UP', x + w / 2, y + 4);
       }
       else if (note.type === 'zigzag') {
-        ctx.fillStyle = '#f97316';
+        ctx.fillStyle = '#00f2fe'; // 🔹 지그재그 노트 헤드 파란색(#00f2fe)으로 변경
         ctx.beginPath();
         ctx.roundRect(x, y - 12, w, 24, 6);
         ctx.fill();
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#0e1117';
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('ZIG', x + w / 2, y + 4);
