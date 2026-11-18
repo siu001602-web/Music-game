@@ -711,7 +711,9 @@ function generateBeatmap(songId, difficulty) {
   const bpm = 125;
   const beatInterval = 60 / bpm; 
   let currentTime = 2.0;
-  const totalDuration = 225.0;
+  
+  // 🌟 삐질게는 2분 20초(~140초) 길이에 맞춰 채보 생성, 스타트레일은 기존 유지
+  const totalDuration = (songId === 'bbijilge') ? 140.0 : 225.0;
 
   let speed = 420;
   if (difficulty === 'normal') speed = 450;
