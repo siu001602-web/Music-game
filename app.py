@@ -156,7 +156,7 @@ rhythm_game_html = """
   .section-title { font-size: 11px; color: #8b949e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
   .song-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
     width: 100%; max-height: 135px; overflow-y: auto; margin-bottom: 8px; padding: 4px;
   }
   .song-card {
@@ -164,8 +164,8 @@ rhythm_game_html = """
     padding: 6px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative;
   }
   .song-card.selected { border-color: #00f2fe; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); background: #1f2630; }
-  .song-thumb { width: 100%; height: 55px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
-  .song-name { font-size: 11px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .song-thumb { width: 100%; height: 50px; border-radius: 6px; object-fit: cover; margin-bottom: 4px; }
+  .song-name { font-size: 10px; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .new-badge { position: absolute; top: 6px; right: 6px; background: #ff4b4b; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 4px; }
 
   .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 8px; }
@@ -174,12 +174,14 @@ rhythm_game_html = """
     padding: 6px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
+  .diff-card[data-diff="easy"].selected { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
   .diff-card[data-diff="normal"].selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
   .diff-card[data-diff="expert"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
   .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
   .diff-name { font-size: 11px; font-weight: 900; }
+  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
   .diff-card[data-diff="expert"] .diff-name { color: #c084fc; }
@@ -333,10 +335,8 @@ rhythm_game_html = """
         <div id="song-list" class="song-grid"></div>
 
         <div class="section-title">Difficulty (난이도 선택)</div>
-        <div class="difficulty-select-container">
-          <div class="diff-card selected" data-diff="normal"><div class="diff-lv" id="lv-normal">Lv. 11</div><div class="diff-name">보통</div></div>
-          <div class="diff-card" data-diff="hard"><div class="diff-lv" id="lv-hard">Lv. 18</div><div class="diff-name">하드</div></div>
-          <div class="diff-card" data-diff="expert"><div class="diff-lv" id="lv-expert">Lv. 25</div><div class="diff-name">익스퍼트</div></div>
+        <div id="difficulty-container" class="difficulty-select-container">
+          <!-- 동적으로 곡에 맞게 렌더링됨 -->
         </div>
 
         <div class="selected-diff-record-box">
@@ -492,6 +492,7 @@ const prepRecordContent = document.getElementById('prep-record-content');
 
 const menuDiffLabel = document.getElementById('menu-diff-label');
 const menuDiffRecord = document.getElementById('menu-diff-record');
+const difficultyContainer = document.getElementById('difficulty-container');
 
 const hpFill = document.getElementById('hp-fill');
 const hpText = document.getElementById('hp-text');
@@ -528,12 +529,7 @@ const modalCloseBtn = document.getElementById('modal-close-btn');
 
 const mainTitle = document.getElementById('main-title');
 const statsContainer = document.getElementById('stats-container');
-const diffCards = document.querySelectorAll('.diff-card');
 const songListContainer = document.getElementById('song-list');
-
-const lvNormal = document.getElementById('lv-normal');
-const lvHard = document.getElementById('lv-hard');
-const lvExpert = document.getElementById('lv-expert');
 
 const navTabs = document.querySelectorAll('.nav-tab');
 const tabContents = {
@@ -559,17 +555,21 @@ navTabs.forEach(tab => {
   });
 });
 
+// 곡별 난이도 구성 다변화 (스타트레일, 삐질게: 쉬움/보통/하드 | 별자리가 될 수 있다면: 보통/하드/익스퍼트)
 const songs = [
   { 
     id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225,
-    levels: { normal: 'Lv. 11', hard: 'Lv. 18', expert: 'Lv. 25' } 
+    type: 'starter',
+    levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18' } 
   },
   { 
     id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144,
-    levels: { normal: 'Lv. 12', hard: 'Lv. 19', expert: 'Lv. 26' } 
+    type: 'starter',
+    levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19' } 
   },
   { 
     id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255,
+    type: 'advanced',
     levels: { normal: 'Lv. 13', hard: 'Lv. 20', expert: 'Lv. 28' } 
   }
 ];
@@ -581,7 +581,7 @@ const KEYS = ['d', 'f', 'j', 'k'];
 const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 
 let currentSongId = 'startrail';
-let currentDifficulty = 'normal'; // normal, hard, expert
+let currentDifficulty = 'normal';
 
 let stella = 100;
 let ownedCharacters = { yuni: false, arunyang: false, huya: false, baku: false };
@@ -589,8 +589,8 @@ let equippedUnit = [null, null];
 let activeSlotIndex = null;
 
 let bestRecords = {
-  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } },
-  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } },
+  startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' } },
   constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, expert: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
@@ -629,18 +629,64 @@ function getActiveBgm() {
 }
 
 function updateSelectedRecordDisplay() {
+  if (!bestRecords[currentSongId][currentDifficulty]) {
+    currentDifficulty = 'normal';
+  }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
-  const diffNameMap = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', expert: '#c084fc' };
+  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
   
-  if (rec.score > 0) {
+  if (rec && rec.score > 0) {
     menuDiffRecord.innerHTML = `<b>${rec.score.toLocaleString()}점</b> (RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>)`;
   } else {
     menuDiffRecord.innerHTML = `기록 없음 (RANK: -)`;
   }
+}
+
+function renderDifficultyButtons() {
+  const song = songs.find(s => s.id === currentSongId);
+  difficultyContainer.innerHTML = '';
+  
+  let diffs = [];
+  if (song.type === 'starter') {
+    diffs = [
+      { key: 'easy', label: '쉬움', lv: song.levels.easy },
+      { key: 'normal', label: '보통', lv: song.levels.normal },
+      { key: 'hard', label: '하드', lv: song.levels.hard }
+    ];
+  } else {
+    diffs = [
+      { key: 'normal', label: '보통', lv: song.levels.normal },
+      { key: 'hard', label: '하드', lv: song.levels.hard },
+      { key: 'expert', label: '익스퍼트', lv: song.levels.expert }
+    ];
+  }
+
+  // 현재 선택된 난이도가 새 곡에 없으면 기본값으로 보정
+  if (!diffs.some(d => d.key === currentDifficulty)) {
+    currentDifficulty = diffs[0].key;
+  }
+
+  diffs.forEach(d => {
+    const card = document.createElement('div');
+    card.className = `diff-card ${d.key === currentDifficulty ? 'selected' : ''}`;
+    card.setAttribute('data-diff', d.key);
+    card.innerHTML = `<div class="diff-lv">${d.lv}</div><div class="diff-name">${d.label}</div>`;
+    
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentDifficulty = d.key;
+      statsContainer.style.display = 'none';
+      mainTitle.innerHTML = 'RHYTHM STAR';
+      mainTitle.style.color = '#00f2fe';
+      updateSelectedRecordDisplay();
+    });
+    difficultyContainer.appendChild(card);
+  });
 }
 
 function renderSongList() {
@@ -665,47 +711,31 @@ function renderSongList() {
       menuScreen.style.backgroundImage = `linear-gradient(rgba(14, 17, 23, 0.94), rgba(14, 17, 23, 0.94)), url('${song.thumb}')`;
       
       renderSongList();
-      updateDifficultyLevels();
+      renderDifficultyButtons();
       updateSelectedRecordDisplay();
     });
     songListContainer.appendChild(card);
   });
 }
 
-function updateDifficultyLevels() {
-  const song = songs.find(s => s.id === currentSongId);
-  if (song) {
-    lvNormal.innerText = song.levels.normal;
-    lvHard.innerText = song.levels.hard;
-    lvExpert.innerText = song.levels.expert;
-  }
-}
-
 renderSongList();
-updateDifficultyLevels();
+renderDifficultyButtons();
 updateSelectedRecordDisplay();
-
-diffCards.forEach(card => {
-  card.addEventListener('click', () => {
-    diffCards.forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    currentDifficulty = card.getAttribute('data-diff');
-    statsContainer.style.display = 'none';
-    mainTitle.innerHTML = 'RHYTHM STAR';
-    mainTitle.style.color = '#00f2fe';
-    updateSelectedRecordDisplay();
-  });
-});
 
 nextPrepBtn.addEventListener('click', () => {
   const song = songs.find(s => s.id === currentSongId);
-  const diffNameMap = { normal: `보통 (${song.levels.normal})`, hard: `하드 (${song.levels.hard})`, expert: `익스퍼트 (${song.levels.expert})` };
+  const diffNameMap = { 
+    easy: `쉬움 (${song.levels.easy})`, 
+    normal: `보통 (${song.levels.normal || song.levels.normal})`, 
+    hard: `하드 (${song.levels.hard})`, 
+    expert: `익스퍼트 (${song.levels.expert})` 
+  };
   prepSongTitle.innerHTML = `🎵 ${song.title} [${diffNameMap[currentDifficulty]}]`;
   
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffNameUI = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   prepRecordTitle.innerHTML = `🏆 [${diffNameUI[currentDifficulty]}] 최고 기록`;
-  if (rec.score > 0) {
+  if (rec && rec.score > 0) {
     prepRecordContent.innerHTML = `최고 점수: <b>${rec.score.toLocaleString()}점</b> | RANK: <span style="color:${rec.color}; font-weight:bold;">${rec.rank}</span>`;
   } else {
     prepRecordContent.innerHTML = `기록 없음 (첫 클리어에 도전하세요!)`;
@@ -896,7 +926,8 @@ function generateBeatmap(songId, difficulty) {
   if (songId === 'bbijilge') seed = 2000;
   else if (songId === 'constellation') seed = 3000;
 
-  if (difficulty === 'normal') seed += 100;
+  if (difficulty === 'easy') seed += 50;
+  else if (difficulty === 'normal') seed += 100;
   else if (difficulty === 'hard') seed += 200;
   else if (difficulty === 'expert') seed += 300;
 
@@ -911,9 +942,10 @@ function generateBeatmap(songId, difficulty) {
   let currentTime = 2.0;
   const totalDuration = songObj ? songObj.duration : 225.0;
 
-  let speed = 450;
+  let speed = 420;
+  if (difficulty === 'normal') speed = 450;
   if (difficulty === 'hard') speed = 490;
-  if (difficulty === 'expert') speed = 540; // 익스퍼트: 빠른 노트 속도
+  if (difficulty === 'expert') speed = 540;
   window.NOTE_SPEED = speed;
 
   let activeLongEndTimes = [0, 0, 0, 0];
@@ -924,9 +956,10 @@ function generateBeatmap(songId, difficulty) {
     const rand = seededRandom();
 
     if (currentTime < activeLongEndTimes[lane]) {
-      if (difficulty === 'normal') currentTime += beatInterval * 1.2;
+      if (difficulty === 'easy') currentTime += beatInterval * 1.8;
+      else if (difficulty === 'normal') currentTime += beatInterval * 1.2;
       else if (difficulty === 'hard') currentTime += beatInterval * 0.85;
-      else currentTime += beatInterval * 0.5; // 익스퍼트: 촘촘한 간격
+      else currentTime += beatInterval * 0.5;
       index++;
       continue;
     }
@@ -942,10 +975,10 @@ function generateBeatmap(songId, difficulty) {
     else if (index % 4 === 0 && (rand < (difficulty === 'expert' ? 0.7 : 0.45))) {
       notes.push({ time: currentTime, lane: lane, type: 'swipe', swipeDir: lane === 0 ? 'right' : 'left', hit: false, missed: false });
     }
-    else if (difficulty !== 'normal' && index % 6 === 0 && rand < 0.5) {
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 6 === 0 && rand < 0.5) {
       notes.push({ time: currentTime, lane: lane, type: 'bonus', hit: false, missed: false });
     }
-    else if (difficulty !== 'normal' && index % 7 === 0 && rand < 0.5) {
+    else if (difficulty !== 'easy' && difficulty !== 'normal' && index % 7 === 0 && rand < 0.5) {
       const zigzagDur = beatInterval * 1.5;
       const targetLane = (lane + (seededRandom() < 0.5 ? 1 : -1) + LANES) % LANES;
       if (currentTime >= activeLongEndTimes[targetLane]) {
@@ -957,12 +990,12 @@ function generateBeatmap(songId, difficulty) {
         activeLongEndTimes[targetLane] = currentTime + zigzagDur + 0.3;
       }
     }
-    else if (index % 3 === 0 && rand < 0.4) {
+    else if (difficulty !== 'easy' && index % 3 === 0 && rand < 0.4) {
       const releaseDur = beatInterval * (seededRandom() * 1.0 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'release', duration: releaseDur, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + releaseDur + 0.3;
     }
-    else if (index % 3 === 1 && rand < 0.45) {
+    else if (difficulty !== 'easy' && index % 3 === 1 && rand < 0.45) {
       const longDuration = beatInterval * (seededRandom() * 1.2 + 1.0);
       notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
       activeLongEndTimes[lane] = currentTime + longDuration + 0.3;
@@ -971,12 +1004,14 @@ function generateBeatmap(songId, difficulty) {
       notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
     }
 
-    if (difficulty === 'normal') {
+    if (difficulty === 'easy') {
+      currentTime += beatInterval * 1.8;
+    } else if (difficulty === 'normal') {
       currentTime += beatInterval * 1.2;
     } else if (difficulty === 'hard') {
       currentTime += beatInterval * 0.85;
     } else {
-      currentTime += beatInterval * 0.48; // 익스퍼트: 쉴 틈 없는 복잡한 코드 밀도
+      currentTime += beatInterval * 0.48; // 익스퍼트: 복잡하고 촘촘한 밀도
     }
     index++;
   }
@@ -1361,13 +1396,19 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// 곡 길이와 난이도별 4분 15초(255초) 스케일에 맞춘 랭크 컷 시스템
 function calculateRank(songId, difficulty, finalScore) {
   let multiplier = 1.0;
-  if (songId === 'constellation') multiplier = 1.35; // 4분 15초 대곡 보정
+  if (songId === 'constellation') multiplier = 1.35;
   else if (songId === 'bbijilge') multiplier = 0.85;
 
-  if (difficulty === 'normal') {
+  if (difficulty === 'easy') {
+    if (finalScore >= 90000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
+    if (finalScore >= 75000 * multiplier) return { rank: 'S', color: '#facc15' };
+    if (finalScore >= 60000 * multiplier) return { rank: 'A', color: '#00f2fe' };
+    if (finalScore >= 45000 * multiplier) return { rank: 'B', color: '#4ade80' };
+    if (finalScore >= 30000 * multiplier) return { rank: 'C', color: '#fb923c' };
+    return { rank: 'D', color: '#94a3b8' };
+  } else if (difficulty === 'normal') {
     if (finalScore >= 180000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 145000 * multiplier) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 115000 * multiplier) return { rank: 'A', color: '#00f2fe' };
@@ -1382,7 +1423,6 @@ function calculateRank(songId, difficulty, finalScore) {
     if (finalScore >= 95000 * multiplier) return { rank: 'C', color: '#fb923c' };
     return { rank: 'D', color: '#94a3b8' };
   } else {
-    // 익스퍼트 (EXPERT) 난이도 랭크 컷
     if (finalScore >= 350000 * multiplier) return { rank: 'SS', color: '#ff79c6' };
     if (finalScore >= 290000 * multiplier) return { rank: 'S', color: '#facc15' };
     if (finalScore >= 230000 * multiplier) return { rank: 'A', color: '#00f2fe' };
@@ -1804,7 +1844,7 @@ function endGame() {
 
   const rankInfo = calculateRank(currentSongId, currentDifficulty, score);
 
-  if (score > bestRecords[currentSongId][currentDifficulty].score) {
+  if (!bestRecords[currentSongId][currentDifficulty] || score > bestRecords[currentSongId][currentDifficulty].score) {
     bestRecords[currentSongId][currentDifficulty] = { score: score, rank: rankInfo.rank, color: rankInfo.color };
     clearTitle = "🎉 NEW RECORD! " + clearTitle;
   }
@@ -1813,7 +1853,7 @@ function endGame() {
   updateInventoryUI();
   updateSelectedRecordDisplay();
 
-  const diffNameUI = { normal: '보통', hard: '하드', expert: '익스퍼트' };
+  const diffNameUI = { easy: '쉬움', normal: '보통', hard: '하드', expert: '익스퍼트' };
   mainTitle.innerHTML = `[${diffNameUI[currentDifficulty]}] ${clearTitle}`;
   mainTitle.style.color = titleColor;
   mainTitle.style.fontSize = "16px";
