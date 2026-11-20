@@ -304,10 +304,10 @@ const bgm3 = document.getElementById('bgm3');
 const bgm4 = document.getElementById('bgm4');
 
 const songs = [
-  { id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185, levels: { easy: 'Lv. 4', normal: 'Lv. 8', hard: 'Lv. 15', extreme: 'Lv. 25' } },
-  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 26' } },
-  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 27' } },
-  { id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255, levels: { easy: 'Lv. 7', normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 29' } }
+  { id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185, levels: { easy: 'Lv. 4', normal: 'Lv. 9', hard: 'Lv. 16', extreme: 'Lv. 27' } },
+  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 19', extreme: 'Lv. 28' } },
+  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 20', extreme: 'Lv. 29' } },
+  { id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255, levels: { easy: 'Lv. 7', normal: 'Lv. 14', hard: 'Lv. 22', extreme: 'Lv. 31' } }
 ];
 
 const LANES = 4;
@@ -425,6 +425,7 @@ let judgementColor = "#fff";
 let judgementTimer = 0;
 let keyPressed = [false, false, false, false];
 let notes = [];
+let totalNotesCount = 0;
 
 function getActiveBgm() {
   const s = songs.find(item => item.id === currentSongId);
@@ -442,50 +443,51 @@ function generateBeatmap(songId, difficulty) {
   const songObj = songs.find(s => s.id === songId);
   const totalDuration = songObj ? songObj.duration : 185.0;
 
-  // 난이도별 노트 간격, 속도, 롱노트/지그재그 빈도 설정
-  let timeInterval = 1.6;
+  // 난이도별 세부 설정 (타일 수, 속도, 롱노트/지그재그 확률 대폭 강화)
+  let timeInterval = 1.2;
   let longNoteChance = 0.0;
   let zigzagChance = 0.0;
 
   if (difficulty === 'easy') {
-    window.NOTE_SPEED = 350;
-    timeInterval = 1.4;
-    longNoteChance = 0.1;
-    zigzagChance = 0.0;
+    window.NOTE_SPEED = 380;
+    timeInterval = 1.1;
+    longNoteChance = 0.15;
+    zigzagChance = 0.1;
   } else if (difficulty === 'normal') {
-    window.NOTE_SPEED = 430;
-    timeInterval = 0.95;
-    longNoteChance = 0.25;
-    zigzagChance = 0.15;
-  } else if (difficulty === 'hard') {
-    window.NOTE_SPEED = 520;
-    timeInterval = 0.65;
-    longNoteChance = 0.35;
+    window.NOTE_SPEED = 460;
+    timeInterval = 0.75;
+    longNoteChance = 0.3;
     zigzagChance = 0.3;
-  } else if (difficulty === 'extreme') {
-    window.NOTE_SPEED = 620;
-    timeInterval = 0.42;
+  } else if (difficulty === 'hard') {
+    window.NOTE_SPEED = 560;
+    timeInterval = 0.48;
     longNoteChance = 0.45;
-    zigzagChance = 0.5;
+    zigzagChance = 0.6;
+  } else if (difficulty === 'extreme') {
+    window.NOTE_SPEED = 660;
+    timeInterval = 0.28;
+    longNoteChance = 0.55;
+    zigzagChance = 0.85;
   }
 
   let currentTime = 2.0;
   let lastLane = 0;
   let index = 0;
 
-  while (currentTime < totalDuration - 3.0) {
+  while (currentTime < totalDuration - 2.0) {
     let lane = Math.floor(seededRandom() * LANES);
     
-    // 지그재그 노트 패턴 구현 (이전 레인과 번갈아가며 유도)
+    // 지그재그 노트(트릴 패턴) 유도
     if (zigzagChance > 0 && seededRandom() < zigzagChance) {
-      lane = (lastLane + (seededRandom() > 0.5 ? 1 : 3)) % LANES;
+      lane = (lastLane + 1 + Math.floor(seededRandom() * 2)) % LANES;
     }
     lastLane = lane;
 
-    const isLong = difficulty !== 'easy' && index % 3 === 0 && seededRandom() < longNoteChance;
+    const isLong = difficulty !== 'easy' && index % 2 === 0 && seededRandom() < longNoteChance;
 
     if (isLong) {
-      const longDuration = 0.8 + (seededRandom() * 0.8);
+      // 롱노트 크기(길이)를 짧은 것부터 긴 것까지 랜덤하게 다양화 (0.4초 ~ 2.2초)
+      const longDuration = 0.4 + (seededRandom() * 1.8);
       notes.push({ 
         time: currentTime, 
         lane: lane, 
@@ -509,6 +511,7 @@ function generateBeatmap(songId, difficulty) {
     currentTime += timeInterval;
     index++;
   }
+  totalNotesCount = notes.length;
 }
 
 function incrementCombo() {
@@ -518,16 +521,16 @@ function incrementCombo() {
 
 function applyHitScore(note, minDiff) {
   if (minDiff <= 0.12) {
-    score += (100 + (combo * 2));
+    score += Math.round(100 * (1 + combo * 0.01));
     incrementCombo();
     stats.perfect++;
-    healHp(1.2);
+    healHp(1.0);
     showJudgement("PERFECT!", "#00f2fe");
   } else if (minDiff <= 0.22) {
-    score += (70 + combo);
+    score += Math.round(70 * (1 + combo * 0.01));
     incrementCombo();
     stats.great++;
-    healHp(0.6);
+    healHp(0.5);
     showJudgement("GREAT!", "#4ade80");
   } else {
     score += 30;
@@ -598,7 +601,7 @@ function handleTapDown(lane) {
 function handleMiss() {
   stats.miss++;
   combo = 0;
-  damageHp(12);
+  damageHp(10);
   showJudgement("MISS", "#ff4b4b");
 }
 
@@ -636,12 +639,15 @@ window.addEventListener('keyup', (e) => {
 });
 
 function calculateRank(finalScore, difficulty) {
-  let threshold = difficulty === 'easy' ? 90000 : (difficulty === 'normal' ? 150000 : (difficulty === 'hard' ? 240000 : 350000));
-  if (finalScore >= threshold * 0.95) return { rank: 'SS', color: '#ff79c6' };
-  if (finalScore >= threshold * 0.80) return { rank: 'S', color: '#facc15' };
-  if (finalScore >= threshold * 0.65) return { rank: 'A', color: '#00f2fe' };
-  if (finalScore >= threshold * 0.50) return { rank: 'B', color: '#4ade80' };
-  if (finalScore >= threshold * 0.30) return { rank: 'C', color: '#fb923c' };
+  // 실제 획득 가능한 총 노트 수에 비례하여 현실적으로 달성 가능한 점수 컷 설정
+  const maxPossibleScore = totalNotesCount * 120;
+  const ratio = finalScore / Math.max(1, maxPossibleScore);
+
+  if (ratio >= 0.92) return { rank: 'SS', color: '#ff79c6' };
+  if (ratio >= 0.80) return { rank: 'S', color: '#facc15' };
+  if (ratio >= 0.65) return { rank: 'A', color: '#00f2fe' };
+  if (ratio >= 0.50) return { rank: 'B', color: '#4ade80' };
+  if (ratio >= 0.30) return { rank: 'C', color: '#fb923c' };
   return { rank: 'D', color: '#94a3b8' };
 }
 
@@ -676,7 +682,7 @@ function updateAndDraw() {
     const timeDiff = note.time - currentTime;
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
-    // 롱노트 처리
+    // 다양해진 롱노트 크기(길이) 처리
     if (note.type === 'long') {
       const tailTimeDiff = (note.time + note.duration) - currentTime;
       const tailY = HIT_Y - (tailTimeDiff * window.NOTE_SPEED);
@@ -685,17 +691,17 @@ function updateAndDraw() {
         if (currentTime >= note.time + note.duration) {
           note.holding = false;
           note.tailHit = true;
-          score += 50;
+          score += 40;
           incrementCombo();
           stats.perfect++;
-          healHp(1.0);
+          healHp(0.8);
         }
       }
 
       if (tailY <= HIT_Y && y >= -50) {
         const x = note.lane * LANE_WIDTH + 14;
         const w = LANE_WIDTH - 28;
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.4)';
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.45)';
         ctx.fillRect(x, Math.max(0, tailY), w, Math.min(HIT_Y, y) - Math.max(0, tailY));
       }
     }
@@ -770,7 +776,7 @@ function triggerGameOver() {
   isPlaying = false;
   getActiveBgm().pause();
   mainTitle.innerHTML = "💔 GAME OVER";
-  mainTitle.style.noteColor = "#ff4b4b";
+  mainTitle.style.color = "#ff4b4b";
   statsContainer.innerHTML = `체력이 소진되었습니다. 최종 점수: ${score.toLocaleString()}`;
   statsContainer.style.display = 'block';
   switchView('menu');
