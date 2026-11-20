@@ -185,17 +185,18 @@ rhythm_game_html = """
   }
   .song-card.selected .song-name { color: #00f2fe; }
 
-  .difficulty-select-container { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 10px; }
+  .difficulty-select-container { display: flex; gap: 6px; width: 100%; justify-content: center; margin-bottom: 10px; }
   .diff-card {
     flex: 1; background: #161b22; border: 2px solid #30363d; border-radius: 10px;
-    padding: 8px 4px; cursor: pointer; text-align: center; transition: all 0.2s;
+    padding: 8px 2px; cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .diff-card.selected { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background: #1f2630; }
   .diff-card[data-diff="hard"].selected { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.4); }
   .diff-card[data-diff="extreme"].selected { border-color: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
 
-  .diff-lv { font-size: 10px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
-  .diff-name { font-size: 12px; font-weight: 900; }
+  .diff-lv { font-size: 9px; font-weight: bold; color: #8b949e; margin-bottom: 2px; }
+  .diff-name { font-size: 11px; font-weight: 900; }
+  .diff-card[data-diff="easy"] .diff-name { color: #4ade80; }
   .diff-card[data-diff="normal"] .diff-name { color: #00f2fe; }
   .diff-card[data-diff="hard"] .diff-name { color: #ff4b4b; }
   .diff-card[data-diff="extreme"] .diff-name { color: #c084fc; }
@@ -303,10 +304,10 @@ const bgm3 = document.getElementById('bgm3');
 const bgm4 = document.getElementById('bgm4');
 
 const songs = [
-  { id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185, levels: { normal: 'Lv. 8', hard: 'Lv. 15', extreme: 'Lv. 25' } },
-  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225, levels: { normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 26' } },
-  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144, levels: { normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 27' } },
-  { id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255, levels: { normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 29' } }
+  { id: 'springdream', title: '봄꿈', thumb: 'data:image/jpeg;base64,IMAGE4_BASE64_PLACEHOLDER', audio: bgm4, duration: 185, levels: { easy: 'Lv. 4', normal: 'Lv. 8', hard: 'Lv. 15', extreme: 'Lv. 25' } },
+  { id: 'startrail', title: 'Star Trail', thumb: 'data:image/jpeg;base64,IMAGE1_BASE64_PLACEHOLDER', audio: bgm1, duration: 225, levels: { easy: 'Lv. 5', normal: 'Lv. 11', hard: 'Lv. 18', extreme: 'Lv. 26' } },
+  { id: 'bbijilge', title: '삐질게', thumb: 'data:image/jpeg;base64,IMAGE2_BASE64_PLACEHOLDER', audio: bgm2, duration: 144, levels: { easy: 'Lv. 6', normal: 'Lv. 12', hard: 'Lv. 19', extreme: 'Lv. 27' } },
+  { id: 'constellation', title: '별자리가 될 수 있다면', thumb: 'data:image/jpeg;base64,IMAGE3_BASE64_PLACEHOLDER', audio: bgm3, duration: 255, levels: { easy: 'Lv. 7', normal: 'Lv. 13', hard: 'Lv. 20', extreme: 'Lv. 29' } }
 ];
 
 const LANES = 4;
@@ -318,10 +319,10 @@ const LANE_COLORS = ['#ff4b4b', '#00f2fe', '#00f2fe', '#ff4b4b'];
 let currentSongId = 'springdream';
 let currentDifficulty = 'normal';
 let bestRecords = {
-  springdream: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  startrail: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  bbijilge: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
-  constellation: { normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
+  springdream: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  startrail: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  bbijilge: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } },
+  constellation: { easy: { score: 0, rank: '-', color: '#94a3b8' }, normal: { score: 0, rank: '-', color: '#94a3b8' }, hard: { score: 0, rank: '-', color: '#94a3b8' }, extreme: { score: 0, rank: '-', color: '#94a3b8' } }
 };
 
 function switchView(viewName) {
@@ -330,9 +331,12 @@ function switchView(viewName) {
 }
 
 function updateSelectedRecordDisplay() {
+  if (!bestRecords[currentSongId][currentDifficulty]) {
+    currentDifficulty = 'normal';
+  }
   const rec = bestRecords[currentSongId][currentDifficulty];
-  const diffColorMap = { normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
-  const diffNameMap = { normal: '보통', hard: '하드', extreme: '익스트림' };
+  const diffColorMap = { easy: '#4ade80', normal: '#00f2fe', hard: '#ff4b4b', extreme: '#c084fc' };
+  const diffNameMap = { easy: '쉬움', normal: '보통', hard: '하드', extreme: '익스트림' };
   
   menuDiffLabel.innerText = `🏆 [${diffNameMap[currentDifficulty]}] 최고 기록`;
   menuDiffLabel.style.color = diffColorMap[currentDifficulty];
@@ -349,6 +353,7 @@ function renderDifficultyButtons() {
   difficultyContainer.innerHTML = '';
   
   const diffs = [
+    { key: 'easy', label: '쉬움', lv: song.levels.easy },
     { key: 'normal', label: '보통', lv: song.levels.normal },
     { key: 'hard', label: '하드', lv: song.levels.hard },
     { key: 'extreme', label: '익스트림', lv: song.levels.extreme }
@@ -435,25 +440,73 @@ function generateBeatmap(songId, difficulty) {
   }
 
   const songObj = songs.find(s => s.id === songId);
-  const beatInterval = 0.55; 
-  let currentTime = 2.0;
   const totalDuration = songObj ? songObj.duration : 185.0;
 
-  window.NOTE_SPEED = difficulty === 'normal' ? 420 : (difficulty === 'hard' ? 480 : 540);
+  // 난이도별 노트 간격, 속도, 롱노트/지그재그 빈도 설정
+  let timeInterval = 1.6;
+  let longNoteChance = 0.0;
+  let zigzagChance = 0.0;
 
+  if (difficulty === 'easy') {
+    window.NOTE_SPEED = 350;
+    timeInterval = 1.4;
+    longNoteChance = 0.1;
+    zigzagChance = 0.0;
+  } else if (difficulty === 'normal') {
+    window.NOTE_SPEED = 430;
+    timeInterval = 0.95;
+    longNoteChance = 0.25;
+    zigzagChance = 0.15;
+  } else if (difficulty === 'hard') {
+    window.NOTE_SPEED = 520;
+    timeInterval = 0.65;
+    longNoteChance = 0.35;
+    zigzagChance = 0.3;
+  } else if (difficulty === 'extreme') {
+    window.NOTE_SPEED = 620;
+    timeInterval = 0.42;
+    longNoteChance = 0.45;
+    zigzagChance = 0.5;
+  }
+
+  let currentTime = 2.0;
+  let lastLane = 0;
   let index = 0;
+
   while (currentTime < totalDuration - 3.0) {
-    const lane = Math.floor(seededRandom() * LANES);
-    const isLong = difficulty !== 'normal' && index % 4 === 0 && seededRandom() < 0.35;
+    let lane = Math.floor(seededRandom() * LANES);
+    
+    // 지그재그 노트 패턴 구현 (이전 레인과 번갈아가며 유도)
+    if (zigzagChance > 0 && seededRandom() < zigzagChance) {
+      lane = (lastLane + (seededRandom() > 0.5 ? 1 : 3)) % LANES;
+    }
+    lastLane = lane;
+
+    const isLong = difficulty !== 'easy' && index % 3 === 0 && seededRandom() < longNoteChance;
 
     if (isLong) {
-      const longDuration = beatInterval * 1.5;
-      notes.push({ time: currentTime, lane: lane, type: 'long', duration: longDuration, tailHit: false, holding: false, hit: false, missed: false });
+      const longDuration = 0.8 + (seededRandom() * 0.8);
+      notes.push({ 
+        time: currentTime, 
+        lane: lane, 
+        type: 'long', 
+        duration: longDuration, 
+        tailHit: false, 
+        holding: false, 
+        hit: false, 
+        missed: false 
+      });
     } else {
-      notes.push({ time: currentTime, lane: lane, type: 'normal', hit: false, missed: false });
+      notes.push({ 
+        time: currentTime, 
+        lane: lane, 
+        type: 'normal', 
+        hit: false, 
+        missed: false 
+      });
     }
 
-    currentTime += difficulty === 'normal' ? 1.2 : (difficulty === 'hard' ? 0.85 : 0.55);
+    currentTime += timeInterval;
     index++;
   }
 }
@@ -583,7 +636,7 @@ window.addEventListener('keyup', (e) => {
 });
 
 function calculateRank(finalScore, difficulty) {
-  let threshold = difficulty === 'normal' ? 150000 : (difficulty === 'hard' ? 240000 : 350000);
+  let threshold = difficulty === 'easy' ? 90000 : (difficulty === 'normal' ? 150000 : (difficulty === 'hard' ? 240000 : 350000));
   if (finalScore >= threshold * 0.95) return { rank: 'SS', color: '#ff79c6' };
   if (finalScore >= threshold * 0.80) return { rank: 'S', color: '#facc15' };
   if (finalScore >= threshold * 0.65) return { rank: 'A', color: '#00f2fe' };
@@ -623,16 +676,28 @@ function updateAndDraw() {
     const timeDiff = note.time - currentTime;
     const y = HIT_Y - (timeDiff * window.NOTE_SPEED);
 
-    if (note.type === 'long' && note.holding) {
-      if (currentTime >= note.time + note.duration) {
-        note.holding = false;
-        note.tailHit = true;
-        score += 50;
-        incrementCombo();
-        stats.perfect++;
-        healHp(1.0);
+    // 롱노트 처리
+    if (note.type === 'long') {
+      const tailTimeDiff = (note.time + note.duration) - currentTime;
+      const tailY = HIT_Y - (tailTimeDiff * window.NOTE_SPEED);
+
+      if (note.holding) {
+        if (currentTime >= note.time + note.duration) {
+          note.holding = false;
+          note.tailHit = true;
+          score += 50;
+          incrementCombo();
+          stats.perfect++;
+          healHp(1.0);
+        }
       }
-      continue;
+
+      if (tailY <= HIT_Y && y >= -50) {
+        const x = note.lane * LANE_WIDTH + 14;
+        const w = LANE_WIDTH - 28;
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.4)';
+        ctx.fillRect(x, Math.max(0, tailY), w, Math.min(HIT_Y, y) - Math.max(0, tailY));
+      }
     }
 
     if (!note.hit && timeDiff < -0.35) {
@@ -644,7 +709,7 @@ function updateAndDraw() {
     if (y >= -50 && y <= HIT_Y + 20) {
       const x = note.lane * LANE_WIDTH + 10;
       const w = LANE_WIDTH - 20;
-      ctx.fillStyle = LANE_COLORS[note.lane];
+      ctx.fillStyle = note.type === 'long' ? '#facc15' : LANE_COLORS[note.lane];
       ctx.beginPath();
       ctx.roundRect(x, y - 12, w, 24, 6);
       ctx.fill();
@@ -705,7 +770,7 @@ function triggerGameOver() {
   isPlaying = false;
   getActiveBgm().pause();
   mainTitle.innerHTML = "💔 GAME OVER";
-  mainTitle.style.color = "#ff4b4b";
+  mainTitle.style.noteColor = "#ff4b4b";
   statsContainer.innerHTML = `체력이 소진되었습니다. 최종 점수: ${score.toLocaleString()}`;
   statsContainer.style.display = 'block';
   switchView('menu');
